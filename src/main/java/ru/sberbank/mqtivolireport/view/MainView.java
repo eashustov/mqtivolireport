@@ -115,10 +115,8 @@ public class MainView extends VerticalLayout {
     private InputStream getInputStream() {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-
         csvWriter.writeNext("id", "ServerName", "MqName", "TivoliInstall");
-        repo.findAll().forEach(c -> csvWriter.writeNext("" + c.getId(), c.getServerName(), c.getMqName(), c.getTivoliInstall()));
+        dataView.getItems().forEach(c -> csvWriter.writeNext("" + c.getId(), c.getServerName(), c.getMqName(), c.getTivoliInstall()));
         return IOUtils.toInputStream(stringWriter.toString(), "UTF-8");
 
     }
@@ -134,29 +132,28 @@ public class MainView extends VerticalLayout {
     private static class PersonFilter {
 
 
-        private final GridListDataView<MqTivoliData> dataView;
+        private final GridListDataView<MqTivoliData> dataViewFiltered;
         private String mqName;
         private String serverName;
         private String tivoliInstall;
         public PersonFilter(GridListDataView<MqTivoliData> dataView) {
-            this.dataView = dataView;
-            this.dataView.addFilter(this::test);
+            this.dataViewFiltered = dataView;
+            this.dataViewFiltered.addFilter(this::test);
 
         }
         public void setMqName(String mqName) {
             this.mqName = mqName;
-            this.dataView.refreshAll();
+            this.dataViewFiltered.refreshAll();
         }
         public void setServerName(String serverName) {
 
             this.serverName = serverName;
-            this.dataView.refreshAll();
+            this.dataViewFiltered.refreshAll();
         }
-
 
         public void setTivoliInstall(String tivoliInstall) {
             this.tivoliInstall = tivoliInstall;
-            this.dataView.refreshAll();
+            this.dataViewFiltered.refreshAll();
         }
         public boolean test(MqTivoliData mqTivoliData) {
             boolean matchesFullName = matches(mqTivoliData.getMqName(), mqName);
