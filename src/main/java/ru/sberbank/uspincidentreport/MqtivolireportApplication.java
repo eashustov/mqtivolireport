@@ -1,4 +1,4 @@
-package ru.sberbank.mqtivolireport;
+package ru.sberbank.uspincidentreport;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

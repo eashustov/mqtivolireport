@@ -1,4 +1,4 @@
-package ru.sberbank.mqtivolireport.domain;
+package ru.sberbank.uspincidentreport.domain;
 
 import lombok.Data;
 

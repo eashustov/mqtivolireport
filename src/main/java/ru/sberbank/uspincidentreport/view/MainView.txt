@@ -1,4 +1,4 @@
-package ru.sberbank.mqtivolireport.view;
+package ru.sberbank.uspincidentreport.view;
 
 import com.helger.commons.csv.CSVWriter;
 import com.vaadin.flow.component.grid.Grid;
@@ -13,8 +13,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.apache.commons.io.IOUtils;
-import ru.sberbank.mqtivolireport.domain.MqTivoliData;
-import ru.sberbank.mqtivolireport.repo.MqTivoliRepo;
+import ru.sberbank.uspincidentreport.domain.MqTivoliData;
+import ru.sberbank.uspincidentreport.repo.MqTivoliRepo_;
 
 import java.io.InputStream;
 import java.io.StringWriter;
