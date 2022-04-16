@@ -9,6 +9,7 @@ import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
@@ -39,6 +40,7 @@ public class MainView extends VerticalLayout {
     private Grid<UspIncidentData> grid;
     private GridListDataView<UspIncidentData> dataView;
     private Anchor anchor;
+
     public MainView(UspIncidentRepo repo) {
         this.repo = repo;
         this.header = new H4("Автоинциденты системы мониторинга УСП");
@@ -56,6 +58,7 @@ public class MainView extends VerticalLayout {
             layout.add(new Label(incident.getACTION()));
             return layout;
         }));
+        IncidentContextMenu incContextMenu = new IncidentContextMenu(grid);
         Grid.Column<UspIncidentData> NUMBER = grid
                 .addColumn(UspIncidentData::getNUMBER).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> BRIEF_DESCRIPTION = grid
@@ -64,18 +67,18 @@ public class MainView extends VerticalLayout {
                 .addColumn(UspIncidentData::getPRIORITY_CODE).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> OPEN_TIME = grid
                 .addColumn(UspIncidentData::getOPEN_TIME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
-        Grid.Column<UspIncidentData> ASSIGNEE_NAME	= grid
+        Grid.Column<UspIncidentData> ASSIGNEE_NAME = grid
                 .addColumn(UspIncidentData::getHPC_ASSIGNEE_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> ASSIGNMENT = grid
                 .addColumn(UspIncidentData::getHPC_ASSIGNMENT).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> CREATED_BY_NAME = grid
                 .addColumn(UspIncidentData::getHPC_CREATED_BY_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> ZABBIX_HISTORY = grid
-                .addColumn(new ComponentRenderer<>(z ->(new Anchor (z.getZABBIX_HISTORY(),"История проблем по хосту")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getZABBIX_HISTORY(), "История проблем по хосту")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> STATUS = grid
                 .addColumn(UspIncidentData::getHPC_STATUS).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> RESOLUTION = grid
-                .addColumn(new ComponentRenderer<>(z ->(new Anchor (z.getRESOLUTION(),"Сценарий устранения")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION(), "Сценарий устранения")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> ACTION = grid
                 .addColumn(UspIncidentData::getACTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> HOST = grid
@@ -141,7 +144,7 @@ public class MainView extends VerticalLayout {
         actions.setVerticalComponentAlignment(Alignment.CENTER, anchor, menuButton);
         setHorizontalComponentAlignment(Alignment.END, actions);
 
-        add(header, actions, grid);
+        add(header, actions, grid, incContextMenu);
 
         //Simple Filter View
 //
@@ -151,6 +154,7 @@ public class MainView extends VerticalLayout {
 
 //        showData("");
     }
+
     private Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer) {
         Label label = new Label(labelText);
         label.getStyle().set("padding-top", "var(--lumo-space-m)")
@@ -170,6 +174,7 @@ public class MainView extends VerticalLayout {
         layout.getThemeList().add("spacing-xs");
         return layout;
     }
+
     private InputStream getInputStream() {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
@@ -182,6 +187,7 @@ public class MainView extends VerticalLayout {
         return IOUtils.toInputStream(stringWriter.toString(), "UTF-8");
 
     }
+
     // Simple showData with one filter text
 //    private void showData(String filterText) {
 //        if (filterText.isEmpty()) {
@@ -208,6 +214,7 @@ public class MainView extends VerticalLayout {
         private String action;
         private String host;
         private String problem;
+
         public PersonFilter(GridListDataView<UspIncidentData> dataView) {
             this.dataViewFiltered = dataView;
             this.dataViewFiltered.addFilter(this::test);
@@ -298,6 +305,7 @@ public class MainView extends VerticalLayout {
                     matchesStatus && matchesResolution && matchesAction && matchesHost && matchesProblem;
 
         }
+
         private boolean matches(String value, String searchTerm) {
             return searchTerm == null || searchTerm.isEmpty() || value
                     .toLowerCase().contains(searchTerm.toLowerCase());
@@ -316,6 +324,21 @@ public class MainView extends VerticalLayout {
             });
             menuItem.setCheckable(true);
             menuItem.setChecked(column.isVisible());
+        }
+    }
+
+    private static class IncidentContextMenu extends GridContextMenu<UspIncidentData> {
+        public IncidentContextMenu(Grid<UspIncidentData> target) {
+            super(target);
+
+                    addItem("Сценарий устранения", e -> e.getItem().ifPresent(incident -> {
+                        getUI().get().getPage().open(incident.getRESOLUTION(), "Сценарий устранения");
+                        // System.out.printf("Edit: %s%n", person.getFullName());
+                    }));
+                    addItem("История в Zabbix", e -> e.getItem().ifPresent(incident -> {
+                        getUI().get().getPage().open(incident.getZABBIX_HISTORY(), "История проблем по хосту");
+                        // System.out.printf("Delete: %s%n", person.getFullName());
+                    }));
         }
     }
 }
