@@ -11,10 +11,13 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -47,8 +50,12 @@ public class MainView extends VerticalLayout {
 //Grid View
         Grid<UspIncidentData> grid = new Grid<>(UspIncidentData.class, false);
         grid.setHeight("500px");
-        grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
-//      Grid.Column<MqTivoliData> id = grid.addColumn(MqTivoliData::getId);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
+        grid.setItemDetailsRenderer(new ComponentRenderer<>(incident -> {
+            VerticalLayout layout = new VerticalLayout();
+            layout.add(new Label(incident.getACTION()));
+            return layout;
+        }));
         Grid.Column<UspIncidentData> NUMBER = grid
                 .addColumn(UspIncidentData::getNUMBER).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> BRIEF_DESCRIPTION = grid
@@ -64,21 +71,21 @@ public class MainView extends VerticalLayout {
         Grid.Column<UspIncidentData> CREATED_BY_NAME = grid
                 .addColumn(UspIncidentData::getHPC_CREATED_BY_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> ZABBIX_HISTORY = grid
-                .addColumn(UspIncidentData::getZABBIX_HISTORY).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(new ComponentRenderer<>(z ->(new Anchor (z.getZABBIX_HISTORY(),"История проблем по хосту")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> STATUS = grid
                 .addColumn(UspIncidentData::getHPC_STATUS).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> RESOLUTION = grid
-                .addColumn(UspIncidentData::getRESOLUTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(new ComponentRenderer<>(z ->(new Anchor (z.getRESOLUTION(),"Сценарий устранения")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> ACTION = grid
                 .addColumn(UspIncidentData::getACTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> HOST = grid
                 .addColumn(UspIncidentData::getHOST).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> PROBLEM = grid
                 .addColumn(UspIncidentData::getPROBLEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
-//        grid.getColumnByKey("id").setWidth("50px").setFlexGrow(0);
         GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll());
         PersonFilter personFilter = new PersonFilter(dataView);
-        //Create header for Grid
+
+        //Create headers for Grid
         grid.getHeaderRows().clear();
         HeaderRow headerRow = grid.appendHeaderRow();
         headerRow.getCell(NUMBER)
@@ -100,7 +107,7 @@ public class MainView extends VerticalLayout {
         headerRow.getCell(STATUS)
                 .setComponent(createFilterHeader("Статус", personFilter::setStatus));
         headerRow.getCell(RESOLUTION)
-                .setComponent(createFilterHeader("Сценарий для устранения", personFilter::setResolution));
+                .setComponent(createFilterHeader("Сценарий устранения", personFilter::setResolution));
         headerRow.getCell(ACTION)
                 .setComponent(createFilterHeader("Подробное описание", personFilter::setAction));
         headerRow.getCell(HOST)
@@ -112,7 +119,7 @@ public class MainView extends VerticalLayout {
         anchor.getElement().setAttribute("download", true);
 
         //Column Visibility
-        Button menuButton = new Button("Видимость колонок");
+        Button menuButton = new Button(new Icon(VaadinIcon.LIST_SELECT));
         menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         ColumnToggleContextMenu columnToggleContextMenu = new ColumnToggleContextMenu(menuButton);
         columnToggleContextMenu.addColumnToggleItem("Номер инцидента", NUMBER);
@@ -134,8 +141,6 @@ public class MainView extends VerticalLayout {
         actions.setVerticalComponentAlignment(Alignment.CENTER, anchor, menuButton);
         setHorizontalComponentAlignment(Alignment.END, actions);
 
-
-
         add(header, actions, grid);
 
         //Simple Filter View
@@ -150,16 +155,17 @@ public class MainView extends VerticalLayout {
         Label label = new Label(labelText);
         label.getStyle().set("padding-top", "var(--lumo-space-m)")
                 .set("font-size", "var(--lumo-font-size-xs)");
-        TextField textField = new TextField();
-        textField.setValueChangeMode(ValueChangeMode.EAGER);
-        textField.setClearButtonVisible(true);
-        textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        textField.setWidthFull();
-        textField.getStyle().set("max-width", "100%");
-        textField.setPlaceholder("Поиск " + labelText);
-        textField.addValueChangeListener(
+        TextField filterField = new TextField();
+        filterField.setValueChangeMode(ValueChangeMode.EAGER);
+        filterField.setClearButtonVisible(true);
+        filterField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        filterField.setWidthFull();
+        filterField.getStyle().set("max-width", "100%");
+//        filterField.setPlaceholder("Поиск");
+//        filterField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
+        filterField.addValueChangeListener(
                 e -> filterChangeConsumer.accept(e.getValue()));
-        VerticalLayout layout = new VerticalLayout(label, textField);
+        VerticalLayout layout = new VerticalLayout(label, filterField);
         layout.getThemeList().clear();
         layout.getThemeList().add("spacing-xs");
         return layout;
@@ -168,7 +174,7 @@ public class MainView extends VerticalLayout {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
         csvWriter.writeNext("Номер инцидента", "Краткое описание", "Важность", "Время регистрации", "Исполнитель",
-                "Назначен на группу", "Инициатор", "История в Zabbix", "Статус", "Сценарий для устранения", "Подробное описание",
+                "Назначен на группу", "Инициатор", "История в Zabbix", "Статус", "Сценарий устранения", "Подробное описание",
                 "Сервер", "Проблема");
         dataView.getItems().forEach(c -> csvWriter.writeNext("" + c.getNUMBER(), c.getBRIEF_DESCRIPTION(), c.getPRIORITY_CODE(),
                 c.getOPEN_TIME(), c.getHPC_ASSIGNEE_NAME(), c.getHPC_ASSIGNMENT(), c.getHPC_CREATED_BY_NAME(), c.getZABBIX_HISTORY(),

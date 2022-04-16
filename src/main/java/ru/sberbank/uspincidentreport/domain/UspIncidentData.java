@@ -6,7 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(schema = "SMPRIMARY", name = "probsummarym1")
+//@Table(schema = "SMPRIMARY", name = "probsummarym1")
+@Table(name = "probsummarym1")
 public class UspIncidentData {
     @Id
     @Column(name = "NUMBER")
@@ -98,7 +99,7 @@ public class UspIncidentData {
     }
 
     public String getZABBIX_HISTORY() {
-        return "<a href='" + ZABBIX_HISTORY + "</a>";
+        return ZABBIX_HISTORY;
     }
 
     public String getPROBLEM() {
@@ -106,7 +107,7 @@ public class UspIncidentData {
     }
         public String getRESOLUTION() {
         if (PROBLEM.contains("MQ_Queue_Depth")){
-            return "<a href='https://nlb-jenkins/cis/job/OASP_2/job/tivoli/job/TIVOLI_AGENT_MANAGE/build'" + HOST + "</a>";
+            return "https://nlb-jenkins/cis/job/OASP_2/job/tivoli/job/TIVOLI_AGENT_MANAGE/build+" + HOST;
         } else {
             return "Нет сценариев для устранения инцидента";
         }
