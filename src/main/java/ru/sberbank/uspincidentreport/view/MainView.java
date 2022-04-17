@@ -48,11 +48,14 @@ public class MainView extends VerticalLayout {
         this.dataView = grid.setItems(repo.findAll());
         this.anchor = new Anchor(new StreamResource("uspincidentreport.csv", this::getInputStream), "Экспорт в CSV");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
-
+        setJustifyContentMode(JustifyContentMode.START);
+        
 //Grid View
         Grid<UspIncidentData> grid = new Grid<>(UspIncidentData.class, false);
         grid.setHeight("500px");
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
+        grid.setColumnReorderingAllowed(true);
+// Вывод подробной информации по инциденту по выделению строки таблицы
         grid.setItemDetailsRenderer(new ComponentRenderer<>(incident -> {
             VerticalLayout layout = new VerticalLayout();
             layout.add(new Label(incident.getACTION()));
@@ -75,16 +78,20 @@ public class MainView extends VerticalLayout {
                 .addColumn(UspIncidentData::getHPC_CREATED_BY_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> ZABBIX_HISTORY = grid
                 .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getZABBIX_HISTORY(), "История проблем по хосту")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+        ZABBIX_HISTORY.setVisible(false);
         Grid.Column<UspIncidentData> STATUS = grid
                 .addColumn(UspIncidentData::getHPC_STATUS).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> RESOLUTION = grid
                 .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION(), "Сценарий устранения")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+        RESOLUTION.setVisible(false);
         Grid.Column<UspIncidentData> ACTION = grid
                 .addColumn(UspIncidentData::getACTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+        ACTION.setVisible(false);
         Grid.Column<UspIncidentData> HOST = grid
                 .addColumn(UspIncidentData::getHOST).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> PROBLEM = grid
                 .addColumn(UspIncidentData::getPROBLEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+        PROBLEM.setVisible(false);
         GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll());
         PersonFilter personFilter = new PersonFilter(dataView);
 
@@ -102,7 +109,7 @@ public class MainView extends VerticalLayout {
         headerRow.getCell(ASSIGNEE_NAME)
                 .setComponent(createFilterHeader("Исполнитель", personFilter::setAssigneeName));
         headerRow.getCell(ASSIGNMENT)
-                .setComponent(createFilterHeader("Назначен на группу", personFilter::setAssignment));
+                .setComponent(createFilterHeader("Назначен в группу", personFilter::setAssignment));
         headerRow.getCell(CREATED_BY_NAME)
                 .setComponent(createFilterHeader("Инициатор", personFilter::setCreatedByName));
         headerRow.getCell(ZABBIX_HISTORY)
@@ -118,6 +125,8 @@ public class MainView extends VerticalLayout {
         headerRow.getCell(PROBLEM)
                 .setComponent(createFilterHeader("Проблема", personFilter::setProblem));
 
+                                                                              
+
         //Anchor block
         anchor.getElement().setAttribute("download", true);
 
@@ -130,7 +139,7 @@ public class MainView extends VerticalLayout {
         columnToggleContextMenu.addColumnToggleItem("Важность", PRIORITY_CODE);
         columnToggleContextMenu.addColumnToggleItem("Время регистрации", OPEN_TIME);
         columnToggleContextMenu.addColumnToggleItem("Исполнитель", ASSIGNEE_NAME);
-        columnToggleContextMenu.addColumnToggleItem("Назначен на группу", ASSIGNMENT);
+        columnToggleContextMenu.addColumnToggleItem("Назначен в группу", ASSIGNMENT);
         columnToggleContextMenu.addColumnToggleItem("Инициатор", CREATED_BY_NAME);
         columnToggleContextMenu.addColumnToggleItem("История в Zabbix", ZABBIX_HISTORY);
         columnToggleContextMenu.addColumnToggleItem("Статус", STATUS);
@@ -141,7 +150,7 @@ public class MainView extends VerticalLayout {
 
         // build HorizontalLayout
         HorizontalLayout actions = new HorizontalLayout(anchor, menuButton);
-        actions.setVerticalComponentAlignment(Alignment.CENTER, anchor, menuButton);
+        actions.setVerticalComponentAlignment(Alignment.END, anchor, menuButton);
         setHorizontalComponentAlignment(Alignment.END, actions);
 
         add(header, actions, grid, incContextMenu);
@@ -172,6 +181,7 @@ public class MainView extends VerticalLayout {
         VerticalLayout layout = new VerticalLayout(label, filterField);
         layout.getThemeList().clear();
         layout.getThemeList().add("spacing-xs");
+        layout.setJustifyContentMode(JustifyContentMode.START);
         return layout;
     }
 
@@ -179,7 +189,7 @@ public class MainView extends VerticalLayout {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
         csvWriter.writeNext("Номер инцидента", "Краткое описание", "Важность", "Время регистрации", "Исполнитель",
-                "Назначен на группу", "Инициатор", "История в Zabbix", "Статус", "Сценарий устранения", "Подробное описание",
+                "Назначен в группу", "Инициатор", "История в Zabbix", "Статус", "Сценарий устранения", "Подробное описание",
                 "Сервер", "Проблема");
         dataView.getItems().forEach(c -> csvWriter.writeNext("" + c.getNUMBER(), c.getBRIEF_DESCRIPTION(), c.getPRIORITY_CODE(),
                 c.getOPEN_TIME(), c.getHPC_ASSIGNEE_NAME(), c.getHPC_ASSIGNMENT(), c.getHPC_CREATED_BY_NAME(), c.getZABBIX_HISTORY(),
