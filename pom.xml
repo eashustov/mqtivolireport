@@ -9,12 +9,12 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.sberbank</groupId>
-    <artifactId>mqtivolireport</artifactId>
+    <artifactId>uspincidentreport</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>mqtivolireport</name>
+    <name>uspincidentreport</name>
     <description>Demo project for Spring Boot</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
         <vaadin.version>23.0.4</vaadin.version>
     </properties>
     <dependencies>
@@ -46,6 +46,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <version>1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <!--            <scope>runtime</scope>-->
         </dependency>
     </dependencies>
     <dependencyManagement>
