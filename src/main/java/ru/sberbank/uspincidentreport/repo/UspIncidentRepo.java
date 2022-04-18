@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String> {
 
-//   @Override
+   @Override
    @Query(value = "SELECT\n" +
            "\t* \n" +
            "FROM\n" +
@@ -93,11 +93,5 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "WHERE\n" +
            "\tHPC_CREATED_BY_NAME = 'Технологический пользователь АС ZABBIX_SI (958891)'",
            nativeQuery = true)
-   List<UspIncidentData> findAll_();
-
    List<UspIncidentData> findAll();
-
-//    List<UspIncidentData> findByServerName(String ServerName);
-//
-//    UspIncidentData findById(long id);
 }

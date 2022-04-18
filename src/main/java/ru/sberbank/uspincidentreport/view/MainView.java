@@ -23,6 +23,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
@@ -185,6 +186,7 @@ public class MainView extends VerticalLayout {
         return layout;
     }
 
+    @SneakyThrows
     private InputStream getInputStream() {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
@@ -195,7 +197,6 @@ public class MainView extends VerticalLayout {
                 c.getOPEN_TIME(), c.getHPC_ASSIGNEE_NAME(), c.getHPC_ASSIGNMENT(), c.getHPC_CREATED_BY_NAME(), c.getZABBIX_HISTORY(),
                 c.getHPC_STATUS(), c.getRESOLUTION(), c.getACTION(), c.getHOST(), c.getPROBLEM()));
         return IOUtils.toInputStream(stringWriter.toString(), "UTF-8");
-
     }
 
     // Simple showData with one filter text
