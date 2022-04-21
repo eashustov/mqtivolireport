@@ -73,7 +73,6 @@
                 <artifactId>commons-csv</artifactId>
                 <version>1.8</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-client -->
         </dependencies>
     </dependencyManagement>
 

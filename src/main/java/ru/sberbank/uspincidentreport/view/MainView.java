@@ -1,6 +1,9 @@
 package ru.sberbank.uspincidentreport.view;
 import com.helger.commons.csv.CSVWriter;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
@@ -28,10 +31,12 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
-
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Timer;
 import java.util.function.Consumer;
+
+
 @Route
 @PageTitle("Автоинциденты системы мониторинга УСП")
 public class MainView extends VerticalLayout {
@@ -41,6 +46,24 @@ public class MainView extends VerticalLayout {
     private Grid<UspIncidentData> grid;
     private GridListDataView<UspIncidentData> dataView;
     private Anchor anchor;
+    private RefreshThread thread;
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+//        add(new Span("Waiting for updates"));
+
+        // Start the data feed thread
+        thread = new RefreshThread(attachEvent.getUI(), this);
+        thread.start();
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        // Cleanup
+        thread.interrupt();
+        thread = null;
+    }
+
 
     public MainView(UspIncidentRepo repo) {
         this.repo = repo;
@@ -50,18 +73,13 @@ public class MainView extends VerticalLayout {
         this.anchor = new Anchor(new StreamResource("uspincidentreport.csv", this::getInputStream), "Экспорт в CSV");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         setJustifyContentMode(JustifyContentMode.START);
-        
+
 //Grid View
         Grid<UspIncidentData> grid = new Grid<>(UspIncidentData.class, false);
         grid.setHeight("500px");
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
         grid.setColumnReorderingAllowed(true);
-// Вывод подробной информации по инциденту по выделению строки таблицы
-        grid.setItemDetailsRenderer(new ComponentRenderer<>(incident -> {
-            VerticalLayout layout = new VerticalLayout();
-            layout.add(new Label(incident.getACTION()));
-            return layout;
-        }));
+
         IncidentContextMenu incContextMenu = new IncidentContextMenu(grid);
         Grid.Column<UspIncidentData> NUMBER = grid
                 .addColumn(UspIncidentData::getNUMBER).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
@@ -93,6 +111,7 @@ public class MainView extends VerticalLayout {
         Grid.Column<UspIncidentData> PROBLEM = grid
                 .addColumn(UspIncidentData::getPROBLEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         PROBLEM.setVisible(false);
+
         GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll());
         PersonFilter personFilter = new PersonFilter(dataView);
 
@@ -126,7 +145,16 @@ public class MainView extends VerticalLayout {
         headerRow.getCell(PROBLEM)
                 .setComponent(createFilterHeader("Проблема", personFilter::setProblem));
 
-                                                                              
+
+
+        // Вывод подробной информации по инциденту по выделению строки таблицы
+        grid.setItemDetailsRenderer(new ComponentRenderer<>(incident -> {
+            VerticalLayout layout = new VerticalLayout();
+            layout.add(new Label(incident.getACTION()));
+            return layout;
+        }));
+
+
 
         //Anchor block
         anchor.getElement().setAttribute("download", true);
@@ -164,6 +192,7 @@ public class MainView extends VerticalLayout {
 
 //        showData("");
     }
+
 
     private Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer) {
         Label label = new Label(labelText);
@@ -342,14 +371,61 @@ public class MainView extends VerticalLayout {
         public IncidentContextMenu(Grid<UspIncidentData> target) {
             super(target);
 
-                    addItem("Сценарий устранения", e -> e.getItem().ifPresent(incident -> {
-                        getUI().get().getPage().open(incident.getRESOLUTION(), "Сценарий устранения");
-                        // System.out.printf("Edit: %s%n", person.getFullName());
-                    }));
-                    addItem("История в Zabbix", e -> e.getItem().ifPresent(incident -> {
-                        getUI().get().getPage().open(incident.getZABBIX_HISTORY(), "История проблем по хосту");
-                        // System.out.printf("Delete: %s%n", person.getFullName());
-                    }));
+            addItem("Сценарий устранения", e -> e.getItem().ifPresent(incident -> {
+                getUI().get().getPage().open(incident.getRESOLUTION(), "Сценарий устранения");
+                // System.out.printf("Edit: %s%n", person.getFullName());
+            }));
+            addItem("История в Zabbix", e -> e.getItem().ifPresent(incident -> {
+                getUI().get().getPage().open(incident.getZABBIX_HISTORY(), "История проблем по хосту");
+                // System.out.printf("Delete: %s%n", person.getFullName());
+            }));
         }
     }
+    private static class RefreshThread extends Thread {
+        private final UI ui;
+        private final MainView view;
+        private int count = 30;
+        private Span span = new Span();
+
+        public RefreshThread(UI ui, MainView view) {
+            this.ui = ui;
+            this.view = view;
+        }
+
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    // Update the data for a while
+                    while (count > 0) {
+                        // Sleep to emulate background work
+                        Thread.sleep(1000);
+                        String message = "Time left " + count--;
+
+                        ui.access(() -> {
+                            view.remove(span);
+                            span.setText(message);
+                            view.add(span);
+//                            new PersonFilter(view.dataView);
+
+                        });
+                    }
+
+                    // Inform that we are done
+                    ui.access(() -> {
+                        new PersonFilter(view.dataView);
+                        view.remove(span);
+                        span.setText("Updated");
+                        view.add(span);
+                        count = 30;
+                    });
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
 }

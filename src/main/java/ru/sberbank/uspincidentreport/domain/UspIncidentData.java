@@ -28,6 +28,8 @@ public class UspIncidentData {
     private String HPC_STATUS;
     @Column(name = "ACTION")
     private String ACTION;
+    @Column(name = "OPENED_BY")
+    private String OPENED_BY;
     private String ZABBIX_HISTORY;
     private String HOST;
     private String RESOLUTION;
@@ -36,7 +38,7 @@ public class UspIncidentData {
 
     public UspIncidentData(String NUMBER, String BRIEF_DESCRIPTION, String PRIORITY_CODE, String OPEN_TIME,
                            String HPC_ASSIGNEE_NAME, String HPC_ASSIGNMENT, String HPC_CREATED_BY_NAME,
-                           String ACTION, String ZABBIX_HISTORY, String HOST, String HPC_STATUS, String PROBLEM, String RESOLUTION) {
+                           String ACTION, String ZABBIX_HISTORY, String HOST, String HPC_STATUS, String PROBLEM, String RESOLUTION, String OPENED_BY) {
         this.NUMBER = NUMBER;
         this.BRIEF_DESCRIPTION = BRIEF_DESCRIPTION;
         this.PRIORITY_CODE = PRIORITY_CODE;
@@ -50,6 +52,7 @@ public class UspIncidentData {
         this.ZABBIX_HISTORY = ZABBIX_HISTORY;
         this.RESOLUTION = RESOLUTION;
         this.PROBLEM = PROBLEM;
+        this.OPENED_BY = OPENED_BY;
 
     }
 
@@ -105,7 +108,8 @@ public class UspIncidentData {
     public String getPROBLEM() {
         return PROBLEM;
     }
-        public String getRESOLUTION() {
+
+    public String getRESOLUTION() {
         if (PROBLEM.contains("MQ_Queue_Depth")){
             return "https://nlb-jenkins/cis/job/OASP_2/job/tivoli/job/TIVOLI_AGENT_MANAGE/build+" + HOST;
         } else {
@@ -114,5 +118,7 @@ public class UspIncidentData {
 
     }
 
-
+    public String getOPENED_BY() {
+        return OPENED_BY;
+    }
 }
