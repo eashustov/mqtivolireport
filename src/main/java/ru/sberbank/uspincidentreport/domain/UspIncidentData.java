@@ -113,7 +113,7 @@ public class UspIncidentData {
         if (PROBLEM.contains("MQ_Queue_Depth")){
             return "https://nlb-jenkins/cis/job/OASP_2/job/tivoli/job/TIVOLI_AGENT_MANAGE/build+" + HOST;
         } else {
-            return "Нет сценариев для устранения инцидента";
+            return "https://RLM.ca.sbrf.ru/Auth";
         }
 
     }

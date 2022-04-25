@@ -1,8 +1,6 @@
 package ru.sberbank.uspincidentreport.view;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+
+import com.helger.commons.csv.CSVWriter;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -17,7 +15,10 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -29,28 +30,32 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
-import java.io.*;
+
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 
 @Route
 @PageTitle("Автоинциденты системы мониторинга УСП")
-//Сохранение состояния таблицы при обновлении
-//@PreserveOnRefresh
-public class MainView extends VerticalLayout {
+public class MainView_bak extends VerticalLayout {
     private H4 header;
     @Autowired
     private UspIncidentRepo repo;
     private Grid<UspIncidentData> grid;
     private GridListDataView<UspIncidentData> dataView;
+    private Anchor anchor;
     private RefreshThread thread;
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+//        add(new Span("Waiting for updates"));
+
         // Start the data feed thread
         thread = new RefreshThread(attachEvent.getUI(), this);
         thread.start();
@@ -64,11 +69,12 @@ public class MainView extends VerticalLayout {
     }
 
 
-    public MainView(UspIncidentRepo repo) {
+    public MainView_bak(UspIncidentRepo repo) {
         this.repo = repo;
         this.header = new H4("Автоинциденты системы мониторинга УСП");
         this.grid = new Grid<>(UspIncidentData.class, false);
         this.dataView = grid.setItems(repo.findAll());
+        this.anchor = new Anchor(new StreamResource("uspincidentreport.csv", this::getInputStream), "Экспорт в CSV");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         setJustifyContentMode(JustifyContentMode.START);
 
@@ -144,6 +150,7 @@ public class MainView extends VerticalLayout {
                 .setComponent(createFilterHeader("Проблема", personFilter::setProblem));
 
 
+
         // Вывод подробной информации по инциденту по выделению строки таблицы
         grid.setItemDetailsRenderer(new ComponentRenderer<>(incident -> {
             VerticalLayout layout = new VerticalLayout();
@@ -151,32 +158,10 @@ public class MainView extends VerticalLayout {
             return layout;
         }));
 
-        //Export to CSV
-        var sreamResource = new StreamResource("uspIncidents.csv",
-                () -> {
-                    Stream<UspIncidentData> uspIncidentList = personFilter.dataViewFiltered.getItems();
-                    StringWriter output = new StringWriter();
-                    StatefulBeanToCsv<UspIncidentData> beanToCSV = null;
-                    try {
-                        beanToCSV = new StatefulBeanToCsvBuilder<UspIncidentData>(output)
-                                .withIgnoreField(UspIncidentData.class, UspIncidentData.class.getDeclaredField("ACTION"))
-                                .build();
-                    } catch (NoSuchFieldException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        beanToCSV.write(uspIncidentList);
-                        var contents = output.toString();
-                        return new ByteArrayInputStream(contents.getBytes());
-                    } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-        );
+
 
         //Anchor block
-        Anchor downloadToCSV = new Anchor(sreamResource, "Сохранить в CSV");
+        anchor.getElement().setAttribute("download", true);
 
         //Column Visibility
         Button menuButton = new Button(new Icon(VaadinIcon.LIST_SELECT));
@@ -196,19 +181,22 @@ public class MainView extends VerticalLayout {
         columnToggleContextMenu.addColumnToggleItem("Сервер", HOST);
         columnToggleContextMenu.addColumnToggleItem("Проблема", PROBLEM);
 
-        // build top HorizontalLayout
-        HorizontalLayout actions = new HorizontalLayout(downloadToCSV, menuButton);
-        actions.setVerticalComponentAlignment(Alignment.END, downloadToCSV, menuButton);
+        // build HorizontalLayout
+        HorizontalLayout actions = new HorizontalLayout(anchor, menuButton);
+        actions.setVerticalComponentAlignment(Alignment.END, anchor, menuButton);
         setHorizontalComponentAlignment(Alignment.END, actions);
 
-        //build bottom HorizontalLayout
-        HorizontalLayout statusBar = new HorizontalLayout(new Label("Всего инцидентов: " + String.valueOf(dataView.getItemCount())));
-        actions.setVerticalComponentAlignment(Alignment.END, new Label("Всего инцидентов: " + String.valueOf(dataView.getItemCount())));
-        setHorizontalComponentAlignment(Alignment.END, statusBar);
+        add(header, actions, grid, incContextMenu);
 
-        add(header, actions, grid, incContextMenu, statusBar);
+        //Simple Filter View
+//
+//        filter.setPlaceholder("Поиск");
+//        filter.setValueChangeMode(ValueChangeMode.EAGER);
+//        filter.addValueChangeListener(e -> showData(e.getValue()));
 
+//        showData("");
     }
+
 
     private Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer) {
         Label label = new Label(labelText);
@@ -231,7 +219,28 @@ public class MainView extends VerticalLayout {
         return layout;
     }
 
+    @SneakyThrows
+    private InputStream getInputStream() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+        csvWriter.writeNext("Номер инцидента", "Краткое описание", "Важность", "Время регистрации", "Исполнитель",
+                "Назначен в группу", "Инициатор", "История в Zabbix", "Статус", "Сценарий устранения", "Подробное описание",
+                "Сервер", "Проблема");
+        dataView.getItems().forEach(c -> csvWriter.writeNext("" + c.getNUMBER(), c.getBRIEF_DESCRIPTION(), c.getPRIORITY_CODE(),
+                c.getOPEN_TIME(), c.getHPC_ASSIGNEE_NAME(), c.getHPC_ASSIGNMENT(), c.getHPC_CREATED_BY_NAME(), c.getZABBIX_HISTORY(),
+                c.getHPC_STATUS(), c.getRESOLUTION(), c.getACTION(), c.getHOST(), c.getPROBLEM()));
+        return IOUtils.toInputStream(stringWriter.toString(), "UTF-8");
+    }
 
+    // Simple showData with one filter text
+//    private void showData(String filterText) {
+//        if (filterText.isEmpty()) {
+//            grid.setItems(repo.findAll());
+//        } else {
+//            grid.setItems(repo.findByServerName(filterText));
+//        }
+//
+//    }
     private static class PersonFilter {
 
 
@@ -366,28 +375,23 @@ public class MainView extends VerticalLayout {
         public IncidentContextMenu(Grid<UspIncidentData> target) {
             super(target);
 
-            addItem("Сценарий устранения в RLM", e -> e.getItem().ifPresent(incident -> {
-                getUI().get().getPage().open(incident.getRESOLUTION(), "Сценарий устранения в RLM");
+            addItem("Сценарий устранения", e -> e.getItem().ifPresent(incident -> {
+                getUI().get().getPage().open(incident.getRESOLUTION(), "Сценарий устранения");
                 // System.out.printf("Edit: %s%n", person.getFullName());
             }));
             addItem("История в Zabbix", e -> e.getItem().ifPresent(incident -> {
-                getUI().get().getPage().open(incident.getZABBIX_HISTORY(), "История в Zabbix");
-            }));
-            addItem("Открыть в Service Manager", e -> e.getItem().ifPresent(incident -> {
-                getUI().get().getPage().open(
-                        "https://servicemanager.ca.sbrf.ru/hpsm/index.do?lang=ru&ctx=docEngine&file=probsummary&query=number%3D%22" + incident.getNUMBER() + "%22&action=&title=",
-                        "Открыть в Service Manager");
+                getUI().get().getPage().open(incident.getZABBIX_HISTORY(), "История проблем по хосту");
+                // System.out.printf("Delete: %s%n", person.getFullName());
             }));
         }
     }
-
     private static class RefreshThread extends Thread {
         private final UI ui;
-        private final MainView view;
+        private final MainView_bak view;
         private int count = 30;
         private Span span = new Span();
 
-        public RefreshThread(UI ui, MainView view) {
+        public RefreshThread(UI ui, MainView_bak view) {
             this.ui = ui;
             this.view = view;
         }
@@ -400,12 +404,13 @@ public class MainView extends VerticalLayout {
                     while (count > 0) {
                         // Sleep to emulate background work
                         Thread.sleep(1000);
-                        String message = "Данные обновятся через " + count-- + " сек";
+                        String message = "Time left " + count--;
 
                         ui.access(() -> {
                             view.remove(span);
                             span.setText(message);
                             view.add(span);
+//                            new PersonFilter(view.dataView);
 
                         });
                     }
@@ -414,7 +419,7 @@ public class MainView extends VerticalLayout {
                     ui.access(() -> {
                         new PersonFilter(view.dataView);
                         view.remove(span);
-                        span.setText("Данные обновлены");
+                        span.setText("Updated");
                         view.add(span);
                         count = 30;
                     });
@@ -425,4 +430,6 @@ public class MainView extends VerticalLayout {
         }
 
     }
+
+
 }
