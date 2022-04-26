@@ -1,4 +1,5 @@
 package ru.sberbank.uspincidentreport.view;
+
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -17,10 +18,12 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -33,8 +36,9 @@ import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
-import java.io.*;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -43,14 +47,13 @@ import java.util.stream.Stream;
 @PageTitle("Автоинциденты системы мониторинга УСП")
 //Сохранение состояния таблицы при обновлении
 //@PreserveOnRefresh
-public class MainView extends VerticalLayout {
+public class MainView_260422 extends VerticalLayout {
     private H4 header;
     @Autowired
     private UspIncidentRepo repo;
     private Grid<UspIncidentData> grid;
     private GridListDataView<UspIncidentData> dataView;
     private RefreshThread thread;
-    private static AtomicInteger counter = new AtomicInteger();
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -67,7 +70,7 @@ public class MainView extends VerticalLayout {
     }
 
 
-    public MainView(UspIncidentRepo repo) {
+    public MainView_260422(UspIncidentRepo repo) {
         this.repo = repo;
         this.header = new H4("Автоинциденты системы мониторинга УСП");
         this.grid = new Grid<>(UspIncidentData.class, false);
@@ -205,24 +208,10 @@ public class MainView extends VerticalLayout {
         setHorizontalComponentAlignment(Alignment.END, actions);
 
         //build bottom HorizontalLayout
-        //Кнопка обновления
-        Button refreshButton = new Button(new Icon(VaadinIcon.REFRESH));
-        refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        refreshButton.addClickListener(e -> {
-            // Обновление таблицы
-            personFilter.dataViewFiltered.refreshAll();
-            counter.set(60);
-            Notification.show("Обновление данных").setPosition(Notification.Position.TOP_CENTER);
-            }
-        );
-
-        HorizontalLayout statusBar = new HorizontalLayout(refreshButton, new Label("Всего инцидентов: " + String.valueOf(dataView.getItemCount())));
-        statusBar.setVerticalComponentAlignment(Alignment.END, refreshButton, new Label("Всего инцидентов: " + String.valueOf(dataView.getItemCount())));
+        HorizontalLayout statusBar = new HorizontalLayout(new Label("Всего инцидентов: " + String.valueOf(dataView.getItemCount())));
+        actions.setVerticalComponentAlignment(Alignment.END, new Label("Всего инцидентов: " + String.valueOf(dataView.getItemCount())));
         setHorizontalComponentAlignment(Alignment.END, statusBar);
 
-//        setJustifyContentMode(JustifyContentMode.START);
-
-//        Добавление компонентов в основно layout
         add(header, actions, grid, incContextMenu, statusBar);
 
     }
@@ -400,11 +389,11 @@ public class MainView extends VerticalLayout {
 
     private static class RefreshThread extends Thread {
         private final UI ui;
-        private final MainView view;
-
+        private final MainView_260422 view;
+        private int count = 30;
         private Span span = new Span();
 
-        public RefreshThread(UI ui, MainView view) {
+        public RefreshThread(UI ui, MainView_260422 view) {
             this.ui = ui;
             this.view = view;
         }
@@ -414,10 +403,10 @@ public class MainView extends VerticalLayout {
             try {
                 while (true) {
                     // Update the data for a while
-                    while (counter.get() > 0) {
+                    while (count > 0) {
                         // Sleep to emulate background work
                         Thread.sleep(1000);
-                        String message = "Данные обновятся через " + counter.getAndDecrement() + " сек";
+                        String message = "Данные обновятся через " + count-- + " сек";
 
                         ui.access(() -> {
                             view.remove(span);
@@ -429,11 +418,11 @@ public class MainView extends VerticalLayout {
 
                     // Inform that we are done
                     ui.access(() -> {
-                        new PersonFilter(view.dataView).dataViewFiltered.refreshAll();
+                        new PersonFilter(view.dataView);
                         view.remove(span);
                         span.setText("Данные обновлены");
                         view.add(span);
-                        counter.set(60);
+                        count = 30;
                     });
                 }
             } catch (InterruptedException e) {
