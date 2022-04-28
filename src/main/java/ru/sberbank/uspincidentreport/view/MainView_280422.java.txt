@@ -3,7 +3,10 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import com.vaadin.flow.component.*;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
@@ -17,8 +20,6 @@ import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.menubar.MenuBar;
-import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -153,7 +154,7 @@ public class MainView extends VerticalLayout {
             return layout;
         }));
 
-//        Export to CSV
+        //Export to CSV
         var sreamResource = new StreamResource("uspIncidents.csv",
                 () -> {
                     Stream<UspIncidentData> uspIncidentList = personFilter.dataViewFiltered.getItems();
@@ -178,30 +179,12 @@ public class MainView extends VerticalLayout {
         );
 
         //Anchor block
-        Anchor downloadToCSV = new Anchor(sreamResource, "Сохранить в CSV" );
-        Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
-        buttonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
-        downloadToCSV.removeAll();
-        downloadToCSV.add(buttonDownloadCSV);
-
-        //Создание панели инструментов
-        MenuBar menuBar = new MenuBar();
-        Text selected = new Text("");
-        ComponentEventListener<ClickEvent<MenuItem>> listenerForRefresh = e -> counter.set(0);
-        ComponentEventListener<ClickEvent<MenuItem>> listener = e -> selected.setText(e.getSource().getText());
-
-        menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY, MenuBarVariant.LUMO_SMALL, MenuBarVariant.LUMO_ICON);
-
-        menuBar.addItem("Стиль", listener);
-        menuBar.addItem(new Icon(VaadinIcon.REFRESH), listenerForRefresh);
-        menuBar.addItem(downloadToCSV);
-        menuBar.addItem("Столбцы");
-
+        Anchor downloadToCSV = new Anchor(sreamResource, "Сохранить в CSV");
 
         //Column Visibility
-//        Button menuButton = new Button(new Icon(VaadinIcon.LIST_SELECT));
-//        menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        ColumnToggleContextMenu columnToggleContextMenu = new ColumnToggleContextMenu(menuBar.getItems().get(3));
+        Button menuButton = new Button(new Icon(VaadinIcon.LIST_SELECT));
+        menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        ColumnToggleContextMenu columnToggleContextMenu = new ColumnToggleContextMenu(menuButton);
         columnToggleContextMenu.addColumnToggleItem("Номер инцидента", NUMBER);
         columnToggleContextMenu.addColumnToggleItem("Краткое описание", BRIEF_DESCRIPTION);
         columnToggleContextMenu.addColumnToggleItem("Важность", PRIORITY_CODE);
@@ -216,24 +199,31 @@ public class MainView extends VerticalLayout {
         columnToggleContextMenu.addColumnToggleItem("Сервер", HOST);
         columnToggleContextMenu.addColumnToggleItem("Проблема", PROBLEM);
 
-
-        //Кнопка обновления
-//        Button refreshButton = new Button(new Icon(VaadinIcon.REFRESH));
-//        refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-//        refreshButton.addClickListener(e -> {
-//            // Обновление таблицы
-//            counter.set(0);
-//            }
-//        );
-
         // build top HorizontalLayout
-        HorizontalLayout actions = new HorizontalLayout(menuBar);
-        actions.setVerticalComponentAlignment(Alignment.END, menuBar);
+        HorizontalLayout actions = new HorizontalLayout(downloadToCSV, menuButton);
+        actions.setVerticalComponentAlignment(Alignment.END, downloadToCSV, menuButton);
         setHorizontalComponentAlignment(Alignment.END, actions);
 
+        //build bottom HorizontalLayout
+        //Кнопка обновления
+        Button refreshButton = new Button(new Icon(VaadinIcon.REFRESH));
+        refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        refreshButton.addClickListener(e -> {
+            // Обновление таблицы
+            personFilter.dataViewFiltered.refreshAll();
+            counter.set(60);
+            Notification.show("Обновление данных").setPosition(Notification.Position.TOP_CENTER);
+            }
+        );
 
-//        Добавление компонентов в основной layout
-        add(header, actions, grid, incContextMenu);
+        HorizontalLayout statusBar = new HorizontalLayout(refreshButton, new Label("Всего инцидентов: " + String.valueOf(dataView.getItemCount())));
+        statusBar.setVerticalComponentAlignment(Alignment.END, refreshButton, new Label("Всего инцидентов: " + String.valueOf(dataView.getItemCount())));
+        setHorizontalComponentAlignment(Alignment.END, statusBar);
+
+//        setJustifyContentMode(JustifyContentMode.START);
+
+//        Добавление компонентов в основно layout
+        add(header, actions, grid, incContextMenu, statusBar);
 
     }
 
@@ -411,15 +401,12 @@ public class MainView extends VerticalLayout {
     private static class RefreshThread extends Thread {
         private final UI ui;
         private final MainView view;
+
         private Span span = new Span();
-        private Span incCount = new Span();
-
-
 
         public RefreshThread(UI ui, MainView view) {
             this.ui = ui;
             this.view = view;
-            counter.set(60);
         }
 
         @Override
@@ -430,13 +417,12 @@ public class MainView extends VerticalLayout {
                     while (counter.get() > 0) {
                         // Sleep to emulate background work
                         Thread.sleep(1000);
-                        String message = "Обновление данных через " + counter.getAndDecrement() + " сек";
+                        String message = "Данные обновятся через " + counter.getAndDecrement() + " сек";
 
                         ui.access(() -> {
-                            view.remove(incCount, span);
+                            view.remove(span);
                             span.setText(message);
-                            incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
-                            view.add(incCount, span);
+                            view.add(span);
 
                         });
                     }
@@ -444,11 +430,9 @@ public class MainView extends VerticalLayout {
                     // Inform that we are done
                     ui.access(() -> {
                         new PersonFilter(view.dataView).dataViewFiltered.refreshAll();
-                        view.remove(incCount, span);
-                        Notification.show("Данные обновлены", 1000, Notification.Position.TOP_CENTER);
+                        view.remove(span);
                         span.setText("Данные обновлены");
-                        incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
-                        view.add(incCount, span);
+                        view.add(span);
                         counter.set(60);
                     });
                 }
