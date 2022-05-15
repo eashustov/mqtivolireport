@@ -8,7 +8,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -185,68 +184,21 @@ public class MainView extends VerticalLayout {
         downloadToCSV.removeAll();
         downloadToCSV.add(buttonDownloadCSV);
 
-        //Link to Analitics
-        Anchor analiticsChart = new Anchor("analitics", "Аналитика");
-        analiticsChart.setTarget("_blank");
-
-
         //Создание панели инструментов
         MenuBar menuBar = new MenuBar();
+        Text selected = new Text("");
         ComponentEventListener<ClickEvent<MenuItem>> listenerForRefresh = e -> counter.set(0);
-
-////Так можно делать обработку меню видимости столбцов без изсползования ColumnToggleContextMenu. Силль отображения одинаковый. ПРоще делать с ColumnToggleContextMenu.
-//        ComponentEventListener<ClickEvent<MenuItem>> incNumberlistener = e -> {
-//            if (e.getSource().isChecked()) {
-//                NUMBER.setVisible(true);
-//            } else {
-//                NUMBER.setVisible(false);
-//            }
-//        };
-
+        ComponentEventListener<ClickEvent<MenuItem>> listener = e -> selected.setText(e.getSource().getText());
 
         menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY, MenuBarVariant.LUMO_SMALL, MenuBarVariant.LUMO_ICON);
 
-        MenuItem style = menuBar.addItem("Вид");
-        SubMenu styleSubMenu = style.getSubMenu();
-        MenuItem normal = styleSubMenu.addItem("Номальный");
-        normal.setCheckable(true);
-        normal.setChecked(true);
-        MenuItem compact = styleSubMenu.addItem("Компактный");
-        compact.setCheckable(true);
-        compact.setChecked(false);
-
-        ComponentEventListener<ClickEvent<MenuItem>> NormalStylelistener = e -> {
-            if (e.getSource().isChecked()) {
-                grid.removeThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
-                grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
-                compact.setChecked(false);
-            }
-        };
-
-        ComponentEventListener<ClickEvent<MenuItem>> CompactStylelistener = e -> {
-            if (e.getSource().isChecked()) {
-                grid.removeThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
-                grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
-                normal.setChecked(false);
-            }
-        };
-
-        normal.addClickListener(NormalStylelistener);
-        compact.addClickListener(CompactStylelistener);
-
+        menuBar.addItem("Стиль", listener);
         menuBar.addItem(new Icon(VaadinIcon.REFRESH), listenerForRefresh);
         menuBar.addItem(downloadToCSV);
         menuBar.addItem("Столбцы");
-        ////Так можно делать меню видимости столбцов без изсползования ColumnToggleContextMenu. Силль отображения одинаковый. ПРоще делать с ColumnToggleContextMenu.
-//        SubMenu styleSubMenu = column.getSubMenu();
-//        MenuItem incNumber = styleSubMenu.addItem("Номер инцидента");
-//        incNumber.setCheckable(true);
-//        incNumber.setChecked(true);
-//        incNumber.addClickListener(incNumberlistener);
 
 
         //Column Visibility
-//        Так можно прикрутить кнопку к меню выбора видимости столбцов. В данном приложении используется MenuBar
 //        Button menuButton = new Button(new Icon(VaadinIcon.LIST_SELECT));
 //        menuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         ColumnToggleContextMenu columnToggleContextMenu = new ColumnToggleContextMenu(menuBar.getItems().get(3));
@@ -275,9 +227,8 @@ public class MainView extends VerticalLayout {
 //        );
 
         // build top HorizontalLayout
-        HorizontalLayout actions = new HorizontalLayout(analiticsChart,menuBar);
+        HorizontalLayout actions = new HorizontalLayout(menuBar);
         actions.setVerticalComponentAlignment(Alignment.END, menuBar);
-        actions.setVerticalComponentAlignment(Alignment.CENTER, analiticsChart);
         setHorizontalComponentAlignment(Alignment.END, actions);
 
 

@@ -116,9 +116,11 @@
     "@vaadin/vaadin-virtual-list": "23.0.4",
     "@vaadin/vertical-layout": "23.0.4",
     "@vaadin/virtual-list": "23.0.4",
+    "apexcharts": "3.30.0",
     "construct-style-sheets-polyfill": "3.0.4",
     "date-fns": "2.23.0",
-    "lit": "2.1.4"
+    "lit": "2.1.4",
+    "onecolor": "3.1.0"
   },
   "devDependencies": {
     "chokidar": "^3.5.0",
@@ -257,9 +259,11 @@
       "@vaadin/vaadin-virtual-list": "23.0.4",
       "@vaadin/vertical-layout": "23.0.4",
       "@vaadin/virtual-list": "23.0.4",
+      "apexcharts": "3.30.0",
       "construct-style-sheets-polyfill": "3.0.4",
       "date-fns": "2.23.0",
-      "lit": "2.1.4"
+      "lit": "2.1.4",
+      "onecolor": "3.1.0"
     },
     "devDependencies": {
       "chokidar": "^3.5.0",
@@ -283,7 +287,7 @@
       "workbox-precaching": "6.5.0",
       "workbox-webpack-plugin": "6.5.0"
     },
-    "hash": "1fed5a77cacb6ffea5aff69421e6fa26ec4c98e555920ec41ad38f41ca910169"
+    "hash": "3abaec4e962d042dfea3ee86e2d0b6875049dbb50297738c56be886ff9d4d92a"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -402,6 +406,8 @@
     "chokidar": "$chokidar",
     "date-fns": "$date-fns",
     "@hilla/form": "$@hilla/form",
-    "@hilla/frontend": "$@hilla/frontend"
+    "@hilla/frontend": "$@hilla/frontend",
+    "apexcharts": "$apexcharts",
+    "onecolor": "$onecolor"
   }
 }
