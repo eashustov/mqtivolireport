@@ -36,7 +36,6 @@ public class UspIncidentData {
     private String PROBLEM;
 
 
-
     public UspIncidentData(String NUMBER, String BRIEF_DESCRIPTION, String PRIORITY_CODE, String OPEN_TIME,
                            String HPC_ASSIGNEE_NAME, String HPC_ASSIGNMENT, String HPC_CREATED_BY_NAME,
                            String ACTION, String ZABBIX_HISTORY, String HOST, String HPC_STATUS, String PROBLEM, String RESOLUTION, String OPENED_BY) {
@@ -122,5 +121,4 @@ public class UspIncidentData {
     public String getOPENED_BY() {
         return OPENED_BY;
     }
-
 }
