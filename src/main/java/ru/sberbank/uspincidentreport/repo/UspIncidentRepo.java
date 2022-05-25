@@ -2,8 +2,8 @@ package ru.sberbank.uspincidentreport.repo;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import ru.sberbank.uspincidentreport.domain.IUspIncidentDataTotalCount;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
-
 import java.util.List;
 
 @Repository
@@ -121,6 +121,8 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
 //           "WHERE\n" +
 //           "\tOPENED_BY = 'int_zabbix_si'",
 //           nativeQuery = true)
+
    @Query(value = "select * from probsummarym1", nativeQuery = true)
    List<UspIncidentData> findAll();
+
 }
