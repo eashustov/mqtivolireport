@@ -3,15 +3,17 @@ package ru.sberbank.uspincidentreport.view;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.appreciated.apexcharts.ApexCharts;
 import com.github.appreciated.apexcharts.ApexChartsBuilder;
-import com.github.appreciated.apexcharts.config.builder.ChartBuilder;
-import com.github.appreciated.apexcharts.config.builder.LegendBuilder;
-import com.github.appreciated.apexcharts.config.builder.PlotOptionsBuilder;
-import com.github.appreciated.apexcharts.config.builder.ResponsiveBuilder;
+import com.github.appreciated.apexcharts.config.builder.*;
 import com.github.appreciated.apexcharts.config.chart.Type;
+import com.github.appreciated.apexcharts.config.chart.Zoom;
+import com.github.appreciated.apexcharts.config.chart.builder.ZoomBuilder;
+import com.github.appreciated.apexcharts.config.grid.builder.RowBuilder;
 import com.github.appreciated.apexcharts.config.legend.Position;
 import com.github.appreciated.apexcharts.config.plotoptions.builder.PieBuilder;
 import com.github.appreciated.apexcharts.config.plotoptions.pie.builder.*;
 import com.github.appreciated.apexcharts.config.responsive.builder.OptionsBuilder;
+import com.github.appreciated.apexcharts.config.stroke.Curve;
+import com.github.appreciated.apexcharts.config.subtitle.Align;
 import com.github.appreciated.apexcharts.helper.Series;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
 public class Analitics extends VerticalLayout {
     private H4 header;
     ApexCharts donutChart;
+    ApexCharts lineChart;
     String startDate;
     String endDate;
     DatePicker start_Date;
@@ -79,6 +82,7 @@ public class Analitics extends VerticalLayout {
         this.dataTotalCountRepo = dataTotalCountRepo;
         getAnaliticsData();
         this.donutChart = donutChartInit(seriesData,labelsData);
+        this.lineChart = LineChartInit ();
 
 
         //Кнопка запроса аналитики
@@ -91,7 +95,7 @@ public class Analitics extends VerticalLayout {
         HorizontalLayout dateLayout = new HorizontalLayout(start_Date, end_Date, buttonQuery);
         dateLayout.setVerticalComponentAlignment(Alignment.END, start_Date, end_Date, buttonQuery);
         setHorizontalComponentAlignment(Alignment.CENTER, dateLayout);
-        HorizontalLayout horizontalLayout = new HorizontalLayout(donutChart);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(donutChart, lineChart);
         add(header, dateLayout, horizontalLayout);
 
         //Обработчик кнопки
@@ -104,8 +108,8 @@ public class Analitics extends VerticalLayout {
                     .withFontSize("15")
                     .withOffsetX(200.0)
                     .build());
-            horizontalLayout.add(donutChart);
-            horizontalLayout.setVerticalComponentAlignment(Alignment.CENTER, donutChart);
+            horizontalLayout.add(donutChart, lineChart);
+            horizontalLayout.setVerticalComponentAlignment(Alignment.START, donutChart, lineChart);
             setHorizontalComponentAlignment(Alignment.END, horizontalLayout);
 
         });
@@ -116,6 +120,9 @@ public class Analitics extends VerticalLayout {
     private ApexCharts donutChartInit(List<Double>seriesData, List<String>labelsData ){
         ApexCharts donutChart = ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get().withType(Type.donut)
+                        .withZoom(ZoomBuilder.get()
+                                .withEnabled(true)
+                                .build())
                         .withOffsetX(-300.0)
                         .build())
                 .withPlotOptions(PlotOptionsBuilder.get().withPie(PieBuilder.get()
@@ -131,7 +138,7 @@ public class Analitics extends VerticalLayout {
                 .withLegend(LegendBuilder.get()
                         .withPosition(Position.right)
                         .withFontSize("15")
-                        .withOffsetX(-10.0)
+                        .withOffsetX(-30.0)
                         .build())
 //                .withSeries(44.0, 55.0, 41.0, 17.0, 15.0, 14.0, 65.0)
                 .withSeries(seriesData.stream().toArray(Double[]::new))
@@ -147,8 +154,9 @@ public class Analitics extends VerticalLayout {
                         .build())
                 .build();
 
-        donutChart.setWidth("1300");
-        donutChart.setHeight("500");
+        donutChart.setWidth("1000");
+        donutChart.setHeight("600");
+
         return donutChart;
     }
 
@@ -170,6 +178,36 @@ public class Analitics extends VerticalLayout {
 
         }
 
+    private ApexCharts LineChartInit (){
+        ApexCharts lineChart = ApexChartsBuilder.get()
+            .withChart(ChartBuilder.get()
+                    .withType(Type.line)
+                    .withZoom(ZoomBuilder.get()
+                            .withEnabled(true)
+                            .build())
+                    .build())
+            .withStroke(StrokeBuilder.get()
+                    .withCurve(Curve.straight)
+                    .build())
+            .withTitle(TitleSubtitleBuilder.get()
+                    .withText("Product Trends by Month")
+                    .withAlign(Align.left)
+                    .build())
+            .withGrid(GridBuilder.get()
+                    .withRow(RowBuilder.get()
+                            .withColors("#f3f3f3", "transparent")
+                            .withOpacity(0.5).build()
+                    ).build())
+            .withXaxis(XAxisBuilder.get()
+                    .withCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep")
+                    .build())
+            .withSeries(new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
+            .build();
+        lineChart.setWidth("1000");
+        lineChart.setHeight("600");
+
+        return lineChart;
+    }
 
 }
 
