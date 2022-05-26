@@ -45,6 +45,7 @@ public class Analitics extends VerticalLayout {
     String endDate;
     DatePicker start_Date;
     DatePicker end_Date;
+
     DateTimeFormatter europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     List<String> labelsData;
     List<Double> seriesData;
@@ -71,32 +72,48 @@ public class Analitics extends VerticalLayout {
         start_Date.setValue(now.minusMonths(1));
         start_Date.addValueChangeListener(e -> end_Date.setMin(e.getValue()));
         end_Date.addValueChangeListener(e -> start_Date.setMax(e.getValue()));
-        startDate = start_Date.getValue().format(europeanDateFormatter);
-        endDate = end_Date.getValue().format(europeanDateFormatter);
+        end_Date.setMin(start_Date.getValue());
+        start_Date.setMax(end_Date.getValue());
+        startDate = start_Date.getValue().format(europeanDateFormatter) + "00.00.00";
+        endDate = end_Date.getValue().format(europeanDateFormatter) + "23.59.59";
         this.dataTotalCountRepo = dataTotalCountRepo;
         getAnaliticsData();
+        this.donutChart = donutChartInit(seriesData,labelsData);
 
 
         //Кнопка запроса аналитики
         Button buttonQuery = new Button();
         buttonQuery.setText("Запрос данных");
-        buttonQuery.addClickListener(clickEvent -> {
-            getAnaliticsData();
-            donutChart.resetSeries(true,false);
-            donutChart.setLabels(String.valueOf(labelsData));
-            donutChart.setSeries(Double.valueOf(String.valueOf(seriesData)));
-            donutChart.render();
-        });
+
 
         //Отображение. Добавление компонентов
-        VerticalLayout dateLayout = new VerticalLayout(start_Date, end_Date, buttonQuery);
-        HorizontalLayout horizontalLayout = new HorizontalLayout(donutChartInit(), dateLayout);
-        add(header, horizontalLayout);
+//        VerticalLayout dateLayout = new VerticalLayout(start_Date, end_Date, buttonQuery);
+        HorizontalLayout dateLayout = new HorizontalLayout(start_Date, end_Date, buttonQuery);
+        dateLayout.setVerticalComponentAlignment(Alignment.END, start_Date, end_Date, buttonQuery);
+        setHorizontalComponentAlignment(Alignment.CENTER, dateLayout);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(donutChart);
+        add(header, dateLayout, horizontalLayout);
+
+        //Обработчик кнопки
+        buttonQuery.addClickListener(clickEvent -> {
+            getAnaliticsData();
+            horizontalLayout.removeAll();
+            donutChart = donutChartInit(seriesData,labelsData);
+            donutChart.setLegend(LegendBuilder.get()
+                    .withPosition(Position.right)
+                    .withFontSize("15")
+                    .withOffsetX(200.0)
+                    .build());
+            horizontalLayout.add(donutChart);
+            horizontalLayout.setVerticalComponentAlignment(Alignment.CENTER, donutChart);
+            setHorizontalComponentAlignment(Alignment.END, horizontalLayout);
+
+        });
 
 
     }
 
-    private ApexCharts donutChartInit(){
+    private ApexCharts donutChartInit(List<Double>seriesData, List<String>labelsData ){
         ApexCharts donutChart = ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get().withType(Type.donut)
                         .withOffsetX(-300.0)
