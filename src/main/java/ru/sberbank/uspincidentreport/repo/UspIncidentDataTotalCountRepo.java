@@ -90,7 +90,7 @@ public interface UspIncidentDataTotalCountRepo extends CrudRepository<UspInciden
 //            "\tOPENED_BY = 'int_zabbix_si' AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate '00:00:00', 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate '23:59:59', 'DD.MM.RRRR HH24:MI:SS')\n" +
 //            "\tGROUP BY \"HPC_ASSIGNMENT\" ORDER BY \"COUNT_INC\" DESC",
 //            nativeQuery = true)
-        @Query(value = "select p.HPC_ASSIGNMENT as Assignment, COUNT (p.NUMBER) AS countInc from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_CHAR(:endDate, 'DD.MM.RRRR HH24:MI:SS') GROUP BY Assignment ORDER BY countInc DESC", nativeQuery = true)
+        @Query(value = "select p.HPC_ASSIGNMENT as Assignment, COUNT (p.NUMBER) AS countInc from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy hh:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy hh:mm:ss') GROUP BY Assignment ORDER BY countInc DESC", nativeQuery = true)
 
 //    @Query(value = "select p.HPC_ASSIGNMENT as Assignment, COUNT (p.NUMBER) AS countInc from probsummarym1 p GROUP BY Assignment ORDER BY countInc DESC", nativeQuery = true)
     List<IUspIncidentDataTotalCount> findIncCount(@Param("startDate") String startDate, @Param("endDate") String endDate);

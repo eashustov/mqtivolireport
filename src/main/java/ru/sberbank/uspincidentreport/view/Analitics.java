@@ -1,13 +1,13 @@
 package ru.sberbank.uspincidentreport.view;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.appreciated.apexcharts.ApexCharts;
 import com.github.appreciated.apexcharts.ApexChartsBuilder;
 import com.github.appreciated.apexcharts.config.builder.*;
 import com.github.appreciated.apexcharts.config.chart.Type;
-import com.github.appreciated.apexcharts.config.chart.Zoom;
+import com.github.appreciated.apexcharts.config.chart.builder.ToolbarBuilder;
 import com.github.appreciated.apexcharts.config.chart.builder.ZoomBuilder;
 import com.github.appreciated.apexcharts.config.grid.builder.RowBuilder;
+import com.github.appreciated.apexcharts.config.legend.HorizontalAlign;
 import com.github.appreciated.apexcharts.config.legend.Position;
 import com.github.appreciated.apexcharts.config.plotoptions.builder.PieBuilder;
 import com.github.appreciated.apexcharts.config.plotoptions.pie.builder.*;
@@ -23,19 +23,14 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.SneakyThrows;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.sberbank.uspincidentreport.domain.IUspIncidentDataTotalCount;
-import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
-import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Route(value = "analitics")
@@ -55,10 +50,10 @@ public class Analitics extends VerticalLayout {
     @Autowired
     private UspIncidentDataTotalCountRepo dataTotalCountRepo;
     @Autowired
-    private UspIncidentDataCountPerMonthRepo countPerMonthRepo;
+    private UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo;
 
 
-    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo) {
+    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo) {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
 
@@ -80,7 +75,8 @@ public class Analitics extends VerticalLayout {
         startDate = start_Date.getValue().format(europeanDateFormatter) + "00.00.00";
         endDate = end_Date.getValue().format(europeanDateFormatter) + "23.59.59";
         this.dataTotalCountRepo = dataTotalCountRepo;
-        getAnaliticsData();
+        this.dataCountPerMonthRepo = dataCountPerMonthRepo;
+        getTotalCountAnaliticsData();
         this.donutChart = donutChartInit(seriesData,labelsData);
         this.lineChart = LineChartInit ();
 
@@ -100,7 +96,7 @@ public class Analitics extends VerticalLayout {
 
         //Обработчик кнопки
         buttonQuery.addClickListener(clickEvent -> {
-            getAnaliticsData();
+            getTotalCountAnaliticsData();
             horizontalLayout.removeAll();
             donutChart = donutChartInit(seriesData,labelsData);
             donutChart.setLegend(LegendBuilder.get()
@@ -123,6 +119,9 @@ public class Analitics extends VerticalLayout {
                         .withZoom(ZoomBuilder.get()
                                 .withEnabled(true)
                                 .build())
+                        .withToolbar(ToolbarBuilder.get()
+                                .withShow(true)
+                                .build())
                         .withOffsetX(-300.0)
                         .build())
                 .withPlotOptions(PlotOptionsBuilder.get().withPie(PieBuilder.get()
@@ -137,6 +136,7 @@ public class Analitics extends VerticalLayout {
                 .build())
                 .withLegend(LegendBuilder.get()
                         .withPosition(Position.right)
+                        .withHorizontalAlign(HorizontalAlign.right)
                         .withFontSize("15")
                         .withOffsetX(-30.0)
                         .build())
@@ -161,7 +161,7 @@ public class Analitics extends VerticalLayout {
     }
 
     @SneakyThrows
-    private void getAnaliticsData(){
+    private void getTotalCountAnaliticsData(){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         startDate = start_Date.getValue().format(europeanDateFormatter);
         endDate = end_Date.getValue().format(europeanDateFormatter);
@@ -178,6 +178,23 @@ public class Analitics extends VerticalLayout {
 
         }
 
+    private void getTotalCounPerMonthAnaliticsData(){
+//        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
+        startDate = start_Date.getValue().format(europeanDateFormatter);
+        endDate = end_Date.getValue().format(europeanDateFormatter);
+
+        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate)
+                .stream()
+                .map(t -> t.getCountInc().doubleValue())
+                .collect(Collectors.toList());
+
+        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate)
+                .stream()
+                .map(t -> t.getAssignment())
+                .collect(Collectors.toList());
+
+    }
+
     private ApexCharts LineChartInit (){
         ApexCharts lineChart = ApexChartsBuilder.get()
             .withChart(ChartBuilder.get()
@@ -190,7 +207,7 @@ public class Analitics extends VerticalLayout {
                     .withCurve(Curve.straight)
                     .build())
             .withTitle(TitleSubtitleBuilder.get()
-                    .withText("Product Trends by Month")
+                    .withText("Динамика по месяцам")
                     .withAlign(Align.left)
                     .build())
             .withGrid(GridBuilder.get()
@@ -201,7 +218,8 @@ public class Analitics extends VerticalLayout {
             .withXaxis(XAxisBuilder.get()
                     .withCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep")
                     .build())
-            .withSeries(new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
+            .withSeries(new Series<>("Компьютеры",20.0, 31.0, 45.0, 61.0, 29.0, 92.0, 39.0, 51.0, 248.0),
+                        new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
             .build();
         lineChart.setWidth("1000");
         lineChart.setHeight("600");
