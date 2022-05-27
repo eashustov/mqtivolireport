@@ -90,9 +90,13 @@ public interface UspIncidentDataCountPerMonthRepo extends CrudRepository<UspInci
 //            "ORDER BY \"HPC_ASSIGNMENT\", \"YEAR\", \"MONTH_NUMBER\" ASC",
 //            nativeQuery = true)
 //    List<IUspIncidentDataCountPerMonth> findIncCountPerMonth(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("groupAssignment") String groupAssignment);
-       @Query(value = "select p.HPC_ASSIGNMENT as assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS month,  MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS monthnumber, YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS year, COUNT (p.NUMBER) AS countinc from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy hh:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy hh:mm:ss')\n" +
-               "GROUP BY assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss'))\n" +
-               "ORDER BY assignment, year, monthnumber ASC", nativeQuery = true)
+//       @Query(value = "select p.HPC_ASSIGNMENT as assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS month,  MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS monthnumber, YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS year, COUNT (p.NUMBER) AS countinc from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy hh:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy hh:mm:ss')\n" +
+//               "GROUP BY assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss'))\n" +
+//               "ORDER BY assignment, year, monthnumber ASC", nativeQuery = true)
+//    List<IUspIncidentDataCountPerMonth> findIncCountPerMonth(@Param("startDate") String startDate, @Param("endDate") String endDate);
+@Query(value = "select p.HPC_ASSIGNMENT as assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS month,  MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS monthnumber, YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS year, COUNT (p.NUMBER) AS countinc from probsummarym1 p \n" +
+        "GROUP BY assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss'))\n" +
+        "ORDER BY assignment, year, monthnumber ASC", nativeQuery = true)
     List<IUspIncidentDataCountPerMonth> findIncCountPerMonth(@Param("startDate") String startDate, @Param("endDate") String endDate);
 
 }

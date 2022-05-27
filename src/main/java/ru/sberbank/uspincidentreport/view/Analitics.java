@@ -9,6 +9,7 @@ import com.github.appreciated.apexcharts.config.chart.builder.ZoomBuilder;
 import com.github.appreciated.apexcharts.config.grid.builder.RowBuilder;
 import com.github.appreciated.apexcharts.config.legend.HorizontalAlign;
 import com.github.appreciated.apexcharts.config.legend.Position;
+import com.github.appreciated.apexcharts.config.markers.builder.HoverBuilder;
 import com.github.appreciated.apexcharts.config.plotoptions.builder.PieBuilder;
 import com.github.appreciated.apexcharts.config.plotoptions.pie.builder.*;
 import com.github.appreciated.apexcharts.config.responsive.builder.OptionsBuilder;
@@ -24,13 +25,14 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Route(value = "analitics")
@@ -56,7 +58,6 @@ public class Analitics extends VerticalLayout {
     public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo) {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
-
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
 //        DatePicker.DatePickerI18n singleFormatI18n = new DatePicker.DatePickerI18n();
 //        singleFormatI18n.setDateFormat("dd.MM.yyyy");
@@ -76,9 +77,10 @@ public class Analitics extends VerticalLayout {
         endDate = end_Date.getValue().format(europeanDateFormatter) + "23.59.59";
         this.dataTotalCountRepo = dataTotalCountRepo;
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
-        getTotalCountAnaliticsData();
+        getTotalCountAnaliticsData(start_Date,end_Date);
         this.donutChart = donutChartInit(seriesData,labelsData);
         this.lineChart = LineChartInit ();
+        getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
 
 
         //Кнопка запроса аналитики
@@ -96,7 +98,7 @@ public class Analitics extends VerticalLayout {
 
         //Обработчик кнопки
         buttonQuery.addClickListener(clickEvent -> {
-            getTotalCountAnaliticsData();
+            getTotalCountAnaliticsData(start_Date,end_Date);
             horizontalLayout.removeAll();
             donutChart = donutChartInit(seriesData,labelsData);
             donutChart.setLegend(LegendBuilder.get()
@@ -124,6 +126,10 @@ public class Analitics extends VerticalLayout {
                                 .build())
                         .withOffsetX(-300.0)
                         .build())
+                .withTitle(TitleSubtitleBuilder.get()
+                        .withText("Количество автоинцидентов за период")
+                        .withAlign(Align.center)
+                        .build())
                 .withPlotOptions(PlotOptionsBuilder.get().withPie(PieBuilder.get()
                         .withDonut(DonutBuilder.get()
                                 .withLabels(LabelsBuilder.get()
@@ -137,8 +143,10 @@ public class Analitics extends VerticalLayout {
                 .withLegend(LegendBuilder.get()
                         .withPosition(Position.right)
                         .withHorizontalAlign(HorizontalAlign.right)
+                        .withFloating(true)
                         .withFontSize("15")
                         .withOffsetX(-30.0)
+                        .withOffsetY(-30.0)
                         .build())
 //                .withSeries(44.0, 55.0, 41.0, 17.0, 15.0, 14.0, 65.0)
                 .withSeries(seriesData.stream().toArray(Double[]::new))
@@ -161,7 +169,7 @@ public class Analitics extends VerticalLayout {
     }
 
     @SneakyThrows
-    private void getTotalCountAnaliticsData(){
+    private void getTotalCountAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         startDate = start_Date.getValue().format(europeanDateFormatter);
         endDate = end_Date.getValue().format(europeanDateFormatter);
@@ -178,20 +186,76 @@ public class Analitics extends VerticalLayout {
 
         }
 
-    private void getTotalCounPerMonthAnaliticsData(){
+    private void getTotalCounPerMonthAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
+        Map<String,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
+        Map<String, Integer> monthYearCountInc = new HashMap<>();
         startDate = start_Date.getValue().format(europeanDateFormatter);
         endDate = end_Date.getValue().format(europeanDateFormatter);
+//        String assignmentGroupPrev = "";
+        List<String> assignmentGroupExecute = new ArrayList<>();
 
-        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate)
-                .stream()
-                .map(t -> t.getCountInc().doubleValue())
-                .collect(Collectors.toList());
+        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate);
 
-        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate)
-                .stream()
-                .map(t -> t.getAssignment())
-                .collect(Collectors.toList());
+                ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
+        while(totalCounPerMonthAnaliticsDataIter.hasNext()){
+            monthYearCountInc.clear();
+            String assignmentGroup = totalCounPerMonthAnaliticsDataIter.next().getAssignment();
+
+
+            if (!assignmentGroupExecute.contains(assignmentGroup)) {
+                TotalCounPerMonthAnaliticsData.stream()
+                        .filter(e -> e.getAssignment().equals(assignmentGroup))
+                        .forEachOrdered(e-> {
+                            monthYearCountInc.put(e.getYear() + " " + e.getMonth(), e.getCountInc());
+                            });
+                assignmentMapToMonthData.put(assignmentGroup,monthYearCountInc);
+                assignmentGroupExecute.add(assignmentGroup);
+
+                System.out.println(monthYearCountInc);
+                System.out.println(assignmentGroupExecute);
+
+            }
+            System.out.println(assignmentMapToMonthData);
+
+        }
+
+
+
+
+
+//        Map<String,Map<String, Integer>> assignmentMapToMonthData = TotalCounPerMonthAnaliticsData.stream()
+//                .forEach(iUspIncidentDataCountPerMonth -> );
+//        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate)
+//                .stream()
+//                .map(t -> t.getCountInc().doubleValue())
+//                .collect(Collectors.toList());
+//
+//        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate)
+//                .stream()
+//                .map(t -> t.getAssignment())
+//                .collect(Collectors.toList());
+
+
+//        Map<String, List<IUspIncidentDataCountPerMonth>> totalCounPerMonthAnaliticsMap = TotalCounPerMonthAnaliticsData.stream()
+//                .collect(Collectors.groupingBy(IUspIncidentDataCountPerMonth::getAssignment));
+
+//        List<String> assignmentgroups = totalCounPerMonthAnaliticsMap.entrySet().stream()
+//                .map(e->e.getKey())
+//                .collect(Collectors.toList());
+////        System.out.println(assignmentgroup);
+//
+//        for (String assignmentgroup:assignmentgroups) {
+//            totalCounPerMonthAnaliticsMap.get(assignmentgroup).stream()
+//                    .map(e->e.)
+//        }
+//
+
+
+//        totalCounPerMonthAnaliticsMap.entrySet().forEach(entry -> {
+//                    System.out.println(entry.getKey() + " " + entry.getValue().toString());
+//                });
+
 
     }
 
@@ -206,9 +270,13 @@ public class Analitics extends VerticalLayout {
             .withStroke(StrokeBuilder.get()
                     .withCurve(Curve.straight)
                     .build())
+            .withMarkers(MarkersBuilder.get()
+                    .withSize(1.0, 1.0)
+                    .withHover(HoverBuilder.get().build())
+                    .build())
             .withTitle(TitleSubtitleBuilder.get()
-                    .withText("Динамика по месяцам")
-                    .withAlign(Align.left)
+                    .withText("Динамика количества автоинцидентов по месяцам")
+                    .withAlign(Align.center)
                     .build())
             .withGrid(GridBuilder.get()
                     .withRow(RowBuilder.get()
