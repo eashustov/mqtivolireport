@@ -245,9 +245,9 @@ public class Analitics extends VerticalLayout {
                 .map(e->e.keySet())
                 .collect(Collectors.toList());
 
-        TreeSet<String>labels = new TreeSet<>();
 
         //        DateTimeFormatter dataLabelsFormatter = DateTimeFormatter.ofPattern("yyyy MMMM dd", Locale.US);
+        TreeSet<String>labels = new TreeSet<>();
 
         allGroupslabels.stream()
                 .forEach(l-> {
@@ -281,7 +281,8 @@ public class Analitics extends VerticalLayout {
                     }
                 });
 
-        System.out.println(labels);
+
+        System.out.println("Временная шкала: " + labels);
 
 
         int maxData=0;
@@ -294,6 +295,12 @@ public class Analitics extends VerticalLayout {
 //            System.out.println(key + ":" + assignmentMapToMonthData.get(key).size());
         }
         System.out.println("Максимальное количество " + maxData);
+
+
+        //Определение Series данных для назначенных групп
+
+        List<String> allGroupSeriesData;
+
 
     }
 
