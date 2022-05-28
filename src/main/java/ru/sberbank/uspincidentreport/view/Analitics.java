@@ -203,7 +203,7 @@ public class Analitics extends VerticalLayout {
                 ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
         while(totalCounPerMonthAnaliticsDataIter.hasNext()){
             monthYearCountInc.clear();
-            String assignmentGroup = valueOf(totalCounPerMonthAnaliticsDataIter.next().getAssignment());
+            String assignmentGroup = totalCounPerMonthAnaliticsDataIter.next().getAssignment();
 
 
             if (!assignmentGroupExecute.contains(assignmentGroup)) {
@@ -213,7 +213,7 @@ public class Analitics extends VerticalLayout {
                         String year = e.getYear();
                         String month = e.getMonth();
                         Integer countInc = e.getCountInc();
-                        monthYearCountInc.put(year + month, countInc);
+                        monthYearCountInc.put(year + " " + month, countInc);
                     }
                 }
 
