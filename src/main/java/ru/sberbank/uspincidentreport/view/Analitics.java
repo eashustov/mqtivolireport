@@ -29,9 +29,15 @@ import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -239,12 +245,39 @@ public class Analitics extends VerticalLayout {
                 .map(e->e.keySet())
                 .collect(Collectors.toList());
 
-        Set<String>labels = new HashSet<>();
+        TreeSet<String>labels = new TreeSet<>();
+
+        //        DateTimeFormatter dataLabelsFormatter = DateTimeFormatter.ofPattern("yyyy MMMM dd", Locale.US);
 
         allGroupslabels.stream()
                 .forEach(l-> {
                     for (String dataLabel:l) {
-                        labels.add(dataLabel);
+                        String sDataLabel;
+                        if (dataLabel.contains("January")) { sDataLabel = dataLabel.replace("January", "1");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("February")) { sDataLabel = dataLabel.replace("February", "2");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("March")) { sDataLabel = dataLabel.replace("March", "3");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("April")) { sDataLabel = dataLabel.replace("April", "4");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("May")) { sDataLabel = dataLabel.replace("May", "5");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("June")) { sDataLabel = dataLabel.replace("June", "6");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("July")) { sDataLabel = dataLabel.replace("July", "7");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("August")) { sDataLabel = dataLabel.replace("August", "8");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("September")) { sDataLabel = dataLabel.replace("September", "9");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("October")) { sDataLabel = dataLabel.replace("October", "10");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("November")) { sDataLabel = dataLabel.replace("November", "11");
+                            labels.add(sDataLabel);}
+                        if (dataLabel.contains("December")) { sDataLabel = dataLabel.replace("December", "12");
+                            labels.add(sDataLabel);}
+
                     }
                 });
 
@@ -258,7 +291,7 @@ public class Analitics extends VerticalLayout {
             dataCount = assignmentMapToMonthData.get(key).size();
             if (dataCount > maxData) maxData = dataCount;
 
-            System.out.println(key + ":" + assignmentMapToMonthData.get(key).size());
+//            System.out.println(key + ":" + assignmentMapToMonthData.get(key).size());
         }
         System.out.println("Максимальное количество " + maxData);
 
