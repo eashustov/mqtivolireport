@@ -35,6 +35,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.String.valueOf;
+
 @Route(value = "analitics")
 @PageTitle("Аналитика автоинцидентов УСП за период")
 public class Analitics extends VerticalLayout {
@@ -189,6 +191,7 @@ public class Analitics extends VerticalLayout {
     private void getTotalCounPerMonthAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         Map<String,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
+//        Map<Integer,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
         Map<String, Integer> monthYearCountInc = new HashMap<>();
         startDate = start_Date.getValue().format(europeanDateFormatter);
         endDate = end_Date.getValue().format(europeanDateFormatter);
@@ -200,62 +203,33 @@ public class Analitics extends VerticalLayout {
                 ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
         while(totalCounPerMonthAnaliticsDataIter.hasNext()){
             monthYearCountInc.clear();
-            String assignmentGroup = totalCounPerMonthAnaliticsDataIter.next().getAssignment();
+            String assignmentGroup = valueOf(totalCounPerMonthAnaliticsDataIter.next().getAssignment());
 
 
             if (!assignmentGroupExecute.contains(assignmentGroup)) {
-                TotalCounPerMonthAnaliticsData.stream()
-                        .filter(e -> e.getAssignment().equals(assignmentGroup))
-                        .forEachOrdered(e-> {
-                            monthYearCountInc.put(e.getYear() + " " + e.getMonth(), e.getCountInc());
-                            });
-                assignmentMapToMonthData.put(assignmentGroup,monthYearCountInc);
+
+                for (IUspIncidentDataCountPerMonth e:TotalCounPerMonthAnaliticsData) {
+                    if(e.getAssignment().equals(assignmentGroup)) {
+                        String year = e.getYear();
+                        String month = e.getMonth();
+                        Integer countInc = e.getCountInc();
+                        monthYearCountInc.put(year + month, countInc);
+                    }
+                }
+
                 assignmentGroupExecute.add(assignmentGroup);
 
+                System.out.println(assignmentGroup);
                 System.out.println(monthYearCountInc);
-                System.out.println(assignmentGroupExecute);
+                System.out.println(assignmentGroupExecute.toString()+  " Список добавленных");
 
+            } else {
+                continue;
             }
+            assignmentMapToMonthData.put(assignmentGroup, new HashMap<String, Integer>(monthYearCountInc));
             System.out.println(assignmentMapToMonthData);
 
         }
-
-
-
-
-
-//        Map<String,Map<String, Integer>> assignmentMapToMonthData = TotalCounPerMonthAnaliticsData.stream()
-//                .forEach(iUspIncidentDataCountPerMonth -> );
-//        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate)
-//                .stream()
-//                .map(t -> t.getCountInc().doubleValue())
-//                .collect(Collectors.toList());
-//
-//        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate)
-//                .stream()
-//                .map(t -> t.getAssignment())
-//                .collect(Collectors.toList());
-
-
-//        Map<String, List<IUspIncidentDataCountPerMonth>> totalCounPerMonthAnaliticsMap = TotalCounPerMonthAnaliticsData.stream()
-//                .collect(Collectors.groupingBy(IUspIncidentDataCountPerMonth::getAssignment));
-
-//        List<String> assignmentgroups = totalCounPerMonthAnaliticsMap.entrySet().stream()
-//                .map(e->e.getKey())
-//                .collect(Collectors.toList());
-////        System.out.println(assignmentgroup);
-//
-//        for (String assignmentgroup:assignmentgroups) {
-//            totalCounPerMonthAnaliticsMap.get(assignmentgroup).stream()
-//                    .map(e->e.)
-//        }
-//
-
-
-//        totalCounPerMonthAnaliticsMap.entrySet().forEach(entry -> {
-//                    System.out.println(entry.getKey() + " " + entry.getValue().toString());
-//                });
-
 
     }
 
