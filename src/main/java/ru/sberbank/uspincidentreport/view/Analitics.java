@@ -191,11 +191,9 @@ public class Analitics extends VerticalLayout {
     private void getTotalCounPerMonthAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         Map<String,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
-//        Map<Integer,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
         Map<String, Integer> monthYearCountInc = new HashMap<>();
         startDate = start_Date.getValue().format(europeanDateFormatter);
         endDate = end_Date.getValue().format(europeanDateFormatter);
-//        String assignmentGroupPrev = "";
         List<String> assignmentGroupExecute = new ArrayList<>();
 
         List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate);
@@ -219,17 +217,50 @@ public class Analitics extends VerticalLayout {
 
                 assignmentGroupExecute.add(assignmentGroup);
 
-                System.out.println(assignmentGroup);
-                System.out.println(monthYearCountInc);
-                System.out.println(assignmentGroupExecute.toString()+  " Список добавленных");
+//                System.out.println(assignmentGroup);
+//                System.out.println(monthYearCountInc);
+//                System.out.println(assignmentGroupExecute.toString()+  " Список добавленных");
 
             } else {
                 continue;
             }
             assignmentMapToMonthData.put(assignmentGroup, new HashMap<String, Integer>(monthYearCountInc));
-            System.out.println(assignmentMapToMonthData);
+//            System.out.println(assignmentMapToMonthData);
 
         }
+
+        //Определение временной шкаолы - Labels
+
+        List<Set<String>> allGroupslabels;
+
+        allGroupslabels = assignmentMapToMonthData.entrySet()
+                .stream()
+                .map(e-> e.getValue())
+                .map(e->e.keySet())
+                .collect(Collectors.toList());
+
+        Set<String>labels = new HashSet<>();
+
+        allGroupslabels.stream()
+                .forEach(l-> {
+                    for (String dataLabel:l) {
+                        labels.add(dataLabel);
+                    }
+                });
+
+        System.out.println(labels);
+
+
+        int maxData=0;
+        int dataCount;
+
+        for (String key : assignmentMapToMonthData.keySet()) {
+            dataCount = assignmentMapToMonthData.get(key).size();
+            if (dataCount > maxData) maxData = dataCount;
+
+            System.out.println(key + ":" + assignmentMapToMonthData.get(key).size());
+        }
+        System.out.println("Максимальное количество " + maxData);
 
     }
 
