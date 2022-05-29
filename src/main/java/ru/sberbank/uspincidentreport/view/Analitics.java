@@ -290,7 +290,7 @@ public class Analitics extends VerticalLayout {
         System.out.println("Максимальное количество " + maxData);
 
 
-        //Определение и форматирование Series данных для назначенных групп
+        //Определение и форматирование данных для назначенных групп
 
 
         assignmentMapToMonthData.entrySet()
@@ -306,6 +306,18 @@ public class Analitics extends VerticalLayout {
                     }
                 });
         System.out.println(assignmentMapToMonthData);
+
+        // Получение Series для данных групп
+        assignmentMapToMonthData.entrySet()
+                .stream()
+                .forEach(e->{
+                    String seriesName = e.getKey();
+                    List<Double> seriesData = e.getValue().entrySet()
+                            .stream()
+                            .map(z->z.getValue().doubleValue())
+                            .collect(Collectors.toList());
+                    new Series<>(seriesName, seriesData.stream().toArray(Double[]::new));
+                });
 
     }
 
