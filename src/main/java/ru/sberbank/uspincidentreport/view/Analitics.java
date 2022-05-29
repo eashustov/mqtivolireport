@@ -237,16 +237,18 @@ public class Analitics extends VerticalLayout {
 
 //                System.out.println(assignmentGroup);
 
-                System.out.println(monthYearCountInc);
+//                System.out.println(monthYearCountInc);
 //                System.out.println(assignmentGroupExecute.toString()+  " Список добавленных");
 
             } else {
                 continue;
             }
             assignmentMapToMonthData.put(assignmentGroup, new TreeMap<String, Integer>(monthYearCountInc));
-            System.out.println(assignmentMapToMonthData);
+//            System.out.println(assignmentMapToMonthData);
 
         }
+
+        System.out.println(assignmentMapToMonthData);
 
         //Определение временной шкаолы - Labels
 
@@ -274,6 +276,7 @@ public class Analitics extends VerticalLayout {
 
         System.out.println("Временная шкала: " + labels);
 
+        //Определение максимального колиичества значений из всех групп.
 
         int maxData=0;
         int dataCount;
@@ -287,10 +290,22 @@ public class Analitics extends VerticalLayout {
         System.out.println("Максимальное количество " + maxData);
 
 
-        //Определение Series данных для назначенных групп
+        //Определение и форматирование Series данных для назначенных групп
 
-        List<String> allGroupSeriesData;
 
+        assignmentMapToMonthData.entrySet()
+                .stream()
+                .map(e-> e.getValue())
+                .forEach(e->{
+                    for (Map.Entry<String, Integer> entry : e.entrySet()) {
+                        for (String key:labels) {
+                            if (!entry.getKey().contains(key)){
+                                    e.put(key,0);
+                                }
+                            }
+                    }
+                });
+        System.out.println(assignmentMapToMonthData);
 
     }
 
