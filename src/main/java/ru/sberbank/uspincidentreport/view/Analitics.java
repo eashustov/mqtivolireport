@@ -215,7 +215,19 @@ public class Analitics extends VerticalLayout {
                 for (IUspIncidentDataCountPerMonth e:TotalCounPerMonthAnaliticsData) {
                     if(e.getAssignment().equals(assignmentGroup)) {
                         String year = e.getYear();
-                        String month = e.getMonth();
+                        String month = e.getMonth()
+                                .replace("January", "1")
+                                .replace("February", "2")
+                                .replace("March", "3")
+                                .replace("April", "4")
+                                .replace("May", "5")
+                                .replace("June", "6")
+                                .replace("July", "7")
+                                .replace("August", "8")
+                                .replace("September","9")
+                                .replace("October","10")
+                                .replace("November", "11")
+                                .replace("December", "12");
                         Integer countInc = e.getCountInc();
                         monthYearCountInc.put(year + " " + month, countInc);
                     }
@@ -224,14 +236,15 @@ public class Analitics extends VerticalLayout {
                 assignmentGroupExecute.add(assignmentGroup);
 
 //                System.out.println(assignmentGroup);
-//                System.out.println(monthYearCountInc);
+
+                System.out.println(monthYearCountInc);
 //                System.out.println(assignmentGroupExecute.toString()+  " Список добавленных");
 
             } else {
                 continue;
             }
-            assignmentMapToMonthData.put(assignmentGroup, new HashMap<String, Integer>(monthYearCountInc));
-//            System.out.println(assignmentMapToMonthData);
+            assignmentMapToMonthData.put(assignmentGroup, new TreeMap<String, Integer>(monthYearCountInc));
+            System.out.println(assignmentMapToMonthData);
 
         }
 
@@ -252,31 +265,8 @@ public class Analitics extends VerticalLayout {
         allGroupslabels.stream()
                 .forEach(l-> {
                     for (String dataLabel:l) {
-                        String sDataLabel;
-                        if (dataLabel.contains("January")) { sDataLabel = dataLabel.replace("January", "1");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("February")) { sDataLabel = dataLabel.replace("February", "2");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("March")) { sDataLabel = dataLabel.replace("March", "3");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("April")) { sDataLabel = dataLabel.replace("April", "4");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("May")) { sDataLabel = dataLabel.replace("May", "5");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("June")) { sDataLabel = dataLabel.replace("June", "6");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("July")) { sDataLabel = dataLabel.replace("July", "7");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("August")) { sDataLabel = dataLabel.replace("August", "8");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("September")) { sDataLabel = dataLabel.replace("September", "9");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("October")) { sDataLabel = dataLabel.replace("October", "10");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("November")) { sDataLabel = dataLabel.replace("November", "11");
-                            labels.add(sDataLabel);}
-                        if (dataLabel.contains("December")) { sDataLabel = dataLabel.replace("December", "12");
-                            labels.add(sDataLabel);}
+
+                        labels.add(dataLabel);
 
                     }
                 });
