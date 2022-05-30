@@ -155,7 +155,7 @@ public class MainView extends VerticalLayout {
         }));
 
 //        Export to CSV
-        var sreamResource = new StreamResource("uspIncidents.csv",
+        var streamResource = new StreamResource("uspIncidents.csv",
                 () -> {
                     Stream<UspIncidentData> uspIncidentList = personFilter.dataViewFiltered.getItems();
                     StringWriter output = new StringWriter();
@@ -179,7 +179,7 @@ public class MainView extends VerticalLayout {
         );
 
         //Anchor block
-        Anchor downloadToCSV = new Anchor(sreamResource, "Сохранить в CSV" );
+        Anchor downloadToCSV = new Anchor(streamResource, "Сохранить в CSV" );
         Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
         buttonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
         downloadToCSV.removeAll();

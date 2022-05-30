@@ -16,32 +16,41 @@ import com.github.appreciated.apexcharts.config.responsive.builder.OptionsBuilde
 import com.github.appreciated.apexcharts.config.stroke.Curve;
 import com.github.appreciated.apexcharts.config.subtitle.Align;
 import com.github.appreciated.apexcharts.helper.Series;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
+import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
+import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static java.lang.String.valueOf;
 
 @Route(value = "analitics")
 @PageTitle("Аналитика автоинцидентов УСП за период")
@@ -53,6 +62,9 @@ public class Analitics extends VerticalLayout {
     String endDate;
     DatePicker start_Date;
     DatePicker end_Date;
+    TreeSet<String>labels = new TreeSet<>();
+    private Grid<UspIncidentData> grid;
+    private GridListDataView<UspIncidentData> dataView;
 
     DateTimeFormatter europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     List<String> labelsData;
@@ -61,9 +73,14 @@ public class Analitics extends VerticalLayout {
     private UspIncidentDataTotalCountRepo dataTotalCountRepo;
     @Autowired
     private UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo;
+    @Autowired
+    private UspIncidentRepo repo;
+
+    private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
 
 
-    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo) {
+
+    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentRepo repo) {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
@@ -85,10 +102,12 @@ public class Analitics extends VerticalLayout {
         endDate = end_Date.getValue().format(europeanDateFormatter) + "23.59.59";
         this.dataTotalCountRepo = dataTotalCountRepo;
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
+        this.repo = repo;
         getTotalCountAnaliticsData(start_Date,end_Date);
+        this.assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
         this.donutChart = donutChartInit(seriesData,labelsData);
         this.lineChart = LineChartInit ();
-        getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
+
 
 
         //Кнопка запроса аналитики
@@ -96,10 +115,19 @@ public class Analitics extends VerticalLayout {
         buttonQuery.setText("Запрос данных");
 
 
+        //Anchor block
+        Anchor downloadToCSV = new Anchor(exporttoCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
+        Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
+        buttonDownloadCSV.setText("Сохранить в CSV");
+//        buttonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
+        downloadToCSV.removeAll();
+        downloadToCSV.add(buttonDownloadCSV);
+
+
         //Отображение. Добавление компонентов
 //        VerticalLayout dateLayout = new VerticalLayout(start_Date, end_Date, buttonQuery);
-        HorizontalLayout dateLayout = new HorizontalLayout(start_Date, end_Date, buttonQuery);
-        dateLayout.setVerticalComponentAlignment(Alignment.END, start_Date, end_Date, buttonQuery);
+        HorizontalLayout dateLayout = new HorizontalLayout(start_Date, end_Date, buttonQuery, downloadToCSV );
+        dateLayout.setVerticalComponentAlignment(Alignment.END, start_Date, end_Date, buttonQuery, downloadToCSV);
         setHorizontalComponentAlignment(Alignment.CENTER, dateLayout);
         HorizontalLayout horizontalLayout = new HorizontalLayout(donutChart, lineChart);
         add(header, dateLayout, horizontalLayout);
@@ -194,7 +222,7 @@ public class Analitics extends VerticalLayout {
 
         }
 
-    private void getTotalCounPerMonthAnaliticsData(DatePicker start_Date, DatePicker end_Date){
+    private Map<String,Map<String, Integer>> getTotalCounPerMonthAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         Map<String,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
         Map<String, Integer> monthYearCountInc = new HashMap<>();
@@ -248,7 +276,7 @@ public class Analitics extends VerticalLayout {
 
         }
 
-        System.out.println(assignmentMapToMonthData);
+//        System.out.println(assignmentMapToMonthData);
 
         //Определение временной шкаолы - Labels
 
@@ -261,9 +289,6 @@ public class Analitics extends VerticalLayout {
                 .collect(Collectors.toList());
 
 
-        //        DateTimeFormatter dataLabelsFormatter = DateTimeFormatter.ofPattern("yyyy MMMM dd", Locale.US);
-        TreeSet<String>labels = new TreeSet<>();
-
         allGroupslabels.stream()
                 .forEach(l-> {
                     for (String dataLabel:l) {
@@ -274,20 +299,20 @@ public class Analitics extends VerticalLayout {
                 });
 
 
-        System.out.println("Временная шкала: " + labels);
+//        System.out.println("Временная шкала: " + labels);
 
         //Определение максимального колиичества значений из всех групп.
 
-        int maxData=0;
-        int dataCount;
-
-        for (String key : assignmentMapToMonthData.keySet()) {
-            dataCount = assignmentMapToMonthData.get(key).size();
-            if (dataCount > maxData) maxData = dataCount;
+//        int maxData=0;
+//        int dataCount;
+//
+//        for (String key : assignmentMapToMonthData.keySet()) {
+//            dataCount = assignmentMapToMonthData.get(key).size();
+//            if (dataCount > maxData) maxData = dataCount;
 
 //            System.out.println(key + ":" + assignmentMapToMonthData.get(key).size());
-        }
-        System.out.println("Максимальное количество " + maxData);
+//        }
+//        System.out.println("Максимальное количество " + maxData);
 
 
         //Определение и форматирование данных для назначенных групп
@@ -297,18 +322,20 @@ public class Analitics extends VerticalLayout {
                 .stream()
                 .map(e-> e.getValue())
                 .forEach(e->{
-                    for (Map.Entry<String, Integer> entry : e.entrySet()) {
                         for (String key:labels) {
-                            if (!entry.getKey().contains(key)){
-                                    e.put(key,0);
+                            if (!e.containsKey(key))
+                                    e.put(key, 0);
                                 }
-                            }
-                    }
                 });
-        System.out.println(assignmentMapToMonthData);
+//        System.out.println(assignmentMapToMonthData);
+        return assignmentMapToMonthData;
 
+    }
+
+    private List<Series> SetSeries(Map<String,Map<String, Integer>>assignmentGroupMapToMonthData) {
         // Получение Series для данных групп
-        assignmentMapToMonthData.entrySet()
+        List<Series> setSeries = new ArrayList<>();
+        assignmentGroupMapToMonthData.entrySet()
                 .stream()
                 .forEach(e->{
                     String seriesName = e.getKey();
@@ -316,10 +343,10 @@ public class Analitics extends VerticalLayout {
                             .stream()
                             .map(z->z.getValue().doubleValue())
                             .collect(Collectors.toList());
-                    new Series<>(seriesName, seriesData.stream().toArray(Double[]::new));
+                    setSeries.add(new Series<>(seriesName, seriesData.stream().toArray(Double[]::new)));
                 });
-
-    }
+        return setSeries;
+            }
 
     private ApexCharts LineChartInit (){
         ApexCharts lineChart = ApexChartsBuilder.get()
@@ -346,16 +373,55 @@ public class Analitics extends VerticalLayout {
                             .withOpacity(0.5).build()
                     ).build())
             .withXaxis(XAxisBuilder.get()
-                    .withCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep")
+                    .withCategories(new ArrayList<String>(labels))
+//                    .withCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep")
                     .build())
-            .withSeries(new Series<>("Компьютеры",20.0, 31.0, 45.0, 61.0, 29.0, 92.0, 39.0, 51.0, 248.0),
-                        new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
+
+                .withSeries(SetSeries(assignmentGroupMapToMonthData).stream().toArray(Series[]::new))
+
+//                    new Series<>("Компьютеры",20.0, 31.0, 45.0, 61.0, 29.0, 92.0, 39.0, 51.0, 248.0),
+//                    new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
             .build();
         lineChart.setWidth("1000");
         lineChart.setHeight("600");
 
         return lineChart;
     }
+
+    private GridListDataView<UspIncidentData> initGridIncData (DatePicker start_Date, DatePicker end_Date){
+        startDate = start_Date.getValue().format(europeanDateFormatter);
+        endDate = end_Date.getValue().format(europeanDateFormatter);
+        grid = new Grid<>(UspIncidentData.class, false);
+        dataView = grid.setItems(repo.findIncByDate(startDate,endDate));
+        return dataView;
+    };
+
+    private StreamResource exporttoCSV(GridListDataView<UspIncidentData> dataView){
+        //        Export to CSV
+        var streamResource = new StreamResource("uspIncidents.csv",
+                () -> {
+                    Stream<UspIncidentData> uspIncidentList = dataView.getItems();
+                    StringWriter output = new StringWriter();
+                    StatefulBeanToCsv<UspIncidentData> beanToCSV = null;
+                    try {
+                        beanToCSV = new StatefulBeanToCsvBuilder<UspIncidentData>(output)
+                                .withIgnoreField(UspIncidentData.class, UspIncidentData.class.getDeclaredField("ACTION"))
+                                .build();
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        beanToCSV.write(uspIncidentList);
+                        var contents = output.toString();
+                        return new ByteArrayInputStream(contents.getBytes());
+                    } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+        );
+        return streamResource;
+    };
 
 }
 

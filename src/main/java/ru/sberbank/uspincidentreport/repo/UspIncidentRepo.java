@@ -1,6 +1,7 @@
 package ru.sberbank.uspincidentreport.repo;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataTotalCount;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
@@ -124,5 +125,8 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
 
    @Query(value = "select * from probsummarym1", nativeQuery = true)
    List<UspIncidentData> findAll();
+
+   @Query(value = "select * from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy hh:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy hh:mm:ss')", nativeQuery = true)
+   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
 
 }
