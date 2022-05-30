@@ -155,7 +155,7 @@ public class MainView extends VerticalLayout {
         }));
 
 //        Export to CSV
-        var streamResource = new StreamResource("uspIncidents.csv",
+        var streamResource = new StreamResource("uspOpenIncidents.csv",
                 () -> {
                     Stream<UspIncidentData> uspIncidentList = personFilter.dataViewFiltered.getItems();
                     StringWriter output = new StringWriter();
