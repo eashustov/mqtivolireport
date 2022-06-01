@@ -112,11 +112,6 @@ public class MainView extends VerticalLayout {
         Grid.Column<UspIncidentData> PROBLEM = grid
                 .addColumn(UspIncidentData::getPROBLEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         PROBLEM.setVisible(false);
-        Grid.Column<UspIncidentData> AFFECTED_ITEM = grid
-                .addColumn(UspIncidentData::getAFFECTED_ITEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
-        Grid.Column<UspIncidentData> RESOLUTION_GUIDE = grid
-                .addColumn(UspIncidentData::getRESOLUTION_GUIDE).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
-        RESOLUTION_GUIDE.setVisible(false);
 
         GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll());
         PersonFilter personFilter = new PersonFilter(dataView);
@@ -144,16 +139,12 @@ public class MainView extends VerticalLayout {
                 .setComponent(createFilterHeader("Статус", personFilter::setStatus));
         headerRow.getCell(RESOLUTION)
                 .setComponent(createFilterHeader("Сценарий устранения", personFilter::setResolution));
-        headerRow.getCell(RESOLUTION_GUIDE)
-                .setComponent(createFilterHeader("Инструкция для устранения", personFilter::setAffectedItem));
         headerRow.getCell(ACTION)
                 .setComponent(createFilterHeader("Подробное описание", personFilter::setAction));
         headerRow.getCell(HOST)
                 .setComponent(createFilterHeader("Сервер", personFilter::setHost));
         headerRow.getCell(PROBLEM)
                 .setComponent(createFilterHeader("Проблема", personFilter::setProblem));
-        headerRow.getCell(AFFECTED_ITEM)
-                .setComponent(createFilterHeader("ИТ-услуга", personFilter::setAffectedItem));
 
 
         // Вывод подробной информации по инциденту по выделению строки таблицы
@@ -269,11 +260,9 @@ public class MainView extends VerticalLayout {
         columnToggleContextMenu.addColumnToggleItem("История в Zabbix", ZABBIX_HISTORY);
         columnToggleContextMenu.addColumnToggleItem("Статус", STATUS);
         columnToggleContextMenu.addColumnToggleItem("Сценарий для устранения", RESOLUTION);
-        columnToggleContextMenu.addColumnToggleItem("Инструкция для устранения", RESOLUTION_GUIDE);
         columnToggleContextMenu.addColumnToggleItem("Подробное описание", ACTION);
         columnToggleContextMenu.addColumnToggleItem("Сервер", HOST);
         columnToggleContextMenu.addColumnToggleItem("Проблема", PROBLEM);
-        columnToggleContextMenu.addColumnToggleItem("ИТ-услуга", AFFECTED_ITEM);
 
 
         //Кнопка обновления
@@ -322,7 +311,7 @@ public class MainView extends VerticalLayout {
     private static class PersonFilter {
 
 
-        private GridListDataView<UspIncidentData> dataViewFiltered;
+        private final GridListDataView<UspIncidentData> dataViewFiltered;
         private String number;
         private String briefDescription;
         private String priorityCode;
@@ -333,11 +322,9 @@ public class MainView extends VerticalLayout {
         private String zabbixHistory;
         private String status;
         private String resolution;
-        private String resolutionGuide;
         private String action;
         private String host;
         private String problem;
-        private String affectedItem;
 
         public PersonFilter(GridListDataView<UspIncidentData> dataView) {
             this.dataViewFiltered = dataView;
@@ -410,15 +397,6 @@ public class MainView extends VerticalLayout {
             this.dataViewFiltered.refreshAll();
         }
 
-        public void setAffectedItem(String affectedItem) {
-            this.affectedItem = affectedItem;
-            this.dataViewFiltered.refreshAll();
-        }
-
-        public void setResolutionGuide(String resolutionGuide){
-            this.dataViewFiltered.refreshAll();
-        }
-
         public boolean test(UspIncidentData uspIncidentData) {
             boolean matchesNumber = matches(uspIncidentData.getNUMBER(), number);
             boolean matchesBriefDescription = matches(uspIncidentData.getBRIEF_DESCRIPTION(), briefDescription);
@@ -433,12 +411,9 @@ public class MainView extends VerticalLayout {
             boolean matchesAction = matches(uspIncidentData.getACTION(), action);
             boolean matchesHost = matches(uspIncidentData.getHOST(), host);
             boolean matchesProblem = matches(uspIncidentData.getPROBLEM(), problem);
-            boolean matchesAffectedItem = matches(uspIncidentData.getAFFECTED_ITEM(), affectedItem);
-            boolean matchesResolutionGuide = matches(uspIncidentData.getAFFECTED_ITEM(), resolutionGuide);
             return matchesNumber && matchesBriefDescription && matchesPriorityCode && matchesOpenTime &&
                     matchesAssigneeName && matchesAssignment && matchesCreatedByName && matchesZabbixHistory &&
-                    matchesStatus && matchesResolution && matchesAction && matchesHost && matchesProblem &&
-                    matchesAffectedItem && matchesResolutionGuide;
+                    matchesStatus && matchesResolution && matchesAction && matchesHost && matchesProblem;
 
         }
 
@@ -468,15 +443,7 @@ public class MainView extends VerticalLayout {
             super(target);
 
             addItem("Сценарий устранения в RLM", e -> e.getItem().ifPresent(incident -> {
-                if (!incident.getRESOLUTION().equals("")) {
-                    getUI().get().getPage().open(incident.getRESOLUTION(), "Сценарий устранения в RLM");
-                } else {Notification.show("Нет сценариев RLM для устранения автоинцидента", 1000, Notification.Position.MIDDLE);}
-                // System.out.printf("Edit: %s%n", person.getFullName());
-            }));
-            addItem("Инструкция для устранения автоинцидента", e -> e.getItem().ifPresent(incident -> {
-                if (!incident.getRESOLUTION_GUIDE().equals("")) {
-                    getUI().get().getPage().open(incident.getRESOLUTION_GUIDE(), "Инструкция для устранения автоинцидента");
-                } else {Notification.show("Нет инструкции для устранения автоинцидента", 1000, Notification.Position.MIDDLE);}
+                getUI().get().getPage().open(incident.getRESOLUTION(), "Сценарий устранения в RLM");
                 // System.out.printf("Edit: %s%n", person.getFullName());
             }));
             addItem("История в Zabbix", e -> e.getItem().ifPresent(incident -> {
@@ -490,22 +457,18 @@ public class MainView extends VerticalLayout {
         }
     }
 
-    private class RefreshThread extends Thread {
+    private static class RefreshThread extends Thread {
         private final UI ui;
         private final MainView view;
         private Span span = new Span();
         private Span incCount = new Span();
-        private Span incFilteredCount = new Span();
-        PersonFilter filter;
 
 
 
         public RefreshThread(UI ui, MainView view) {
             this.ui = ui;
             this.view = view;
-            view.dataView = grid.setItems(repo.findAll());
-            filter = new PersonFilter(view.dataView);
-            counter.set(300);
+            counter.set(60);
         }
 
         @Override
@@ -519,26 +482,23 @@ public class MainView extends VerticalLayout {
                         String message = "Обновление данных через " + counter.getAndDecrement() + " сек";
 
                         ui.access(() -> {
-                            view.remove(incFilteredCount, incCount, span);
+                            view.remove(incCount, span);
                             span.setText(message);
                             incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
-                            incFilteredCount.setText("Отфильтровано: " + String.valueOf(filter.dataViewFiltered.addFilter(filter::test).getItemCount())); //Не работает
-                            view.add(incFilteredCount, incCount, span);
+                            view.add(incCount, span);
 
                         });
                     }
 
                     // Inform that we are done
                     ui.access(() -> {
-                        view.dataView = grid.setItems(repo.findAll());
-//                        new PersonFilter(view.dataView).dataViewFiltered.getItemCount();
-                        filter.dataViewFiltered.addFilter(filter::test).refreshAll();
-                        view.remove(incFilteredCount, incCount, span);
+                        new PersonFilter(view.dataView).dataViewFiltered.refreshAll();
+                        view.remove(incCount, span);
                         Notification.show("Данные обновлены", 1000, Notification.Position.TOP_CENTER);
                         span.setText("Данные обновлены");
-                        incFilteredCount.setText("Отфильтровано: " + String.valueOf(filter.dataViewFiltered.addFilter(filter::test).getItemCount()));//Не работает
-                        view.add(incFilteredCount, incCount, span);
-                        counter.set(300);
+                        incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
+                        view.add(incCount, span);
+                        counter.set(60);
                     });
                 }
             } catch (InterruptedException e) {

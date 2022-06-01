@@ -20,9 +20,11 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Anchor;
@@ -31,6 +33,8 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
@@ -42,12 +46,14 @@ import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,6 +86,7 @@ public class Analitics extends VerticalLayout {
 
 
 
+
     public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentRepo repo) {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
@@ -106,7 +113,7 @@ public class Analitics extends VerticalLayout {
         getTotalCountAnaliticsData(start_Date,end_Date);
         this.assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
         this.donutChart = donutChartInit(seriesData,labelsData);
-        this.lineChart = LineChartInit ();
+        this.lineChart = LineChartInit();
 
 
 
@@ -129,22 +136,30 @@ public class Analitics extends VerticalLayout {
         HorizontalLayout dateLayout = new HorizontalLayout(start_Date, end_Date, buttonQuery, downloadToCSV );
         dateLayout.setVerticalComponentAlignment(Alignment.END, start_Date, end_Date, buttonQuery, downloadToCSV);
         setHorizontalComponentAlignment(Alignment.CENTER, dateLayout);
-        HorizontalLayout horizontalLayout = new HorizontalLayout(donutChart, lineChart);
-        add(header, dateLayout, horizontalLayout);
+        FormLayout formLayout = new FormLayout();
+        formLayout.add(donutChart, lineChart);
+        formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
+//        HorizontalLayout chartsLayout = new HorizontalLayout(donutChart, lineChart);
+//        setHorizontalComponentAlignment(Alignment.CENTER, tabs);
+        add(header, dateLayout, formLayout);
 
         //Обработчик кнопки
         buttonQuery.addClickListener(clickEvent -> {
             getTotalCountAnaliticsData(start_Date,end_Date);
-            horizontalLayout.removeAll();
+            assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
+            lineChart = LineChartInit();
+//            chartsLayout.removeAll();
             donutChart = donutChartInit(seriesData,labelsData);
+            donutChart.setMaxWidth("70%");
+            donutChart.setWidth("1000px");
             donutChart.setLegend(LegendBuilder.get()
                     .withPosition(Position.right)
                     .withFontSize("15")
                     .withOffsetX(200.0)
                     .build());
-            horizontalLayout.add(donutChart, lineChart);
-            horizontalLayout.setVerticalComponentAlignment(Alignment.START, donutChart, lineChart);
-            setHorizontalComponentAlignment(Alignment.END, horizontalLayout);
+//            chartsLayout.add(donutChart, lineChart);
+//            chartsLayout.setVerticalComponentAlignment(Alignment.START, donutChart, lineChart);
+//            setHorizontalComponentAlignment(Alignment.CENTER, chartsLayout);
 
         });
 
@@ -160,7 +175,8 @@ public class Analitics extends VerticalLayout {
                         .withToolbar(ToolbarBuilder.get()
                                 .withShow(true)
                                 .build())
-                        .withOffsetX(-300.0)
+//                        .withOffsetX(-100.0)
+//                        .withOffsetY(100.0)
                         .build())
                 .withTitle(TitleSubtitleBuilder.get()
                         .withText("Количество автоинцидентов за период")
@@ -177,17 +193,16 @@ public class Analitics extends VerticalLayout {
                         .build())
                 .build())
                 .withLegend(LegendBuilder.get()
-                        .withPosition(Position.right)
-                        .withHorizontalAlign(HorizontalAlign.right)
+                        .withPosition(Position.bottom)
+                        .withHorizontalAlign(HorizontalAlign.center)
                         .withFloating(true)
-                        .withFontSize("15")
-                        .withOffsetX(-30.0)
-                        .withOffsetY(-30.0)
+//                        .withFontSize("15")
+////                        .withOffsetX(-300.0)
+//                        .withOffsetY(30.0)
                         .build())
 //                .withSeries(44.0, 55.0, 41.0, 17.0, 15.0, 14.0, 65.0)
                 .withSeries(seriesData.stream().toArray(Double[]::new))
                 .withLabels(labelsData.stream().toArray(String[]::new))
-//                .withLabels("Первый", "ЦИ ОАСП Системы очередей сообщений", "Третий", "Четвертый", "Пятый", "ЦИ ОАСП Системы очередей сообщений", "ЦИ ОАСП Системы очередей сообщений")
                 .withResponsive(ResponsiveBuilder.get()
                         .withBreakpoint(480.0)
                         .withOptions(OptionsBuilder.get()
@@ -198,8 +213,10 @@ public class Analitics extends VerticalLayout {
                         .build())
                 .build();
 
-        donutChart.setWidth("1000");
-        donutChart.setHeight("600");
+        donutChart.setMaxWidth("100%");
+        donutChart.setWidth("1000px");
+        donutChart.setMaxHeight("100%");
+        donutChart.setHeight("500px");
 
         return donutChart;
     }
@@ -382,8 +399,11 @@ public class Analitics extends VerticalLayout {
 //                    new Series<>("Компьютеры",20.0, 31.0, 45.0, 61.0, 29.0, 92.0, 39.0, 51.0, 248.0),
 //                    new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
             .build();
-        lineChart.setWidth("1000");
-        lineChart.setHeight("600");
+        lineChart.setMaxWidth("100%");
+        lineChart.setWidth("1000px");
+        lineChart.setMaxHeight("100%");
+        lineChart.setHeight("600px");
+//        lineChart.setHeight("600");
 
         return lineChart;
     }
