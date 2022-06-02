@@ -34,8 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -504,6 +507,7 @@ public class MainView extends VerticalLayout {
             this.view = view;
             view.dataView = grid.setItems(repo.findAll());
             counter.set(300);
+
         }
 
         @Override
@@ -520,7 +524,9 @@ public class MainView extends VerticalLayout {
                             view.remove(incFilteredCount, incCount, span);
                             span.setText(message);
                             incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
-                            incFilteredCount.setText("Отфильтровано: " + String.valueOf(personFilter.dataViewFiltered.getItemCount()));
+                            personFilter.dataViewFiltered.removeItems(personFilter.dataViewFiltered.getItems().collect(Collectors.toList()));
+                            personFilter.dataViewFiltered.addItems(view.dataView.getItems().collect(Collectors.toList()));
+                            incFilteredCount.setText("Отфильтровано: " + String.valueOf(view.personFilter.dataViewFiltered.getItemCount()));
                             view.add(incFilteredCount, incCount, span);
 
                         });
@@ -529,9 +535,13 @@ public class MainView extends VerticalLayout {
                     // Inform that we are done
                     ui.access(() -> {
                         view.remove(incFilteredCount, incCount, span);
+                        personFilter.dataViewFiltered.removeItems(personFilter.dataViewFiltered.getItems().collect(Collectors.toList()));
+                        view.dataView = grid.setItems(repo.findAll());
+                        personFilter.dataViewFiltered.addItems(repo.findAll());
                         Notification.show("Данные обновлены", 1000, Notification.Position.TOP_CENTER);
                         span.setText("Данные обновлены");
-                        incFilteredCount.setText("Отфильтровано: " + String.valueOf(personFilter.dataViewFiltered.getItemCount()));
+                        incFilteredCount.setText("Отфильтровано: " + String.valueOf(view.personFilter.dataViewFiltered.getItemCount()));
+                        incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
                         view.add(incFilteredCount, incCount, span);
                         counter.set(300);
                     });

@@ -1,4 +1,5 @@
 package ru.sberbank.uspincidentreport.repo;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -129,5 +130,6 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
    @Query(value = "select * from probsummarym1 LIMIT 500", nativeQuery = true)
 //   @Query(value = "select * from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy HH:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy HH:mm:ss')", nativeQuery = true)
    List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
+
 
 }
