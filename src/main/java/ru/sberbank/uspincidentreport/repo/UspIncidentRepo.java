@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String> {
 
-   @Override
+//   @Override
 //   @Query(value = "SELECT\n" +
 //           "\t* \n" +
 //           "FROM\n" +
@@ -124,12 +124,12 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
 //           "\tOPENED_BY = 'int_zabbix_si'",
 //           nativeQuery = true)
 
-   @Query(value = "select * from probsummarym1 LIMIT 500", nativeQuery = true)
-   List<UspIncidentData> findAll();
+   @Query(value = "select * from probsummarym1 p WHERE p.HPC_ASSIGNMENT IN (:assignmentGroup) LIMIT 500", nativeQuery = true)
+   List<UspIncidentData> findAll(@Param("assignmentGroup") String assignmentGroup);
 
    @Query(value = "select * from probsummarym1 LIMIT 500", nativeQuery = true)
 //   @Query(value = "select * from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy HH:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy HH:mm:ss')", nativeQuery = true)
-   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
+   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("assignmentGroup") String assignmentGroup);
 
 
 }

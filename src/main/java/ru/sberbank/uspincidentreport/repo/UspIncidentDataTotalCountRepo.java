@@ -92,6 +92,7 @@ public interface UspIncidentDataTotalCountRepo extends CrudRepository<UspInciden
 //            nativeQuery = true)
 //        @Query(value = "select p.HPC_ASSIGNMENT as Assignment, COUNT (p.NUMBER) AS countInc from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy hh:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy hh:mm:ss') GROUP BY Assignment ORDER BY countInc DESC", nativeQuery = true)
 
-    @Query(value = "select p.HPC_ASSIGNMENT as Assignment, COUNT (p.NUMBER) AS countInc from probsummarym1 p GROUP BY Assignment ORDER BY countInc DESC", nativeQuery = true)
-    List<IUspIncidentDataTotalCount> findIncCount(@Param("startDate") String startDate, @Param("endDate") String endDate);
+    @Query(value = "select p.HPC_ASSIGNMENT as Assignment, COUNT (p.NUMBER) AS countInc from probsummarym1 p WHERE p.HPC_ASSIGNMENT IN (:assignmentGroup) GROUP BY Assignment ORDER BY countInc DESC", nativeQuery = true)
+    List<IUspIncidentDataTotalCount> findIncCount(@Param("assignmentGroup") String assignmentGroup);
+//    List<IUspIncidentDataTotalCount> findIncCount(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("assignmentGroup") String assignmentGroup);
 }

@@ -21,9 +21,7 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -34,12 +32,11 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
@@ -47,9 +44,12 @@ import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 
-import java.awt.*;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -57,6 +57,8 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.nio.file.Files.*;
 
 
 @Route(value = "analitics")
@@ -85,10 +87,11 @@ public class Analitics extends VerticalLayout {
 
     private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
 
+    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
 
 
-    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentRepo repo) {
+    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentRepo repo) throws IOException {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
@@ -236,12 +239,14 @@ public class Analitics extends VerticalLayout {
         startDate = start_Date.getValue().format(europeanDateFormatter);
         endDate = end_Date.getValue().format(europeanDateFormatter);
 
-        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate)
+        seriesData = dataTotalCountRepo.findIncCount(assignmentGroup)
+//        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate, assignmentGroup)
                 .stream()
                 .map(t -> t.getCountInc().doubleValue())
                 .collect(Collectors.toList());
 
-        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate)
+        labelsData = dataTotalCountRepo.findIncCount(assignmentGroup)
+//        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate, assignmentGroup)
                 .stream()
                 .map(t -> t.getAssignment())
                 .collect(Collectors.toList());
@@ -256,9 +261,11 @@ public class Analitics extends VerticalLayout {
         endDate = end_Date.getValue().format(europeanDateFormatter);
         List<String> assignmentGroupExecute = new ArrayList<>();
 
-        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate);
+        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(assignmentGroup);
+//        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate, assignmentGroup);
 
-                ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
+
+        ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
         while(totalCounPerMonthAnaliticsDataIter.hasNext()){
             monthYearCountInc.clear();
             String assignmentGroup = totalCounPerMonthAnaliticsDataIter.next().getAssignment();
@@ -421,7 +428,7 @@ public class Analitics extends VerticalLayout {
         startDate = start_Date.getValue().format(europeanDateFormatter);
         endDate = end_Date.getValue().format(europeanDateFormatter);
         grid = new Grid<>(UspIncidentData.class, false);
-        dataView = grid.setItems(repo.findIncByDate(startDate,endDate));
+        dataView = grid.setItems(repo.findIncByDate(startDate, endDate, assignmentGroup ));
         return dataView;
     };
 
