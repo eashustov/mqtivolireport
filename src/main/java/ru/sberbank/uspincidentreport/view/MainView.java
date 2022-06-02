@@ -71,7 +71,7 @@ public class MainView extends VerticalLayout {
         this.repo = repo;
         this.header = new H4("Автоинциденты системы мониторинга УСП");
         this.grid = new Grid<>(UspIncidentData.class, false);
-        this.dataView = grid.setItems(repo.findAll());
+//        this.dataView = grid.setItems(repo.findAll());
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         setJustifyContentMode(JustifyContentMode.START);
 

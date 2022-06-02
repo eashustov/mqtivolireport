@@ -6,6 +6,7 @@ import com.github.appreciated.apexcharts.config.builder.*;
 import com.github.appreciated.apexcharts.config.chart.Type;
 import com.github.appreciated.apexcharts.config.chart.builder.ToolbarBuilder;
 import com.github.appreciated.apexcharts.config.chart.builder.ZoomBuilder;
+import com.github.appreciated.apexcharts.config.chart.toolbar.Tools;
 import com.github.appreciated.apexcharts.config.grid.builder.RowBuilder;
 import com.github.appreciated.apexcharts.config.legend.HorizontalAlign;
 import com.github.appreciated.apexcharts.config.legend.Position;
@@ -122,10 +123,12 @@ public class Analitics extends VerticalLayout {
         buttonQuery.setText("Запрос данных");
 
 
+
         //Anchor block
         Anchor downloadToCSV = new Anchor(exporttoCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
         Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
         buttonDownloadCSV.setText("Сохранить в CSV");
+        buttonDownloadCSV.setEnabled(false);
 //        buttonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
         downloadToCSV.removeAll();
         downloadToCSV.add(buttonDownloadCSV);
@@ -139,27 +142,28 @@ public class Analitics extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
         formLayout.add(donutChart, lineChart);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
-//        HorizontalLayout chartsLayout = new HorizontalLayout(donutChart, lineChart);
-//        setHorizontalComponentAlignment(Alignment.CENTER, tabs);
-        add(header, dateLayout, formLayout);
+        formLayout.setSizeUndefined();
+        add(header, dateLayout);
+
 
         //Обработчик кнопки
         buttonQuery.addClickListener(clickEvent -> {
+            formLayout.removeAll();
+            remove(formLayout);
             getTotalCountAnaliticsData(start_Date,end_Date);
             assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
             lineChart = LineChartInit();
-//            chartsLayout.removeAll();
             donutChart = donutChartInit(seriesData,labelsData);
-            donutChart.setMaxWidth("70%");
-            donutChart.setWidth("1000px");
-            donutChart.setLegend(LegendBuilder.get()
-                    .withPosition(Position.right)
-                    .withFontSize("15")
-                    .withOffsetX(200.0)
-                    .build());
-//            chartsLayout.add(donutChart, lineChart);
-//            chartsLayout.setVerticalComponentAlignment(Alignment.START, donutChart, lineChart);
-//            setHorizontalComponentAlignment(Alignment.CENTER, chartsLayout);
+            donutChart.setMaxWidth("100%");
+            donutChart.setWidth("900px");
+            donutChart.setMaxHeight("100%");
+            donutChart.setHeight("600px");
+            formLayout.add(donutChart, lineChart);
+            formLayout.setSizeUndefined();
+            add(formLayout);
+            buttonDownloadCSV.setEnabled(true);
+
+
 
         });
 
@@ -171,12 +175,16 @@ public class Analitics extends VerticalLayout {
                 .withChart(ChartBuilder.get().withType(Type.donut)
                         .withZoom(ZoomBuilder.get()
                                 .withEnabled(true)
+                                .withAutoScaleYaxis(true)
                                 .build())
                         .withToolbar(ToolbarBuilder.get()
                                 .withShow(true)
+                                .withTools(new Tools())
                                 .build())
 //                        .withOffsetX(-100.0)
-//                        .withOffsetY(100.0)
+                        .withOffsetY(-30.0) //-30 Это смешение вверх
+//                        .withWidth("700px")
+//                        .withHeight("400px")
                         .build())
                 .withTitle(TitleSubtitleBuilder.get()
                         .withText("Количество автоинцидентов за период")
@@ -195,10 +203,11 @@ public class Analitics extends VerticalLayout {
                 .withLegend(LegendBuilder.get()
                         .withPosition(Position.bottom)
                         .withHorizontalAlign(HorizontalAlign.center)
-                        .withFloating(true)
+//                        .withHeight(10.0)
+//                        .withFloating(true)
 //                        .withFontSize("15")
-////                        .withOffsetX(-300.0)
-//                        .withOffsetY(30.0)
+//                        .withOffsetX(0.0)
+                        .withOffsetY(10.0)
                         .build())
 //                .withSeries(44.0, 55.0, 41.0, 17.0, 15.0, 14.0, 65.0)
                 .withSeries(seriesData.stream().toArray(Double[]::new))
@@ -214,9 +223,9 @@ public class Analitics extends VerticalLayout {
                 .build();
 
         donutChart.setMaxWidth("100%");
-        donutChart.setWidth("1000px");
+        donutChart.setWidth("900px");
         donutChart.setMaxHeight("100%");
-        donutChart.setHeight("500px");
+        donutChart.setHeight("600px");
 
         return donutChart;
     }
@@ -400,10 +409,10 @@ public class Analitics extends VerticalLayout {
 //                    new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
             .build();
         lineChart.setMaxWidth("100%");
-        lineChart.setWidth("1000px");
+        lineChart.setWidth("900px");
         lineChart.setMaxHeight("100%");
         lineChart.setHeight("600px");
-//        lineChart.setHeight("600");
+//        lineChart.render();
 
         return lineChart;
     }
