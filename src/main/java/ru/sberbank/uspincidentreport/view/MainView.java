@@ -51,6 +51,7 @@ public class MainView extends VerticalLayout {
     private GridListDataView<UspIncidentData> dataView;
     private RefreshThread thread;
     private static AtomicInteger counter = new AtomicInteger();
+    PersonFilter personFilter;
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -119,7 +120,7 @@ public class MainView extends VerticalLayout {
         RESOLUTION_GUIDE.setVisible(false);
 
         GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll());
-        PersonFilter personFilter = new PersonFilter(dataView);
+        personFilter = new PersonFilter(dataView);
 
         //Create headers for Grid
         grid.getHeaderRows().clear();
@@ -496,15 +497,12 @@ public class MainView extends VerticalLayout {
         private Span span = new Span();
         private Span incCount = new Span();
         private Span incFilteredCount = new Span();
-        PersonFilter filter;
-
 
 
         public RefreshThread(UI ui, MainView view) {
             this.ui = ui;
             this.view = view;
             view.dataView = grid.setItems(repo.findAll());
-            filter = new PersonFilter(view.dataView);
             counter.set(300);
         }
 
@@ -522,7 +520,7 @@ public class MainView extends VerticalLayout {
                             view.remove(incFilteredCount, incCount, span);
                             span.setText(message);
                             incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
-                            incFilteredCount.setText("Отфильтровано: " + String.valueOf(filter.dataViewFiltered.addFilter(filter::test).getItemCount())); //Не работает
+                            incFilteredCount.setText("Отфильтровано: " + String.valueOf(personFilter.dataViewFiltered.getItemCount()));
                             view.add(incFilteredCount, incCount, span);
 
                         });
@@ -530,13 +528,10 @@ public class MainView extends VerticalLayout {
 
                     // Inform that we are done
                     ui.access(() -> {
-                        view.dataView = grid.setItems(repo.findAll());
-//                        new PersonFilter(view.dataView).dataViewFiltered.getItemCount();
-                        filter.dataViewFiltered.addFilter(filter::test).refreshAll();
                         view.remove(incFilteredCount, incCount, span);
                         Notification.show("Данные обновлены", 1000, Notification.Position.TOP_CENTER);
                         span.setText("Данные обновлены");
-                        incFilteredCount.setText("Отфильтровано: " + String.valueOf(filter.dataViewFiltered.addFilter(filter::test).getItemCount()));//Не работает
+                        incFilteredCount.setText("Отфильтровано: " + String.valueOf(personFilter.dataViewFiltered.getItemCount()));
                         view.add(incFilteredCount, incCount, span);
                         counter.set(300);
                     });
