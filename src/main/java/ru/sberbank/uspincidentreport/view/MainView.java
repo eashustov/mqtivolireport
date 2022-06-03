@@ -34,10 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -59,7 +55,7 @@ public class MainView extends VerticalLayout {
     private RefreshThread thread;
     private static AtomicInteger counter = new AtomicInteger();
     PersonFilter personFilter;
-    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
+//    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -127,7 +123,8 @@ public class MainView extends VerticalLayout {
                 .addColumn(UspIncidentData::getRESOLUTION_GUIDE).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         RESOLUTION_GUIDE.setVisible(false);
 
-        GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll(assignmentGroup));
+//        GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll(assignmentGroup));
+        GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll());
         personFilter = new PersonFilter(dataView);
 
         //Create headers for Grid
@@ -510,7 +507,8 @@ public class MainView extends VerticalLayout {
         public RefreshThread(UI ui, MainView view) {
             this.ui = ui;
             this.view = view;
-            view.dataView = grid.setItems(repo.findAll(assignmentGroup));
+//            view.dataView = grid.setItems(repo.findAll(assignmentGroup));
+            view.dataView = grid.setItems(repo.findAll());
             counter.set(300);
 
         }
@@ -541,8 +539,10 @@ public class MainView extends VerticalLayout {
                     ui.access(() -> {
                         view.remove(incFilteredCount, incCount, span);
                         personFilter.dataViewFiltered.removeItems(personFilter.dataViewFiltered.getItems().collect(Collectors.toList()));
-                        view.dataView = grid.setItems(repo.findAll(assignmentGroup));
-                        personFilter.dataViewFiltered.addItems(repo.findAll(assignmentGroup));
+//                        view.dataView = grid.setItems(repo.findAll(assignmentGroup));
+//                        personFilter.dataViewFiltered.addItems(repo.findAll(assignmentGroup));
+                        view.dataView = grid.setItems(repo.findAll());
+                        personFilter.dataViewFiltered.addItems(repo.findAll());
                         Notification.show("Данные обновлены", 1000, Notification.Position.TOP_CENTER);
                         span.setText("Данные обновлены");
                         incFilteredCount.setText("Отфильтровано: " + String.valueOf(view.personFilter.dataViewFiltered.getItemCount()));

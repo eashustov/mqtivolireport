@@ -1,5 +1,4 @@
 package ru.sberbank.uspincidentreport.view;
-
 import com.github.appreciated.apexcharts.ApexCharts;
 import com.github.appreciated.apexcharts.ApexChartsBuilder;
 import com.github.appreciated.apexcharts.config.builder.*;
@@ -36,20 +35,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
-
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -87,9 +81,7 @@ public class Analitics extends VerticalLayout {
 
     private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
 
-    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
-
-
+//    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
     public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentRepo repo) throws IOException {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
@@ -109,8 +101,8 @@ public class Analitics extends VerticalLayout {
         end_Date.addValueChangeListener(e -> start_Date.setMax(e.getValue()));
         end_Date.setMin(start_Date.getValue());
         start_Date.setMax(end_Date.getValue());
-        startDate = start_Date.getValue().format(europeanDateFormatter) + "00.00.00";
-        endDate = end_Date.getValue().format(europeanDateFormatter) + "23.59.59";
+        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00.00.00".replaceAll("\"", "");
+        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23.59.59".replaceAll("\"", "");
         this.dataTotalCountRepo = dataTotalCountRepo;
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
         this.repo = repo;
@@ -236,17 +228,21 @@ public class Analitics extends VerticalLayout {
     @SneakyThrows
     private void getTotalCountAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
-        startDate = start_Date.getValue().format(europeanDateFormatter);
-        endDate = end_Date.getValue().format(europeanDateFormatter);
+        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00.00.00".replaceAll("\"", "");
+        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23.59.59".replaceAll("\"", "");
 
-        seriesData = dataTotalCountRepo.findIncCount(assignmentGroup)
+//        seriesData = dataTotalCountRepo.findIncCount(assignmentGroup)
 //        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate, assignmentGroup)
+//        seriesData = dataTotalCountRepo.findIncCount()
+        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate)
                 .stream()
                 .map(t -> t.getCountInc().doubleValue())
                 .collect(Collectors.toList());
 
-        labelsData = dataTotalCountRepo.findIncCount(assignmentGroup)
+//        labelsData = dataTotalCountRepo.findIncCount(assignmentGroup)
 //        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate, assignmentGroup)
+//        labelsData = dataTotalCountRepo.findIncCount()
+        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate)
                 .stream()
                 .map(t -> t.getAssignment())
                 .collect(Collectors.toList());
@@ -257,12 +253,14 @@ public class Analitics extends VerticalLayout {
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         Map<String,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
         Map<String, Integer> monthYearCountInc = new HashMap<>();
-        startDate = start_Date.getValue().format(europeanDateFormatter);
-        endDate = end_Date.getValue().format(europeanDateFormatter);
+        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00.00.00".replaceAll("\"", "");
+        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23.59.59".replaceAll("\"", "");
         List<String> assignmentGroupExecute = new ArrayList<>();
 
-        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(assignmentGroup);
+//        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(assignmentGroup);
 //        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate, assignmentGroup);
+//        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth();
+        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate);
 
 
         ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
@@ -276,19 +274,20 @@ public class Analitics extends VerticalLayout {
                 for (IUspIncidentDataCountPerMonth e:TotalCounPerMonthAnaliticsData) {
                     if(e.getAssignment().equals(assignmentGroup)) {
                         String year = e.getYear();
-                        String month = e.getMonth()
-                                .replace("January", "1")
-                                .replace("February", "2")
-                                .replace("March", "3")
-                                .replace("April", "4")
-                                .replace("May", "5")
-                                .replace("June", "6")
-                                .replace("July", "7")
-                                .replace("August", "8")
-                                .replace("September","9")
-                                .replace("October","10")
-                                .replace("November", "11")
-                                .replace("December", "12");
+                        String month = e.getMonthNumber();
+//                        String month = e.getMonth()
+//                                .replace("January", "1")
+//                                .replace("February", "2")
+//                                .replace("March", "3")
+//                                .replace("April", "4")
+//                                .replace("May", "5")
+//                                .replace("June", "6")
+//                                .replace("July", "7")
+//                                .replace("August", "8")
+//                                .replace("September","9")
+//                                .replace("October","10")
+//                                .replace("November", "11")
+//                                .replace("December", "12");
                         Integer countInc = e.getCountInc();
                         monthYearCountInc.put(year + " " + month, countInc);
                     }
@@ -297,7 +296,7 @@ public class Analitics extends VerticalLayout {
                 assignmentGroupExecute.add(assignmentGroup);
 
 //                System.out.println(assignmentGroup);
-
+//
 //                System.out.println(monthYearCountInc);
 //                System.out.println(assignmentGroupExecute.toString()+  " Список добавленных");
 
@@ -425,10 +424,11 @@ public class Analitics extends VerticalLayout {
     }
 
     private GridListDataView<UspIncidentData> initGridIncData (DatePicker start_Date, DatePicker end_Date){
-        startDate = start_Date.getValue().format(europeanDateFormatter);
-        endDate = end_Date.getValue().format(europeanDateFormatter);
+        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00.00.00".replaceAll("\"", "");
+        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23.59.59".replaceAll("\"", "");
         grid = new Grid<>(UspIncidentData.class, false);
-        dataView = grid.setItems(repo.findIncByDate(startDate, endDate, assignmentGroup ));
+//        dataView = grid.setItems(repo.findIncByDate(startDate, endDate, assignmentGroup ));
+        dataView = grid.setItems(repo.findIncByDate(startDate, endDate));
         return dataView;
     };
 
@@ -457,7 +457,7 @@ public class Analitics extends VerticalLayout {
                 }
         );
         return streamResource;
-    };
+    }
 
 }
 
