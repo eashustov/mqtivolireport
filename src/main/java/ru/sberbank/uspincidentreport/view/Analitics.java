@@ -40,7 +40,8 @@ import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
-import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
+import ru.sberbank.uspincidentreport.repo.UspIncidentAnaliticsRepo;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -51,8 +52,6 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.nio.file.Files.*;
 
 
 @Route(value = "analitics")
@@ -66,8 +65,8 @@ public class Analitics extends VerticalLayout {
     DatePicker start_Date;
     DatePicker end_Date;
     TreeSet<String>labels = new TreeSet<>();
-    private Grid<UspIncidentData> grid;
-    private GridListDataView<UspIncidentData> dataView;
+    private Grid<UspIncidentData> grid_analitics;
+    private GridListDataView<UspIncidentData> dataView_analitics;
 
     DateTimeFormatter europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     List<String> labelsData;
@@ -77,13 +76,13 @@ public class Analitics extends VerticalLayout {
     @Autowired
     private UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo;
     @Autowired
-    private UspIncidentRepo repo;
+    private UspIncidentAnaliticsRepo repoAnalitics;
 
     private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
 
 //    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
-    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentRepo repo) throws IOException {
+    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics) throws IOException {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
@@ -101,11 +100,11 @@ public class Analitics extends VerticalLayout {
         end_Date.addValueChangeListener(e -> start_Date.setMax(e.getValue()));
         end_Date.setMin(start_Date.getValue());
         start_Date.setMax(end_Date.getValue());
-        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00.00.00".replaceAll("\"", "");
-        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23.59.59".replaceAll("\"", "");
+        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00:00:00";
+        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
         this.dataTotalCountRepo = dataTotalCountRepo;
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
-        this.repo = repo;
+        this.repoAnalitics = repoAnalitics;
         getTotalCountAnaliticsData(start_Date,end_Date);
         this.assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
         this.donutChart = donutChartInit(seriesData,labelsData);
@@ -120,7 +119,7 @@ public class Analitics extends VerticalLayout {
 
 
         //Anchor block
-        Anchor downloadToCSV = new Anchor(exporttoCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
+        Anchor downloadToCSV = new Anchor ((exporttoCSV(start_Date,end_Date)), "Сохранить в CSV" );
         Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
         buttonDownloadCSV.setText("Сохранить в CSV");
         buttonDownloadCSV.setEnabled(false);
@@ -228,15 +227,15 @@ public class Analitics extends VerticalLayout {
     @SneakyThrows
     private void getTotalCountAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
-        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00.00.00".replaceAll("\"", "");
-        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23.59.59".replaceAll("\"", "");
+        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00:00:00";
+        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
 
 //        seriesData = dataTotalCountRepo.findIncCount(assignmentGroup)
 //        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate, assignmentGroup)
 //        seriesData = dataTotalCountRepo.findIncCount()
         seriesData = dataTotalCountRepo.findIncCount(startDate, endDate)
                 .stream()
-                .map(t -> t.getCountInc().doubleValue())
+                .map(t -> t.getCount_Inc().doubleValue())
                 .collect(Collectors.toList());
 
 //        labelsData = dataTotalCountRepo.findIncCount(assignmentGroup)
@@ -244,7 +243,7 @@ public class Analitics extends VerticalLayout {
 //        labelsData = dataTotalCountRepo.findIncCount()
         labelsData = dataTotalCountRepo.findIncCount(startDate, endDate)
                 .stream()
-                .map(t -> t.getAssignment())
+                .map(t -> t.getHPC_Assignment())
                 .collect(Collectors.toList());
 
         }
@@ -253,11 +252,11 @@ public class Analitics extends VerticalLayout {
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         Map<String,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
         Map<String, Integer> monthYearCountInc = new HashMap<>();
-        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00.00.00".replaceAll("\"", "");
-        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23.59.59".replaceAll("\"", "");
+        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00:00:00";
+        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
         List<String> assignmentGroupExecute = new ArrayList<>();
 
-//        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(assignmentGroup);
+//        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(assignmntGroup);
 //        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate, assignmentGroup);
 //        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth();
         List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate);
@@ -266,15 +265,15 @@ public class Analitics extends VerticalLayout {
         ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
         while(totalCounPerMonthAnaliticsDataIter.hasNext()){
             monthYearCountInc.clear();
-            String assignmentGroup = totalCounPerMonthAnaliticsDataIter.next().getAssignment();
+            String assignmentGroup = totalCounPerMonthAnaliticsDataIter.next().getHPC_Assignment();
 
 
             if (!assignmentGroupExecute.contains(assignmentGroup)) {
 
                 for (IUspIncidentDataCountPerMonth e:TotalCounPerMonthAnaliticsData) {
-                    if(e.getAssignment().equals(assignmentGroup)) {
+                    if(e.getHPC_Assignment().equals(assignmentGroup)) {
                         String year = e.getYear();
-                        String month = e.getMonthNumber();
+                        String month = e.getMonth_Number();
 //                        String month = e.getMonth()
 //                                .replace("January", "1")
 //                                .replace("February", "2")
@@ -288,7 +287,7 @@ public class Analitics extends VerticalLayout {
 //                                .replace("October","10")
 //                                .replace("November", "11")
 //                                .replace("December", "12");
-                        Integer countInc = e.getCountInc();
+                        Integer countInc = e.getCount_Inc();
                         monthYearCountInc.put(year + " " + month, countInc);
                     }
                 }
@@ -424,19 +423,19 @@ public class Analitics extends VerticalLayout {
     }
 
     private GridListDataView<UspIncidentData> initGridIncData (DatePicker start_Date, DatePicker end_Date){
-        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00.00.00".replaceAll("\"", "");
-        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23.59.59".replaceAll("\"", "");
-        grid = new Grid<>(UspIncidentData.class, false);
+        startDate = start_Date.getValue().format(europeanDateFormatter) + " 00:00:00";
+        endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
+        grid_analitics = new Grid<>(UspIncidentData.class, false);
 //        dataView = grid.setItems(repo.findIncByDate(startDate, endDate, assignmentGroup ));
-        dataView = grid.setItems(repo.findIncByDate(startDate, endDate));
-        return dataView;
+        dataView_analitics = grid_analitics.setItems(repoAnalitics.findIncByDate(startDate, endDate));
+        return dataView_analitics;
     };
 
-    private StreamResource exporttoCSV(GridListDataView<UspIncidentData> dataView){
+    private StreamResource exporttoCSV(DatePicker start_Date, DatePicker end_Date){
         //        Export to CSV
         var streamResource = new StreamResource("uspIncidents.csv",
                 () -> {
-                    Stream<UspIncidentData> uspIncidentList = dataView.getItems();
+                    Stream<UspIncidentData> uspIncidentList = initGridIncData (start_Date, end_Date).getItems();
                     StringWriter output = new StringWriter();
                     StatefulBeanToCsv<UspIncidentData> beanToCSV = null;
                     try {

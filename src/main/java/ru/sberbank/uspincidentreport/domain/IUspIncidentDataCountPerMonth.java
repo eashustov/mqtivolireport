@@ -2,10 +2,10 @@ package ru.sberbank.uspincidentreport.domain;
 
 public interface IUspIncidentDataCountPerMonth {
 
-    String getAssignment();
+    String getHPC_Assignment();
     String getMonth();
-    String getMonthNumber();
+    String getMonth_Number();
     String getYear();
-    Integer getCountInc();
+    Integer getCount_Inc();
 
 }

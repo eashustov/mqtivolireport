@@ -40,9 +40,9 @@ public class UspIncidentData {
     private String AFFECTED_ITEM;
     private String ZABBIX_HISTORY;
     private String HOST;
-    private String RESOLUTION;
+    private String RESOLUTION = "https://RLM.ca.sbrf.ru/Auth";
     private String PROBLEM;
-    private String RESOLUTION_GUIDE;
+    private String RESOLUTION_GUIDE = "https://confluence.ca.sbrf.ru/";
 
 
 
@@ -122,11 +122,18 @@ public class UspIncidentData {
     }
 
     public String getRESOLUTION() {
-        if (PROBLEM.contains("MQ_Queue_Depth")){
-            return "https://nlb-jenkins/cis/job/OASP_2/job/tivoli/job/TIVOLI_AGENT_MANAGE/build+" + HOST;
-        } else {
+        try {
+            if (RESOLUTION != null) {
+                if (PROBLEM.contains("MQ_Queue_Depth")) {
+                    return "https://nlb-jenkins/cis/job/OASP_2/job/tivoli/job/TIVOLI_AGENT_MANAGE/build+" + HOST;
+                } else {
+                    return "https://RLM.ca.sbrf.ru/Auth";
+                }
+            } else {return "https://RLM.ca.sbrf.ru/Auth";}
+        } catch (NullPointerException e) {
             return "https://RLM.ca.sbrf.ru/Auth";
         }
+
 
     }
 
@@ -135,12 +142,14 @@ public class UspIncidentData {
     }
 
     public String getRESOLUTION_GUIDE() {
+        if (RESOLUTION_GUIDE != null) {
 //        if (RESOLUTION_GUIDE.contains("MQ_Queue_Depth")){
 //            return "https://nlb-jenkins/cis/job/OASP_2/job/tivoli/job/TIVOLI_AGENT_MANAGE/build+" + HOST;
 //        } else {
 //            return "";
 //        }
-        return "https://confluence.ca.sbrf.ru/";
+            return "https://confluence.ca.sbrf.ru/";
+        } else {return "https://confluence.ca.sbrf.ru/";}
     }
 
     public String getAFFECTED_ITEM() {

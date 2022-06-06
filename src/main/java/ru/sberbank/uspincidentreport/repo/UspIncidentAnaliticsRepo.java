@@ -1,15 +1,16 @@
 package ru.sberbank.uspincidentreport.repo;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 
 import java.util.List;
 
 @Repository
-public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String> {
+public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData, String> {
 
-   @Override
    @Query(value = "SELECT\n" +
            "    *\n" +
            "FROM\n" +
@@ -39,8 +40,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "             substr(prob1.hpc_assignment, 1, instr(prob1.hpc_assignment, '(') - 2 )\n" +
            "                                     AS HPC_ASSIGNMENT,\n" +
            "             HPC_CREATED_BY_NAME,\n" +
-           "             'RESOLUTION'\n" +
-           "                                     AS RESOLUTION,\n" +
+           "             'RESOLUTION' AS RESOLUTION,\n" +
            "             OPENED_BY,\n" +
            "             AFFECTED_ITEM, 'RESOLUTION_GUIDE' AS RESOLUTION_GUIDE\n" +
            "         FROM\n" +
@@ -61,11 +61,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "                                           'ЦИ Центр Интеграционные платформы (00011215)',\n" +
            "                                           'СБТ ДК ОСА Серверы приложений (Щелчков Р.А.) (00010280)',\n" +
            "                                           'Сопровождение Платформы управления контейнерами (00018435)',\n" +
-           "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)') AND\n" +
-           "                 prob1.hpc_status NOT IN ( '6 Выполнен',\n" +
-           "                                           '7 Закрыт',\n" +
-           "                                           '5 Выполнен',\n" +
-           "                                           '6 Закрыт')\n" +
+           "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)')\n" +
            "         UNION\n" +
            "         SELECT\n" +
            "             prob1.\"NUMBER\",\n" +
@@ -117,25 +113,12 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "                                           'ЦИ Центр Интеграционные платформы (00011215)',\n" +
            "                                           'СБТ ДК ОСА Серверы приложений (Щелчков Р.А.) (00010280)',\n" +
            "                                           'Сопровождение Платформы управления контейнерами (00018435)',\n" +
-           "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)') AND\n" +
-           "                 prob1.hpc_status NOT IN ( '6 Выполнен',\n" +
-           "                                           '7 Закрыт',\n" +
-           "                                           '5 Выполнен',\n" +
-           "                                           '6 Закрыт') )\n" +
+           "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)')) \n" +
            "WHERE\n" +
-           "        OPENED_BY = 'int_zabbix_si'",
-           nativeQuery = true)
+           "        OPENED_BY = 'int_zabbix_si' AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')", nativeQuery = true)
+   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
+//   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("assignmentGroup") String assignmentGroup);
 
-   List<UspIncidentData> findAll();
-
-
-//   @Query(value = "select * from probsummarym1 p WHERE p.HPC_ASSIGNMENT IN (:assignmentGroup) LIMIT 500", nativeQuery = true)
-//   List<UspIncidentData> findAll(@Param("assignmentGroup") String assignmentGroup);
-
-//   @Query(value = "select * from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy HH:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy HH:mm:ss')", nativeQuery = true)
-//   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
-
-//   @Query(value = "select * from probsummarym1 LIMIT 500", nativeQuery = true)
 
 
 }

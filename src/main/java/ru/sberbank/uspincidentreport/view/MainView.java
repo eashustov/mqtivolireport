@@ -120,7 +120,7 @@ public class MainView extends VerticalLayout {
         Grid.Column<UspIncidentData> AFFECTED_ITEM = grid
                 .addColumn(UspIncidentData::getAFFECTED_ITEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         Grid.Column<UspIncidentData> RESOLUTION_GUIDE = grid
-                .addColumn(UspIncidentData::getRESOLUTION_GUIDE).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION_GUIDE(), "Инструкция для устранения")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
         RESOLUTION_GUIDE.setVisible(false);
 
 //        GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll(assignmentGroup));
