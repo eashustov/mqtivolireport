@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -53,7 +54,8 @@ public class MainView extends VerticalLayout {
     private Grid<UspIncidentData> grid;
     private GridListDataView<UspIncidentData> dataView;
     private RefreshThread thread;
-    private static AtomicInteger counter = new AtomicInteger();
+//    private static AtomicInteger counter = new AtomicInteger();
+    private static Boolean needRefresh = false;
     PersonFilter personFilter;
 //    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
@@ -207,7 +209,8 @@ public class MainView extends VerticalLayout {
 
         //Создание панели инструментов
         MenuBar menuBar = new MenuBar();
-        ComponentEventListener<ClickEvent<MenuItem>> listenerForRefresh = e -> counter.set(0);
+//        ComponentEventListener<ClickEvent<MenuItem>> listenerForRefresh = e -> counter.set(0);
+        ComponentEventListener<ClickEvent<MenuItem>> listenerForRefresh = e -> needRefresh = true;
 
 ////Так можно делать обработку меню видимости столбцов без изсползования ColumnToggleContextMenu. Силль отображения одинаковый. ПРоще делать с ColumnToggleContextMenu.
 //        ComponentEventListener<ClickEvent<MenuItem>> incNumberlistener = e -> {
@@ -301,7 +304,41 @@ public class MainView extends VerticalLayout {
 //        Добавление компонентов в основной layout
         add(header, actions, grid, incContextMenu);
 
+//        countRefresh(counter);
+
+
+//        new Thread(() -> { while (true) {
+//            // Update the data for a while
+//            while (counter.get() > 0) {
+//                // Sleep to emulate background work
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                counter.getAndDecrement();
+//
+//            }
+//        }}).start();
+
+
     }
+
+//    public static void countRefresh(AtomicInteger counter){
+//        while (true) {
+//            // Update the data for a while
+//            while (counter.get() > 0) {
+//                // Sleep to emulate background work
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                counter.getAndDecrement();
+//
+//            }
+//        }
+//    }
 
     private Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer) {
         Label label = new Label(labelText);
@@ -509,7 +546,8 @@ public class MainView extends VerticalLayout {
             this.view = view;
 //            view.dataView = grid.setItems(repo.findAll(assignmentGroup));
             view.dataView = grid.setItems(repo.findAll());
-            counter.set(300);
+//            counter.set(300);
+
 
         }
 
@@ -517,11 +555,12 @@ public class MainView extends VerticalLayout {
         public void run() {
             try {
                 while (true) {
+                    int counter = 300;
                     // Update the data for a while
-                    while (counter.get() > 0) {
+                    while (counter > 0 && !needRefresh.booleanValue()) {
                         // Sleep to emulate background work
-                        Thread.sleep(1000);
-                        String message = "Обновление данных через " + counter.getAndDecrement() + " сек";
+                        Thread.sleep(10000);
+                        String message = "Обновление данных через " + (counter = counter -10) + " сек";
 
                         ui.access(() -> {
                             view.remove(incFilteredCount, incCount, span);
@@ -548,7 +587,8 @@ public class MainView extends VerticalLayout {
                         incFilteredCount.setText("Отфильтровано: " + String.valueOf(view.personFilter.dataViewFiltered.getItemCount()));
                         incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
                         view.add(incFilteredCount, incCount, span);
-                        counter.set(300);
+                        needRefresh=false;
+//                        System.gc(); //Запуск GC перенесен в USPIncidentReportApplication
                     });
                 }
             } catch (InterruptedException e) {
