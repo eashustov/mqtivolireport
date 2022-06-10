@@ -34,8 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 import java.io.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,9 +52,8 @@ public class MainView extends VerticalLayout {
     private Grid<UspIncidentData> grid;
     private GridListDataView<UspIncidentData> dataView;
     private RefreshThread thread;
-//    private static AtomicInteger counter = new AtomicInteger();
-    private static Boolean needRefresh = false;
     PersonFilter personFilter;
+
 //    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
     @Override
@@ -207,10 +204,11 @@ public class MainView extends VerticalLayout {
         analiticsChart.setTarget("_blank");
 
 
+
         //Создание панели инструментов
         MenuBar menuBar = new MenuBar();
-//        ComponentEventListener<ClickEvent<MenuItem>> listenerForRefresh = e -> counter.set(0);
-        ComponentEventListener<ClickEvent<MenuItem>> listenerForRefresh = e -> needRefresh = true;
+        ComponentEventListener<ClickEvent<MenuItem>> listenerForRefresh = e -> thread.needRefresh = true;
+
 
 ////Так можно делать обработку меню видимости столбцов без изсползования ColumnToggleContextMenu. Силль отображения одинаковый. ПРоще делать с ColumnToggleContextMenu.
 //        ComponentEventListener<ClickEvent<MenuItem>> incNumberlistener = e -> {
@@ -539,26 +537,24 @@ public class MainView extends VerticalLayout {
         private Span span = new Span();
         private Span incCount = new Span();
         private Span incFilteredCount = new Span();
+        public boolean needRefresh = false;
 
 
         public RefreshThread(UI ui, MainView view) {
             this.ui = ui;
             this.view = view;
-//            view.dataView = grid.setItems(repo.findAll(assignmentGroup));
             view.dataView = grid.setItems(repo.findAll());
-//            counter.set(300);
-
 
         }
 
         @Override
         public void run() {
-            try {
+             try {
                 while (true) {
                     int counter = 300;
                     // Update the data for a while
-                    while (counter > 0 && !needRefresh.booleanValue()) {
-                        // Sleep to emulate background work
+                    while (counter > 0 && !needRefresh) {
+                    // Sleep to emulate background work
                         Thread.sleep(10000);
                         String message = "Обновление данных через " + (counter = counter -10) + " сек";
 
@@ -588,7 +584,7 @@ public class MainView extends VerticalLayout {
                         incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
                         view.add(incFilteredCount, incCount, span);
                         needRefresh=false;
-//                        System.gc(); //Запуск GC перенесен в USPIncidentReportApplication
+//                        System.gc();
                     });
                 }
             } catch (InterruptedException e) {
