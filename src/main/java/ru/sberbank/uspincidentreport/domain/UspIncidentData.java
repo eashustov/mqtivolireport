@@ -72,19 +72,31 @@ public class UspIncidentData {
     }
 
     public String getNUMBER() {
-        return NUMBER;
+        if (NUMBER != null){
+            return NUMBER;
+        }
+        return NUMBER = "";
     }
 
     public String getBRIEF_DESCRIPTION() {
-        return BRIEF_DESCRIPTION;
+        if (BRIEF_DESCRIPTION != null){
+            return BRIEF_DESCRIPTION;
+        }
+        return BRIEF_DESCRIPTION = "";
     }
 
     public String getPRIORITY_CODE() {
-        return PRIORITY_CODE;
-    }
+        if (PRIORITY_CODE != null){
+            return PRIORITY_CODE;
+        }
+        return PRIORITY_CODE = "";
+     }
 
     public String getOPEN_TIME() {
-        return OPEN_TIME;
+        if (OPEN_TIME != null){
+            return OPEN_TIME;
+        }
+        return OPEN_TIME = "";
     }
 
     public String getHPC_ASSIGNEE_NAME() {
@@ -94,32 +106,54 @@ public class UspIncidentData {
         return HPC_ASSIGNEE_NAME = "";
     }
     public String getHPC_ASSIGNMENT() {
-        return HPC_ASSIGNMENT;
+        if (HPC_ASSIGNMENT != null){
+            return HPC_ASSIGNMENT;
+        }
+        return HPC_ASSIGNMENT = "";
     }
 
     public String getHPC_CREATED_BY_NAME() {
-        return HPC_CREATED_BY_NAME;
+        if (HPC_CREATED_BY_NAME != null){
+            return HPC_CREATED_BY_NAME;
+        }
+        return HPC_CREATED_BY_NAME = "";
     }
 
     public String getACTION() {
-        return ACTION;
+
+        if (ACTION != null){
+            return ACTION;
+        }
+        return ACTION = "";
     }
 
     public String getHOST() {
-        return HOST;
+        if (HOST != null){
+            return HOST;
+        }
+        return HOST = "";
     }
 
     public String getHPC_STATUS() {
-        return HPC_STATUS;
+        if (HPC_STATUS != null){
+            return HPC_STATUS;
+        }
+        return HPC_STATUS = "";
     }
 
     public String getZABBIX_HISTORY() {
-        return ZABBIX_HISTORY;
-    }
+        if (ZABBIX_HISTORY != null){
+            return ZABBIX_HISTORY;
+        }
+        return ZABBIX_HISTORY = "";
+       }
 
     public String getPROBLEM() {
-        return PROBLEM;
-    }
+        if (PROBLEM != null){
+            return PROBLEM;
+        }
+        return PROBLEM = "";
+        }
 
     public String getRESOLUTION() {
         try {
@@ -138,8 +172,11 @@ public class UspIncidentData {
     }
 
     public String getOPENED_BY() {
-        return OPENED_BY;
-    }
+        if (OPENED_BY != null){
+            return OPENED_BY;
+        }
+        return OPENED_BY = "";
+     }
 
     public String getRESOLUTION_GUIDE() {
         if (RESOLUTION_GUIDE != null) {
@@ -153,7 +190,10 @@ public class UspIncidentData {
     }
 
     public String getAFFECTED_ITEM() {
-        return AFFECTED_ITEM;
+        if (AFFECTED_ITEM != null){
+            return AFFECTED_ITEM;
+        }
+        return AFFECTED_ITEM = "";
     }
 
 }
