@@ -31,8 +31,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
@@ -82,8 +80,6 @@ public class Analitics extends VerticalLayout {
 
     private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
 
-    private RadioButtonGroup<String> typeAnaliticsSelect = new RadioButtonGroup<>();
-
 //    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
     public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics) throws IOException {
@@ -120,6 +116,8 @@ public class Analitics extends VerticalLayout {
         Button buttonQuery = new Button();
         buttonQuery.setText("Запрос данных");
 
+
+
         //Anchor block
         Anchor downloadToCSV = new Anchor ((exporttoCSV(start_Date,end_Date)), "Сохранить в CSV" );
         Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
@@ -129,23 +127,18 @@ public class Analitics extends VerticalLayout {
         downloadToCSV.removeAll();
         downloadToCSV.add(buttonDownloadCSV);
 
+
         //Отображение. Добавление компонентов
-        //Выбор типа аналитики
-        typeAnaliticsSelect.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        typeAnaliticsSelect.setLabel("");
-        typeAnaliticsSelect.setItems("по группам сопровождения", "по ИТ-услуге");
-        typeAnaliticsSelect.setValue("по группам сопровождения");
-
-        HorizontalLayout dateLayout = new HorizontalLayout(typeAnaliticsSelect, start_Date, end_Date, buttonQuery, downloadToCSV );
-        dateLayout.setVerticalComponentAlignment(Alignment.END, typeAnaliticsSelect, start_Date, end_Date, buttonQuery, downloadToCSV);
+//        VerticalLayout dateLayout = new VerticalLayout(start_Date, end_Date, buttonQuery);
+        HorizontalLayout dateLayout = new HorizontalLayout(start_Date, end_Date, buttonQuery, downloadToCSV );
+        dateLayout.setVerticalComponentAlignment(Alignment.END, start_Date, end_Date, buttonQuery, downloadToCSV);
         setHorizontalComponentAlignment(Alignment.CENTER, dateLayout);
-
         FormLayout formLayout = new FormLayout();
         formLayout.add(donutChart, lineChart);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
         formLayout.setSizeUndefined();
-
         add(header, dateLayout);
+
 
         //Обработчик кнопки
         buttonQuery.addClickListener(clickEvent -> {
@@ -164,12 +157,11 @@ public class Analitics extends VerticalLayout {
             add(formLayout);
             buttonDownloadCSV.setEnabled(true);
 
+
+
         });
 
-        //Обработчик выбора типа аналитики
-        typeAnaliticsSelect.addValueChangeListener(changeEvent -> {
-            buttonQuery.focus();
-        });
+
     }
 
     private ApexCharts donutChartInit(List<Double>seriesData, List<String>labelsData ){
@@ -201,7 +193,7 @@ public class Analitics extends VerticalLayout {
                                         .build())
                                 .build())
                         .build())
-                        .build())
+                .build())
                 .withLegend(LegendBuilder.get()
                         .withPosition(Position.bottom)
                         .withHorizontalAlign(HorizontalAlign.center)
@@ -209,7 +201,7 @@ public class Analitics extends VerticalLayout {
 //                        .withFloating(true)
 //                        .withFontSize("15")
 //                        .withOffsetX(0.0)
-                        .withOffsetY(5.0)
+                        .withOffsetY(10.0)
                         .build())
 //                .withSeries(44.0, 55.0, 41.0, 17.0, 15.0, 14.0, 65.0)
                 .withSeries(seriesData.stream().toArray(Double[]::new))
@@ -224,8 +216,6 @@ public class Analitics extends VerticalLayout {
                         .build())
                 .build();
 
-        donutChart.setColors("#FF0000", "#800000", "#FFFF00", "#808000", "#00FF00", "#008000",
-                "#00FFFF", "#008080", "#0000FF", "#000080", "#800080", "#FF00FF", "#808080", "#000000");
         donutChart.setMaxWidth("100%");
         donutChart.setWidth("900px");
         donutChart.setMaxHeight("100%");
@@ -234,120 +224,56 @@ public class Analitics extends VerticalLayout {
         return donutChart;
     }
 
-    private ApexCharts LineChartInit (){
-        ApexCharts lineChart = ApexChartsBuilder.get()
-                .withChart(ChartBuilder.get()
-                        .withType(Type.line)
-                        .withZoom(ZoomBuilder.get()
-                                .withEnabled(true)
-                                .build())
-                        .build())
-                .withStroke(StrokeBuilder.get()
-                        .withCurve(Curve.straight)
-                        .build())
-                .withMarkers(MarkersBuilder.get()
-                        .withSize(1.0, 1.0)
-                        .withHover(HoverBuilder.get().build())
-                        .build())
-                .withTitle(TitleSubtitleBuilder.get()
-                        .withText("Динамика количества автоинцидентов по месяцам")
-                        .withAlign(Align.center)
-                        .build())
-                .withGrid(GridBuilder.get()
-                        .withRow(RowBuilder.get()
-                                .withColors("#f3f3f3", "transparent")
-                                .withOpacity(0.5).build()
-                        ).build())
-                .withXaxis(XAxisBuilder.get()
-                        .withCategories(new ArrayList<String>(labels))
-//                    .withCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep")
-                        .build())
-
-                .withSeries(SetSeries(assignmentGroupMapToMonthData).stream().toArray(Series[]::new))
-
-//                    new Series<>("Компьютеры",20.0, 31.0, 45.0, 61.0, 29.0, 92.0, 39.0, 51.0, 248.0),
-//                    new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
-                .build();
-        lineChart.setColors("#FF0000", "#800000", "#FFFF00", "#808000", "#00FF00", "#008000",
-                "#00FFFF", "#008080", "#0000FF", "#000080", "#800080", "#FF00FF", "#808080", "#000000");
-        lineChart.setMaxWidth("100%");
-        lineChart.setWidth("900px");
-        lineChart.setMaxHeight("100%");
-        lineChart.setHeight("600px");
-//        lineChart.render();
-
-        return lineChart;
-    }
-
     @SneakyThrows
     private void getTotalCountAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         startDate = start_Date.getValue().format(europeanDateFormatter) + " 00:00:00";
         endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
 
-        if (typeAnaliticsSelect.getValue() == "по группам сопровождения") {
-//        seriesData = dataTotalCountRepo.findIncByAssignmentCount(startDate, endDate, assignmentGroup)
-            seriesData = dataTotalCountRepo.findIncByAssignmentCount(startDate, endDate)
-                    .stream()
-                    .map(t -> t.getCount_Inc().doubleValue())
-                    .collect(Collectors.toList());
+//        seriesData = dataTotalCountRepo.findIncCount(assignmentGroup)
+//        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate, assignmentGroup)
+//        seriesData = dataTotalCountRepo.findIncCount()
+        seriesData = dataTotalCountRepo.findIncCount(startDate, endDate)
+                .stream()
+                .map(t -> t.getCount_Inc().doubleValue())
+                .collect(Collectors.toList());
 
-//        labelsData = dataTotalCountRepo.findIncByAssignmentCount(startDate, endDate, assignmentGroup)
-            labelsData = dataTotalCountRepo.findIncByAssignmentCount(startDate, endDate)
-                    .stream()
-                    .map(t -> t.getHPC_Assignment())
-                    .collect(Collectors.toList());
-        } else {
-            seriesData = dataTotalCountRepo.findIncByAffectedItemCount(startDate, endDate)
-                    .stream()
-                    .map(t -> t.getCount_Inc().doubleValue())
-                    .collect(Collectors.toList());
+//        labelsData = dataTotalCountRepo.findIncCount(assignmentGroup)
+//        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate, assignmentGroup)
+//        labelsData = dataTotalCountRepo.findIncCount()
+        labelsData = dataTotalCountRepo.findIncCount(startDate, endDate)
+                .stream()
+                .map(t -> t.getHPC_Assignment())
+                .collect(Collectors.toList());
 
-            labelsData = dataTotalCountRepo.findIncByAffectedItemCount(startDate, endDate)
-                    .stream()
-                    .map(t -> t.getAffected_Item())
-                    .map(t->t
-                            .replace("CI02021291", "Услуга 1")
-                            .replace("CI02021299", "Услуга 2")
-                            .replace("CI01563053", "Услуга 3")
-                            .replace("April", "Услуга 4")
-                            .replace("May", "Услуга 5")
-                            .replace("June", "Услуга 6")
-                            .replace("July", "Услуга 7")
-                            .replace("August", "Услуга 8")
-                            .replace("September","Услуга 9")
-                            .replace("October","Услуга 10")
-                            .replace("November", "Услуга 11")
-                            .replace("December", "Услуга 12"))
-                    .collect(Collectors.toList());
         }
-
-    }
 
     private Map<String,Map<String, Integer>> getTotalCounPerMonthAnaliticsData(DatePicker start_Date, DatePicker end_Date){
 //        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
-        Map<String,Map<String, Integer>> valueMapToMonthData = new HashMap<>();
+        Map<String,Map<String, Integer>> assignmentMapToMonthData = new HashMap<>();
         Map<String, Integer> monthYearCountInc = new HashMap<>();
         startDate = start_Date.getValue().format(europeanDateFormatter) + " 00:00:00";
         endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
-        List<String> itemExecute = new ArrayList<>();
+        List<String> assignmentGroupExecute = new ArrayList<>();
 
-        //По группе сопровождения
-        if (typeAnaliticsSelect.getValue() == "по группам сопровождения") {
-            List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncAssignmentCountPerMonth(startDate, endDate);
-
-            ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
-            while(totalCounPerMonthAnaliticsDataIter.hasNext()){
-                monthYearCountInc.clear();
-                String assignmentGroup = totalCounPerMonthAnaliticsDataIter.next().getHPC_Assignment();
+//        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(assignmntGroup);
+//        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate, assignmentGroup);
+//        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth();
+        List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncCountPerMonth(startDate, endDate);
 
 
-                if (!itemExecute.contains(assignmentGroup)) {
+        ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
+        while(totalCounPerMonthAnaliticsDataIter.hasNext()){
+            monthYearCountInc.clear();
+            String assignmentGroup = totalCounPerMonthAnaliticsDataIter.next().getHPC_Assignment();
 
-                    for (IUspIncidentDataCountPerMonth e:TotalCounPerMonthAnaliticsData) {
-                        if(e.getHPC_Assignment().equals(assignmentGroup)) {
-                            String year = e.getYear();
-                            String month = e.getMonth_Number();
+
+            if (!assignmentGroupExecute.contains(assignmentGroup)) {
+
+                for (IUspIncidentDataCountPerMonth e:TotalCounPerMonthAnaliticsData) {
+                    if(e.getHPC_Assignment().equals(assignmentGroup)) {
+                        String year = e.getYear();
+                        String month = e.getMonth_Number();
 //                        String month = e.getMonth()
 //                                .replace("January", "1")
 //                                .replace("February", "2")
@@ -361,80 +287,40 @@ public class Analitics extends VerticalLayout {
 //                                .replace("October","10")
 //                                .replace("November", "11")
 //                                .replace("December", "12");
-                            Integer countInc = e.getCount_Inc();
-                            monthYearCountInc.put(year + " " + month, countInc);
-                        }
+                        Integer countInc = e.getCount_Inc();
+                        monthYearCountInc.put(year + " " + month, countInc);
                     }
+                }
 
-                    itemExecute.add(assignmentGroup);
+                assignmentGroupExecute.add(assignmentGroup);
 
 //                System.out.println(assignmentGroup);
 //
 //                System.out.println(monthYearCountInc);
-//                System.out.println(itemExecute.toString()+  " Список добавленных");
+//                System.out.println(assignmentGroupExecute.toString()+  " Список добавленных");
 
-                } else {
-                    continue;
-                }
-                valueMapToMonthData.put(assignmentGroup, new TreeMap<String, Integer>(monthYearCountInc));
-//            System.out.println(valueMapToMonthData);
-
+            } else {
+                continue;
             }
-//        System.out.println(valueMapToMonthData);
+            assignmentMapToMonthData.put(assignmentGroup, new TreeMap<String, Integer>(monthYearCountInc));
+//            System.out.println(assignmentMapToMonthData);
 
-            //По ИТ услуге
-        } else {
-            List<IUspIncidentDataCountPerMonth> TotalCounPerMonthAnaliticsData = dataCountPerMonthRepo.findIncAffectedItemCountPerMonth(startDate, endDate);
-            ListIterator<IUspIncidentDataCountPerMonth> totalCounPerMonthAnaliticsDataIter = TotalCounPerMonthAnaliticsData.listIterator();
-            while (totalCounPerMonthAnaliticsDataIter.hasNext()) {
-                monthYearCountInc.clear();
-                String affectedItem = totalCounPerMonthAnaliticsDataIter.next().getAffected_Item();
-
-                if (!itemExecute.contains(affectedItem)) {
-
-                    for (IUspIncidentDataCountPerMonth e : TotalCounPerMonthAnaliticsData) {
-                        if (e.getAffected_Item().equals(affectedItem)) {
-                            String year = e.getYear();
-                            String month = e.getMonth_Number();
-                            Integer countInc = e.getCount_Inc();
-                            monthYearCountInc.put(year + " " + month, countInc);
-                        }
-                    }
-
-                    affectedItem = affectedItem
-                            .replace("CI02021291", "Услуга 1")
-                            .replace("CI02021299", "Услуга 2")
-                            .replace("CI01563053", "Услуга 3")
-                            .replace("April", "Услуга 4")
-                            .replace("May", "Услуга 5")
-                            .replace("June", "Услуга 6")
-                            .replace("July", "Услуга 7")
-                            .replace("August", "Услуга 8")
-                            .replace("September","Услуга 9")
-                            .replace("October","Услуга 10")
-                            .replace("November", "Услуга 11")
-                            .replace("December", "Услуга 12");
-
-                    itemExecute.add(affectedItem);
-
-                } else {
-                    continue;
-                }
-                valueMapToMonthData.put(affectedItem, new TreeMap<String, Integer>(monthYearCountInc));
-            }
         }
+
+//        System.out.println(assignmentMapToMonthData);
 
         //Определение временной шкаолы - Labels
 
-        List<Set<String>> alllabels;
+        List<Set<String>> allGroupslabels;
 
-        alllabels = valueMapToMonthData.entrySet()
+        allGroupslabels = assignmentMapToMonthData.entrySet()
                 .stream()
                 .map(e-> e.getValue())
                 .map(e->e.keySet())
                 .collect(Collectors.toList());
 
-        alllabels.stream()
+
+        allGroupslabels.stream()
                 .forEach(l-> {
                     for (String dataLabel:l) {
 
@@ -451,11 +337,11 @@ public class Analitics extends VerticalLayout {
 //        int maxData=0;
 //        int dataCount;
 //
-//        for (String key : valueMapToMonthData.keySet()) {
-//            dataCount = valueMapToMonthData.get(key).size();
+//        for (String key : assignmentMapToMonthData.keySet()) {
+//            dataCount = assignmentMapToMonthData.get(key).size();
 //            if (dataCount > maxData) maxData = dataCount;
 
-//            System.out.println(key + ":" + valueMapToMonthData.get(key).size());
+//            System.out.println(key + ":" + assignmentMapToMonthData.get(key).size());
 //        }
 //        System.out.println("Максимальное количество " + maxData);
 
@@ -463,24 +349,24 @@ public class Analitics extends VerticalLayout {
         //Определение и форматирование данных для назначенных групп
 
 
-        valueMapToMonthData.entrySet()
+        assignmentMapToMonthData.entrySet()
                 .stream()
                 .map(e-> e.getValue())
                 .forEach(e->{
-                    for (String key:labels) {
-                        if (!e.containsKey(key))
-                            e.put(key, 0);
-                    }
+                        for (String key:labels) {
+                            if (!e.containsKey(key))
+                                    e.put(key, 0);
+                                }
                 });
-//        System.out.println(valueMapToMonthData);
-        return valueMapToMonthData;
+//        System.out.println(assignmentMapToMonthData);
+        return assignmentMapToMonthData;
 
     }
 
-    private List<Series> SetSeries (Map<String,Map<String, Integer>> valueMapToMonthData) {
+    private List<Series> SetSeries(Map<String,Map<String, Integer>>assignmentGroupMapToMonthData) {
         // Получение Series для данных групп
         List<Series> setSeries = new ArrayList<>();
-        valueMapToMonthData.entrySet()
+        assignmentGroupMapToMonthData.entrySet()
                 .stream()
                 .forEach(e->{
                     String seriesName = e.getKey();
@@ -491,6 +377,49 @@ public class Analitics extends VerticalLayout {
                     setSeries.add(new Series<>(seriesName, seriesData.stream().toArray(Double[]::new)));
                 });
         return setSeries;
+            }
+
+    private ApexCharts LineChartInit (){
+        ApexCharts lineChart = ApexChartsBuilder.get()
+            .withChart(ChartBuilder.get()
+                    .withType(Type.line)
+                    .withZoom(ZoomBuilder.get()
+                            .withEnabled(true)
+                            .build())
+                    .build())
+            .withStroke(StrokeBuilder.get()
+                    .withCurve(Curve.straight)
+                    .build())
+            .withMarkers(MarkersBuilder.get()
+                    .withSize(1.0, 1.0)
+                    .withHover(HoverBuilder.get().build())
+                    .build())
+            .withTitle(TitleSubtitleBuilder.get()
+                    .withText("Динамика количества автоинцидентов по месяцам")
+                    .withAlign(Align.center)
+                    .build())
+            .withGrid(GridBuilder.get()
+                    .withRow(RowBuilder.get()
+                            .withColors("#f3f3f3", "transparent")
+                            .withOpacity(0.5).build()
+                    ).build())
+            .withXaxis(XAxisBuilder.get()
+                    .withCategories(new ArrayList<String>(labels))
+//                    .withCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep")
+                    .build())
+
+                .withSeries(SetSeries(assignmentGroupMapToMonthData).stream().toArray(Series[]::new))
+
+//                    new Series<>("Компьютеры",20.0, 31.0, 45.0, 61.0, 29.0, 92.0, 39.0, 51.0, 248.0),
+//                    new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
+            .build();
+        lineChart.setMaxWidth("100%");
+        lineChart.setWidth("900px");
+        lineChart.setMaxHeight("100%");
+        lineChart.setHeight("600px");
+//        lineChart.render();
+
+        return lineChart;
     }
 
     private GridListDataView<UspIncidentData> initGridIncData (DatePicker start_Date, DatePicker end_Date){
