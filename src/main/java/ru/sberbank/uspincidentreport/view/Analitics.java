@@ -173,6 +173,7 @@ public class Analitics extends VerticalLayout {
     }
 
     private ApexCharts donutChartInit(List<Double>seriesData, List<String>labelsData ){
+        String periodDate = start_Date.getValue().format(europeanDateFormatter) + " - " + end_Date.getValue().format(europeanDateFormatter);
         ApexCharts donutChart = ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get().withType(Type.donut)
                         .withZoom(ZoomBuilder.get()
@@ -189,7 +190,7 @@ public class Analitics extends VerticalLayout {
 //                        .withHeight("400px")
                         .build())
                 .withTitle(TitleSubtitleBuilder.get()
-                        .withText("Количество автоинцидентов за период")
+                        .withText("Количество автоинцидентов за период " + periodDate)
                         .withAlign(Align.center)
                         .build())
                 .withPlotOptions(PlotOptionsBuilder.get().withPie(PieBuilder.get()
@@ -197,7 +198,7 @@ public class Analitics extends VerticalLayout {
                                 .withLabels(LabelsBuilder.get()
                                         .withShow(true)
                                         .withName(NameBuilder.get().withShow(true).build())
-                                        .withTotal(TotalBuilder.get().withShow(true).withLabel("Всего автоинцидентов за период").build())
+                                        .withTotal(TotalBuilder.get().withShow(true).withLabel("Всего за период").build())
                                         .build())
                                 .build())
                         .build())
@@ -224,7 +225,7 @@ public class Analitics extends VerticalLayout {
                         .build())
                 .build();
 
-        donutChart.setColors("#FF0000", "#800000", "#FFFF00", "#808000", "#00FF00", "#008000",
+        donutChart.setColors("#FF0000", "#800000", "#FF8C00", "#808000", "#00FF00", "#008000",
                 "#00FFFF", "#008080", "#0000FF", "#000080", "#800080", "#FF00FF", "#808080", "#000000");
         donutChart.setMaxWidth("100%");
         donutChart.setWidth("900px");
@@ -235,6 +236,7 @@ public class Analitics extends VerticalLayout {
     }
 
     private ApexCharts LineChartInit (){
+        String periodDate = start_Date.getValue().format(europeanDateFormatter) + " - " + end_Date.getValue().format(europeanDateFormatter);
         ApexCharts lineChart = ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get()
                         .withType(Type.line)
@@ -250,7 +252,7 @@ public class Analitics extends VerticalLayout {
                         .withHover(HoverBuilder.get().build())
                         .build())
                 .withTitle(TitleSubtitleBuilder.get()
-                        .withText("Динамика количества автоинцидентов по месяцам")
+                        .withText("Динамика автоинцидентов по месяцам за период " + periodDate)
                         .withAlign(Align.center)
                         .build())
                 .withGrid(GridBuilder.get()
@@ -268,7 +270,7 @@ public class Analitics extends VerticalLayout {
 //                    new Series<>("Компьютеры",20.0, 31.0, 45.0, 61.0, 29.0, 92.0, 39.0, 51.0, 248.0),
 //                    new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
                 .build();
-        lineChart.setColors("#FF0000", "#800000", "#FFFF00", "#808000", "#00FF00", "#008000",
+        lineChart.setColors("#FF0000", "#800000", "#FF8C00", "#808000", "#00FF00", "#008000",
                 "#00FFFF", "#008080", "#0000FF", "#000080", "#800080", "#FF00FF", "#808080", "#000000");
         lineChart.setMaxWidth("100%");
         lineChart.setWidth("900px");
