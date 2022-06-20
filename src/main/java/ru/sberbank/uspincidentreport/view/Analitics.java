@@ -198,7 +198,7 @@ public class Analitics extends VerticalLayout {
                                 .withLabels(LabelsBuilder.get()
                                         .withShow(true)
                                         .withName(NameBuilder.get().withShow(true).build())
-                                        .withTotal(TotalBuilder.get().withShow(true).withLabel("Всего за период").build())
+                                        .withTotal(TotalBuilder.get().withShow(true).withLabel("Всего").build())
                                         .build())
                                 .build())
                         .build())
@@ -309,18 +309,31 @@ public class Analitics extends VerticalLayout {
                     .stream()
                     .map(t -> t.getAffected_Item())
                     .map(t->t
-                            .replace("CI02021291", "Услуга 1")
-                            .replace("CI02021299", "Услуга 2")
-                            .replace("CI01563053", "Услуга 3")
-                            .replace("April", "Услуга 4")
-                            .replace("May", "Услуга 5")
-                            .replace("June", "Услуга 6")
-                            .replace("July", "Услуга 7")
-                            .replace("August", "Услуга 8")
-                            .replace("September","Услуга 9")
-                            .replace("October","Услуга 10")
-                            .replace("November", "Услуга 11")
-                            .replace("December", "Услуга 12"))
+                            .replace("CI02021303", "IBM Connections")
+                            .replace("CI02021304", "IBM WebSphere Portal")
+                            .replace("CI02584076", "IBM HTTP Server")
+                            .replace("CI02584077", "LDAP ADAM")
+                            .replace("CI02584078", "Oracle Web Tier")
+                            .replace("CI02021298", "Oracle Application Server BI")
+                            .replace("CI02021301", "Платформа GridGain (native)")
+                            .replace("CI02021292", "WildFly")
+                            .replace("CI02021302", "Nginx")
+                            .replace("CI02021294", "Oracle WebLogic Server")
+                            .replace("CI02021296", "Oracle Siebel CRM")
+                            .replace("CI02021299", "IBM WebSphere Application Server")
+                            .replace("CI02021293", "IBM BPM – Pega")
+                            .replace("CI02021295", "IBM FileNet Content Manager")
+                            .replace("CI02192117", "Apache Kafka")
+                            .replace("CI02021290", "IBM DataPower")
+                            .replace("CI02021291", "IBM WebSphere MQ")
+                            .replace("CI02021300", "Apache Zookeeper")
+                            .replace("CI02192118", "SOWA")
+                            .replace("CI02021306", "Сервисы интеграции приложений WebSphere (IBM App services)")
+                            .replace("CI00737141", "Специализированные платформы серверов приложений (IBM Portal, Oracle Siebel CRM, Teradat, IBM FileNet)")
+                            .replace("CI00737140", "Интеграционные платформы серверов приложений (WMQ, WMB, DataPower, Pega PRPC)")
+                            .replace("CI00737137", "Стандартные платформы серверов приложений (WAS, WLS)")
+                            .replace("CI02008623", "Мониторинг использования лицензий (МИЛИ)")
+                            .replace("CI01563053", "Платформа управления контейнерами (Terra)"))
                     .collect(Collectors.toList());
         }
 
@@ -404,18 +417,31 @@ public class Analitics extends VerticalLayout {
                     }
 
                     affectedItem = affectedItem
-                            .replace("CI02021291", "Услуга 1")
-                            .replace("CI02021299", "Услуга 2")
-                            .replace("CI01563053", "Услуга 3")
-                            .replace("April", "Услуга 4")
-                            .replace("May", "Услуга 5")
-                            .replace("June", "Услуга 6")
-                            .replace("July", "Услуга 7")
-                            .replace("August", "Услуга 8")
-                            .replace("September","Услуга 9")
-                            .replace("October","Услуга 10")
-                            .replace("November", "Услуга 11")
-                            .replace("December", "Услуга 12");
+                            .replace("CI02021303", "IBM Connections")
+                            .replace("CI02021304", "IBM WebSphere Portal")
+                            .replace("CI02584076", "IBM HTTP Server")
+                            .replace("CI02584077", "LDAP ADAM")
+                            .replace("CI02584078", "Oracle Web Tier")
+                            .replace("CI02021298", "Oracle Application Server BI")
+                            .replace("CI02021301", "Платформа GridGain (native)")
+                            .replace("CI02021292", "WildFly")
+                            .replace("CI02021302", "Nginx")
+                            .replace("CI02021294", "Oracle WebLogic Server")
+                            .replace("CI02021296", "Oracle Siebel CRM")
+                            .replace("CI02021299", "IBM WebSphere Application Server")
+                            .replace("CI02021293", "IBM BPM – Pega")
+                            .replace("CI02021295", "IBM FileNet Content Manager")
+                            .replace("CI02192117", "Apache Kafka")
+                            .replace("CI02021290", "IBM DataPower")
+                            .replace("CI02021291", "IBM WebSphere MQ")
+                            .replace("CI02021300", "Apache Zookeeper")
+                            .replace("CI02192118", "SOWA")
+                            .replace("CI02021306", "Сервисы интеграции приложений WebSphere (IBM App services)")
+                            .replace("CI00737141", "Специализированные платформы серверов приложений (IBM Portal, Oracle Siebel CRM, Teradat, IBM FileNet)")
+                            .replace("CI00737140", "Интеграционные платформы серверов приложений (WMQ, WMB, DataPower, Pega PRPC)")
+                            .replace("CI00737137", "Стандартные платформы серверов приложений (WAS, WLS)")
+                            .replace("CI02008623", "Мониторинг использования лицензий (МИЛИ)")
+                            .replace("CI01563053", "Платформа управления контейнерами (Terra)");
 
                     itemExecute.add(affectedItem);
 
@@ -427,6 +453,8 @@ public class Analitics extends VerticalLayout {
         }
 
         //Определение временной шкаолы - Labels
+
+        labels.clear();
 
         List<Set<String>> alllabels;
 
