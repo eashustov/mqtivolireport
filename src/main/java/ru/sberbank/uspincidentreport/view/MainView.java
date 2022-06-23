@@ -504,7 +504,7 @@ public class MainView extends VerticalLayout {
         }
     }
 
-    private static class IncidentContextMenu extends GridContextMenu<UspIncidentData> {
+    public static class IncidentContextMenu extends GridContextMenu<UspIncidentData> {
         public IncidentContextMenu(Grid<UspIncidentData> target) {
             super(target);
 

@@ -20,19 +20,28 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
@@ -43,6 +52,7 @@ import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentAnaliticsRepo;
+import ru.sberbank.uspincidentreport.service.ExporToCSV;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -114,6 +124,13 @@ public class Analitics extends VerticalLayout {
         this.donutChart = donutChartInit(seriesData,labelsData);
         this.lineChart = LineChartInit();
 
+        //Кнопка поиска
+        TextField searchField = new TextField();
+        searchField.getElement().setAttribute("aria-label", "search");
+        searchField.setPlaceholder("Найти инцидент");
+        searchField.setClearButtonVisible(true);
+        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+//        searchField.setHelperText("Любое значение: Имя хоста, исполнитель, группа сопрровждения, ИТ-услуга");
 
 
         //Кнопка запроса аналитики
@@ -121,7 +138,7 @@ public class Analitics extends VerticalLayout {
         buttonQuery.setText("Запрос данных");
 
         //Anchor block
-        Anchor downloadToCSV = new Anchor ((exporttoCSV(start_Date,end_Date)), "Сохранить в CSV" );
+        Anchor downloadToCSV = new Anchor(ExporToCSV.exportToCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
         Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
         buttonDownloadCSV.setText("Сохранить в CSV");
         buttonDownloadCSV.setEnabled(false);
@@ -136,8 +153,8 @@ public class Analitics extends VerticalLayout {
         typeAnaliticsSelect.setItems("по группам сопровождения", "по ИТ-услуге");
         typeAnaliticsSelect.setValue("по группам сопровождения");
 
-        HorizontalLayout dateLayout = new HorizontalLayout(typeAnaliticsSelect, start_Date, end_Date, buttonQuery, downloadToCSV );
-        dateLayout.setVerticalComponentAlignment(Alignment.END, typeAnaliticsSelect, start_Date, end_Date, buttonQuery, downloadToCSV);
+        HorizontalLayout dateLayout = new HorizontalLayout(typeAnaliticsSelect, start_Date, end_Date, buttonQuery, downloadToCSV, searchField);
+        dateLayout.setVerticalComponentAlignment(Alignment.END, typeAnaliticsSelect, start_Date, end_Date, buttonQuery, downloadToCSV, searchField);
         setHorizontalComponentAlignment(Alignment.CENTER, dateLayout);
 
         FormLayout formLayout = new FormLayout();
@@ -146,6 +163,17 @@ public class Analitics extends VerticalLayout {
         formLayout.setSizeUndefined();
 
         add(header, dateLayout);
+
+        //Обработчик поиска
+        searchField.setValueChangeMode(ValueChangeMode.LAZY);
+        searchField.setValueChangeTimeout(3000);
+        searchField.addValueChangeListener(changeListener->{
+            if (!searchField.getValue().equals(""))
+            {
+                search(start_Date,end_Date, searchField.getValue());
+            }
+        });
+        searchField.addKeyPressListener(Key.ENTER, keyPressEvent -> search(start_Date,end_Date, searchField.getValue()));
 
         //Обработчик кнопки
         buttonQuery.addClickListener(clickEvent -> {
@@ -170,6 +198,81 @@ public class Analitics extends VerticalLayout {
         typeAnaliticsSelect.addValueChangeListener(changeEvent -> {
             buttonQuery.focus();
         });
+    }
+
+    //Метод диалога поиска инцидента
+    private void search(DatePicker start_date, DatePicker end_date, String searchValue) {
+        VerticalLayout searchLayout = new VerticalLayout();
+        startDate = start_date.getValue().format(europeanDateFormatter) + " 00:00:00";
+        endDate = end_date.getValue().format(europeanDateFormatter) + " 23:59:59";
+        String periodDate = start_date.getValue().format(europeanDateFormatter) + " - " + end_date.getValue().format(europeanDateFormatter);
+
+        //Создание диалога поиска
+        Dialog dialog = new Dialog();
+        dialog.setWidth("80%");
+        dialog.setHeight("80%");
+        //        dialog.setHeightFull();
+        //        dialog.setWidthFull();
+        dialog.setDraggable(true);
+        dialog.setResizable(true);
+        //Кнопка закрытия диалога поиска
+        Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
+        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        setHorizontalComponentAlignment(Alignment.END, closeButton);
+
+        Grid<UspIncidentData> searchGrid = new Grid<>(UspIncidentData.class, false);
+        GridListDataView<UspIncidentData> searchDataView = searchGrid.setItems(repoAnalitics.findIncBySearchFilter(startDate,endDate,searchValue));
+
+//        searchGrid.setAllRowsVisible(true); //Автоматическая высота таблицы в зависимости от количества строк
+        searchGrid.setHeight("70%");
+        searchGrid.setWidth("100%");
+        searchGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
+        searchGrid.setColumnReorderingAllowed(true);
+        //Create column for Grid
+
+        Grid.Column<UspIncidentData> NUMBER = searchGrid
+                .addColumn(UspIncidentData::getNUMBER).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Номер инцидента");
+        Grid.Column<UspIncidentData> BRIEF_DESCRIPTION = searchGrid
+                .addColumn(UspIncidentData::getBRIEF_DESCRIPTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Краткое описание");
+        Grid.Column<UspIncidentData> PRIORITY_CODE = searchGrid
+                .addColumn(UspIncidentData::getPRIORITY_CODE).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Важность");
+        Grid.Column<UspIncidentData> OPEN_TIME = searchGrid
+                .addColumn(UspIncidentData::getOPEN_TIME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Время регистрации");
+        Grid.Column<UspIncidentData> ASSIGNEE_NAME = searchGrid
+                .addColumn(UspIncidentData::getHPC_ASSIGNEE_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Исполнитель");
+        Grid.Column<UspIncidentData> ASSIGNMENT = searchGrid
+                .addColumn(UspIncidentData::getHPC_ASSIGNMENT).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Назначен в группу");
+        Grid.Column<UspIncidentData> STATUS = searchGrid
+                .addColumn(UspIncidentData::getHPC_STATUS).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Статус");
+        Grid.Column<UspIncidentData> HOST = searchGrid
+                .addColumn(UspIncidentData::getHOST).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Сервер");
+        Grid.Column<UspIncidentData> AFFECTED_ITEM = searchGrid
+                .addColumn(UspIncidentData::getAFFECTED_ITEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("ИТ-услуга");
+
+
+        // Вывод подробной информации по инциденту по выделению строки таблицы
+        searchGrid.setItemDetailsRenderer(new ComponentRenderer<>(incident -> {
+            VerticalLayout layout = new VerticalLayout();
+            layout.add(new Label(incident.getACTION()));
+            return layout;
+        }));
+        MainView.IncidentContextMenu searchGridContextMenu = new MainView.IncidentContextMenu(searchGrid);
+
+        //Anchor block
+        Anchor searchDownloadToCSV = new Anchor(ExporToCSV.exportToCSV(searchDataView), "Сохранить в CSV" );
+        Button searchButtonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
+        searchButtonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
+        searchDownloadToCSV.removeAll();
+        searchDownloadToCSV.add(searchButtonDownloadCSV);
+        setHorizontalComponentAlignment(Alignment.END, searchDownloadToCSV);
+
+        Label searchHeader = new Label("Автоинциденты за период " + periodDate + " (" + searchDataView.getItemCount() + " шт.)");
+        setHorizontalComponentAlignment(Alignment.CENTER, searchHeader);
+
+        searchLayout.add(closeButton, searchHeader, searchDownloadToCSV);
+        dialog.add(searchLayout, searchGrid, searchGridContextMenu, new Label("Найдено автоинцидентов: " + searchDataView.getItemCount()));
+        dialog.open();
+
     }
 
     private ApexCharts donutChartInit(List<Double>seriesData, List<String>labelsData ){
@@ -532,32 +635,6 @@ public class Analitics extends VerticalLayout {
         return dataView_analitics;
     };
 
-    private StreamResource exporttoCSV(DatePicker start_Date, DatePicker end_Date){
-        //        Export to CSV
-        var streamResource = new StreamResource("uspIncidents.csv",
-                () -> {
-                    Stream<UspIncidentData> uspIncidentList = initGridIncData (start_Date, end_Date).getItems();
-                    StringWriter output = new StringWriter();
-                    StatefulBeanToCsv<UspIncidentData> beanToCSV = null;
-                    try {
-                        beanToCSV = new StatefulBeanToCsvBuilder<UspIncidentData>(output)
-                                .withIgnoreField(UspIncidentData.class, UspIncidentData.class.getDeclaredField("ACTION"))
-                                .build();
-                    } catch (NoSuchFieldException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        beanToCSV.write(uspIncidentList);
-                        var contents = output.toString();
-                        return new ByteArrayInputStream(contents.getBytes());
-                    } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-        );
-        return streamResource;
-    }
 
 }
 
