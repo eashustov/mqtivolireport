@@ -20,18 +20,23 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.ComboBoxVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -48,8 +53,10 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
+import ru.sberbank.uspincidentreport.domain.IUspIncidentDataTop10;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
+import ru.sberbank.uspincidentreport.repo.UspIncidentDataTop10Repo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
 import ru.sberbank.uspincidentreport.repo.UspIncidentAnaliticsRepo;
 import ru.sberbank.uspincidentreport.service.ExporToCSV;
@@ -62,7 +69,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
 import java.util.stream.Stream;
 
 
@@ -89,14 +98,18 @@ public class Analitics extends VerticalLayout {
     private UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo;
     @Autowired
     private UspIncidentAnaliticsRepo repoAnalitics;
+    @Autowired
+    private UspIncidentDataTop10Repo dataTop10IncRepo;
 
     private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
 
     private RadioButtonGroup<String> typeAnaliticsSelect = new RadioButtonGroup<>();
+    IncTop10Filter incTop10Filter;
 
 //    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
-    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics) throws IOException {
+    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics,
+                     UspIncidentDataTop10Repo dataTop10IncRepo) throws IOException {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
@@ -119,6 +132,7 @@ public class Analitics extends VerticalLayout {
         this.dataTotalCountRepo = dataTotalCountRepo;
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
         this.repoAnalitics = repoAnalitics;
+        this.dataTop10IncRepo = dataTop10IncRepo;
         getTotalCountAnaliticsData(start_Date,end_Date);
         this.assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
         this.donutChart = donutChartInit(seriesData,labelsData);
@@ -187,7 +201,7 @@ public class Analitics extends VerticalLayout {
             donutChart.setWidth("900px");
             donutChart.setMaxHeight("100%");
             donutChart.setHeight("600px");
-            formLayout.add(donutChart, lineChart);
+            formLayout.add(donutChart, lineChart,top10IncGridInit());
             formLayout.setSizeUndefined();
             add(formLayout);
             buttonDownloadCSV.setEnabled(true);
@@ -382,6 +396,58 @@ public class Analitics extends VerticalLayout {
 //        lineChart.render();
 
         return lineChart;
+    }
+
+    //Построение таблицы top 10 автоинцидентов
+    private VerticalLayout top10IncGridInit() {
+        String startDate = start_Date.getValue().format(europeanDateFormatter) + " 00:00:00";
+        String endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
+        //top 10 автоинцидентов вертикальная сетка
+        VerticalLayout top10Inclayout = new VerticalLayout();
+        H5 top10Header = new H5("Топ 10 серверов по количеству автоинцидентов за период " + start_Date.getValue().format(europeanDateFormatter) + " - " + end_Date.getValue().format(europeanDateFormatter));
+        Grid<IUspIncidentDataTop10> top10IncGrid = new Grid<>(IUspIncidentDataTop10.class, false);
+
+        GridListDataView<IUspIncidentDataTop10> top10IncDataView = top10IncGrid.setItems(dataTop10IncRepo.findTop10IncCount(startDate,endDate));
+
+        top10IncGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
+        top10IncGrid.setColumnReorderingAllowed(true);
+
+        //Create column for Grid
+
+        Grid.Column<IUspIncidentDataTop10> AFFECTED_ITEM = top10IncGrid
+                .addColumn(IUspIncidentDataTop10::getAffected_Item).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("ИТ-услуга");
+        Grid.Column<IUspIncidentDataTop10> HOST = top10IncGrid
+                .addColumn(IUspIncidentDataTop10::getHost).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Сервер");
+        Grid.Column<IUspIncidentDataTop10> COUNT_INC = top10IncGrid
+                .addColumn(IUspIncidentDataTop10::getCount_Inc).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Количество");
+
+        top10IncGrid.setMaxWidth("100%");
+        top10IncGrid.setWidth("900px");
+        top10IncGrid.setMaxHeight("100%");
+        top10IncGrid.setHeight("600px");
+
+        //Создание фильтра для ИТ услуги
+        incTop10Filter = new Analitics.IncTop10Filter(top10IncDataView);
+        top10IncGrid.getHeaderRows().clear();
+        HeaderRow headerRow = top10IncGrid.appendHeaderRow();
+        headerRow.getCell(AFFECTED_ITEM)
+                .setComponent(createFilterHeader("ИТ-услуга", incTop10Filter::setAffectedItem, top10IncDataView));
+
+
+        //Anchor block
+
+        Anchor top10IncDownloadToCSV = new Anchor(ExporToCSV.exportTop10ToCSV(dataTop10IncRepo, startDate,endDate), "Сохранить в CSV");
+        Button top10IncButtonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
+        top10IncButtonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
+        top10IncDownloadToCSV.removeAll();
+        top10IncDownloadToCSV.add(top10IncButtonDownloadCSV);
+        setHorizontalComponentAlignment(Alignment.END, top10IncDownloadToCSV);
+
+        top10Inclayout.add(top10Header, top10IncDownloadToCSV, top10IncGrid);
+
+        top10Inclayout.setHorizontalComponentAlignment(Alignment.CENTER, top10Header);
+
+        return top10Inclayout;
     }
 
     @SneakyThrows
@@ -634,6 +700,107 @@ public class Analitics extends VerticalLayout {
         dataView_analitics = grid_analitics.setItems(repoAnalitics.findIncByDate(startDate, endDate));
         return dataView_analitics;
     };
+
+    private Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer, GridListDataView<IUspIncidentDataTop10> incTop10DataViewFiltered) {
+        Label label = new Label(labelText);
+        label.getStyle().set("padding-top", "var(--lumo-space-m)")
+                .set("font-size", "var(--lumo-font-size-xs)");
+        Map<String,String> affectedItemMap = new HashMap<>(){{
+            put("CI02021304", "IBM WebSphere Portal");
+            put("CI02584076", "IBM HTTP Server");
+            put("CI02584077", "LDAP ADAM");
+            put("CI02584078", "Oracle Web Tier");
+            put("CI02021298", "Oracle Application Server BI");
+            put("CI02021301", "Платформа GridGain (native)");
+            put("CI02021292", "WildFly");
+            put("CI02021302", "Nginx");
+            put("CI02021294", "Oracle WebLogic Server");
+            put("CI02021296", "Oracle Siebel CRM");
+            put("CI02021299", "IBM WebSphere Application Server");
+            put("CI02021293", "IBM BPM – Pega");
+            put("CI02021295", "IBM FileNet Content Manager");
+            put("CI02192117", "Apache Kafka");
+            put("CI02021290", "IBM DataPower");
+            put("CI02021291", "IBM WebSphere MQ");
+            put("CI02021300", "Apache Zookeeper");
+            put("CI02192118", "SOWA");
+            put("CI02021306", "Сервисы интеграции приложений WebSphere (IBM App services)");
+            put("CI00737141", "Специализированные платформы серверов приложений (IBM Portal, Oracle Siebel CRM, Teradat, IBM FileNet)");
+            put("CI00737140", "Интеграционные платформы серверов приложений (WMQ, WMB, DataPower, Pega PRPC)");
+            put("CI00737137", "Стандартные платформы серверов приложений (WAS, WLS)");
+            put("CI02008623", "Мониторинг использования лицензий (МИЛИ)");
+            put("CI01563053", "Платформа управления контейнерами (Terra)");
+        }};
+
+        Set<String> affectedItem = new HashSet<>(incTop10DataViewFiltered.getItems()
+                .map(item -> item.getAffected_Item())
+                .collect(Collectors.toSet()));
+        Set<String> affectedItemHuman = new HashSet<String>(affectedItem.stream()
+                .map(item -> affectedItemMap.get(item))
+                .collect(Collectors.toSet()));
+
+
+        ComboBox<String> incTop10DilterComboBox = new ComboBox<>();
+        incTop10DilterComboBox.setPlaceholder("Выберите ИТ-услугу");
+        incTop10DilterComboBox.setItems(affectedItemHuman);
+        incTop10DilterComboBox.setClearButtonVisible(true);
+        incTop10DilterComboBox.addThemeVariants(ComboBoxVariant.LUMO_SMALL);
+        incTop10DilterComboBox.setWidthFull();
+        incTop10DilterComboBox.getStyle().set("max-width", "100%");
+
+        incTop10DilterComboBox.addValueChangeListener(e -> filterChangeConsumer.accept(getAffectedItem(affectedItemMap, e.getValue())));
+
+        VerticalLayout layout = new VerticalLayout(incTop10DilterComboBox);
+        layout.getThemeList().clear();
+        layout.getThemeList().add("spacing-xs");
+        layout.setJustifyContentMode(JustifyContentMode.START);
+        return layout;
+
+
+    }
+
+    public String getAffectedItem(Map<String, String> affectedItemMap, String mapValue) {
+        String affectedItem;
+        for (Map.Entry<String, String> entry : affectedItemMap.entrySet()) {
+            if (entry.getValue().equals(mapValue)) {
+                affectedItem = entry.getKey();
+                return affectedItem;
+            }
+        }
+        return "";
+    }
+
+    private static class IncTop10Filter {
+
+
+        private GridListDataView<IUspIncidentDataTop10> incTop10DataViewFiltered;
+
+        private String affectedItem;
+
+        public IncTop10Filter(GridListDataView<IUspIncidentDataTop10> dataView) {
+            this.incTop10DataViewFiltered = dataView;
+            this.incTop10DataViewFiltered.addFilter(this::test);
+
+        }
+
+
+        public void setAffectedItem(String affectedItem) {
+            this.affectedItem = affectedItem;
+            this.incTop10DataViewFiltered.refreshAll();
+        }
+
+
+        public boolean test(IUspIncidentDataTop10 uspIncidentData) {
+            boolean matchesAffectedItem = matches(uspIncidentData.getAffected_Item(), affectedItem);
+            return matchesAffectedItem;
+
+        }
+
+        private boolean matches(String value, String searchTerm) {
+            return searchTerm == null || searchTerm.isEmpty() || value
+                    .toLowerCase().contains(searchTerm.toLowerCase());
+        }
+    }
 
 
 }
