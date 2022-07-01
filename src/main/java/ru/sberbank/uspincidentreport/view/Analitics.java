@@ -441,11 +441,11 @@ public class Analitics extends VerticalLayout {
         top10IncButtonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
         top10IncDownloadToCSV.removeAll();
         top10IncDownloadToCSV.add(top10IncButtonDownloadCSV);
-        setHorizontalComponentAlignment(Alignment.END, top10IncDownloadToCSV);
+        HorizontalLayout top10HeaderLayout = new HorizontalLayout(top10Header,top10IncDownloadToCSV);
 
-        top10Inclayout.add(top10Header, top10IncDownloadToCSV, top10IncGrid);
-
-        top10Inclayout.setHorizontalComponentAlignment(Alignment.CENTER, top10Header);
+        top10HeaderLayout.setVerticalComponentAlignment(Alignment.END, top10Header,top10IncDownloadToCSV);
+        setHorizontalComponentAlignment(Alignment.CENTER, top10HeaderLayout);
+        top10Inclayout.add(top10HeaderLayout, top10IncGrid);
 
         return top10Inclayout;
     }

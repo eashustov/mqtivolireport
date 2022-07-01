@@ -73,7 +73,7 @@ public class MainView extends VerticalLayout {
 
     public MainView(UspIncidentRepo repo) throws IOException {
         this.repo = repo;
-        this.header = new H4("Автоинциденты системы мониторинга УСП");
+        this.header = new H4("Активные автоинциденты системы мониторинга УСП");
         this.grid = new Grid<>(UspIncidentData.class, false);
 //        this.dataView = grid.setItems(repo.findAll());
         setHorizontalComponentAlignment(Alignment.CENTER, header);
