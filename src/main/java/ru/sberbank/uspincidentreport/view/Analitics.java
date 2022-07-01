@@ -411,6 +411,8 @@ public class Analitics extends VerticalLayout {
 
         top10IncGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
         top10IncGrid.setColumnReorderingAllowed(true);
+        //Вывод списка инцидентов по хосту
+        top10IncGrid.addItemDoubleClickListener(inc->search(start_Date, end_Date, inc.getItem().getHost()));
 
         //Create column for Grid
 
