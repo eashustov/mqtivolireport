@@ -133,10 +133,10 @@ public class Analitics extends VerticalLayout {
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
         this.repoAnalitics = repoAnalitics;
         this.dataTop10IncRepo = dataTop10IncRepo;
-        getTotalCountAnaliticsData(start_Date,end_Date);
-        this.assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
-        this.donutChart = donutChartInit(seriesData,labelsData);
-        this.lineChart = LineChartInit();
+//        getTotalCountAnaliticsData(start_Date,end_Date);
+//        this.assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
+//        this.donutChart = donutChartInit(seriesData,labelsData);
+//        this.lineChart = LineChartInit();
 
         //Кнопка поиска
         TextField searchField = new TextField();

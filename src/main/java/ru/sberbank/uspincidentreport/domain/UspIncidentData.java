@@ -179,14 +179,24 @@ public class UspIncidentData {
      }
 
     public String getRESOLUTION_GUIDE() {
-        if (RESOLUTION_GUIDE != null) {
-//        if (RESOLUTION_GUIDE.contains("MQ_Queue_Depth")){
-//            return "https://nlb-jenkins/cis/job/OASP_2/job/tivoli/job/TIVOLI_AGENT_MANAGE/build+" + HOST;
-//        } else {
-//            return "";
-//        }
-            return "https://confluence.ca.sbrf.ru/";
-        } else {return "https://confluence.ca.sbrf.ru/";}
+        if (PROBLEM.contains("MQ Message_ID= AMQ9513 Message_Text= Maximum number of channels reached")
+                || PROBLEM.contains ("Message_ID= AMQ9513E Message_Text= Maximum number of channels reached")) {
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Connection_On_Manager_Maxchannels_max_reached";
+
+        } else if (PROBLEM.contains("MQ Message_ID= AMQ9620 Message_Text= Internal error on call to SSL function on channel")
+                || PROBLEM.contains("MQ Message_ID= AMQ9620E")) {
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=5873860613";
+
+        }else if (PROBLEM.contains("MQHealthcheck MQ_SERVER_DOWN")){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=5901096362";
+
+        } else if (PROBLEM.contains("WEB Status DataPower port 5550")
+                || PROBLEM.contains("WEB Status DataPower port 9090")
+                || PROBLEM.contains("MQ total connections is exceed")){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=5935827654";
+
+        }
+        return "https://confluence.ca.sbrf.ru/";
     }
 
     public String getAFFECTED_ITEM() {
