@@ -172,7 +172,7 @@ public class Analitics extends VerticalLayout {
         setHorizontalComponentAlignment(Alignment.CENTER, dateLayout);
 
         FormLayout formLayout = new FormLayout();
-        formLayout.add(donutChart, lineChart);
+//        formLayout.add(donutChart, lineChart);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
         formLayout.setSizeUndefined();
 
