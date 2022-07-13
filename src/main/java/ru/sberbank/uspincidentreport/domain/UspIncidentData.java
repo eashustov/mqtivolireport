@@ -179,21 +179,102 @@ public class UspIncidentData {
      }
 
     public String getRESOLUTION_GUIDE() {
+        // Инциденты для IBM MQ
         if (PROBLEM.contains("MQ Message_ID= AMQ9513 Message_Text= Maximum number of channels reached")
                 || PROBLEM.contains ("Message_ID= AMQ9513E Message_Text= Maximum number of channels reached")) {
-            return "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Connection_On_Manager_Maxchannels_max_reached";
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518601";
 
         } else if (PROBLEM.contains("MQ Message_ID= AMQ9620 Message_Text= Internal error on call to SSL function on channel")
                 || PROBLEM.contains("MQ Message_ID= AMQ9620E")) {
-            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=5873860613";
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518711";
 
         }else if (PROBLEM.contains("MQHealthcheck MQ_SERVER_DOWN")){
-            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=5901096362";
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518637";
 
+        }else if (PROBLEM.contains("MQ_Connection_On_Channel_Maxinstances_max_reached")) {
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Connection_On_Channel_Maxinstances_max_reached";
+
+        }else if (PROBLEM.contains("MQ_Listener_Not_Started")) {
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Listener_Not_Started";
+
+        }else if (PROBLEM.contains("MQ_Queue_Depth_200_In_Transmission_Queue")){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Queue_Depth_200_In_Transmission_Queue";
+
+        }else if (PROBLEM.contains("MQ_Queue_Manager_Problem")){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Queue_Manager_Problem+Manager_Name%3D+XXXXXXX+MQ_Manager_Status%3D+4";
+
+        }else if (PROBLEM.contains("MQ_Sender_Channel_Problem")){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Sender_Channel_Problem";
+
+        }else if (PROBLEM.contains("CPU Utilization > 95")&&(AFFECTED_ITEM.equals("CI02021291"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518550";
+
+        }else if (PROBLEM.contains("Disk space is more than 95")&&(AFFECTED_ITEM.equals("CI02021291"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518562";
+
+        }else if (PROBLEM.contains("Memory Utilization > 95")&&(AFFECTED_ITEM.equals("CI02021291"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518575";
+
+        }else if (PROBLEM.contains("MQ_Queue_Depth_50%")){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518662";
+
+            //Инциденты для IBM Apache Kafka
+        }else if (PROBLEM.contains("EventQueueSize")&&(AFFECTED_ITEM.equals("CI02192117"))){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/Apache+Kafka.+%5BAI%5DEventQueueSize";
+
+        }else if (PROBLEM.contains("CPU Utilization")&&(AFFECTED_ITEM.equals("CI02192117"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518847";
+
+        }else if (PROBLEM.contains("Disk space is more than 85% full on volume")&&(AFFECTED_ITEM.equals("CI02192117"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518859";
+
+        }else if (PROBLEM.contains("Disk space is more than 95% full on volume")&&(AFFECTED_ITEM.equals("CI02192117"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518871";
+
+        }else if (PROBLEM.contains("Время сборки мусора PS MarkSweep превышает 600 мс")&&(AFFECTED_ITEM.equals("CI02192117"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518883";
+
+        }else if (PROBLEM.contains("Количество UnderMinIsr партиций")&&(AFFECTED_ITEM.equals("CI02192117"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518896";
+
+        }else if (PROBLEM.contains("Количество партиций, не имеющих активного лидера")&&(AFFECTED_ITEM.equals("CI02192117"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518908";
+
+        }else if (PROBLEM.contains("Размер очереди запросов")&&(AFFECTED_ITEM.equals("CI02192117"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518920";
+
+            //Инциденты для IBM DataPower
         } else if (PROBLEM.contains("WEB Status DataPower port 5550")
-                || PROBLEM.contains("WEB Status DataPower port 9090")
-                || PROBLEM.contains("MQ total connections is exceed")){
-            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=5935827654";
+                || PROBLEM.contains("WEB Status DataPower port 9090")){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638519059";
+
+        } else if (PROBLEM.contains("MQ total connections is exceed")){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+MQ+total+connections+is+exceed";
+
+        } else if (PROBLEM.contains("down in domain")){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+down+in+domain%3A+XXXXXXX";
+
+        } else if (PROBLEM.contains("OASP_DP_CPUUsage average 1 minute")){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+OASP_DP_CPUUsage+average+1+minute+%3E+9X";
+
+        } else if (PROBLEM.contains("Response message is: Connection Refused")){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+Response+message+is%3A+Connection+Refused";
+
+        } else if (PROBLEM.contains("Response message is: Connect/Read Timed")){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518512";
+
+        }else if (PROBLEM.contains("is unavailable by ICMP")&&(AFFECTED_ITEM.equals("CI02021290"))){
+            return "https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+unavailable+by+ICMP";
+
+        }else if (PROBLEM.contains("CPUUsage one minute")&&(AFFECTED_ITEM.equals("CI02021290"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518463";
+
+            //Инциденты для SOWA
+        }else if (PROBLEM.contains("CPU Utilization")&&(AFFECTED_ITEM.equals("CI02192118"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518792";
+
+        }else if (PROBLEM.contains("Disk space is more than 9")&&(AFFECTED_ITEM.equals("CI02192118"))){
+            return "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518804";
 
         }
         return "https://confluence.ca.sbrf.ru/";
