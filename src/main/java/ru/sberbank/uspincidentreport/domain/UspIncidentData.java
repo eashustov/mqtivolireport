@@ -181,7 +181,7 @@ public class UspIncidentData {
 
     public String getRESOLUTION_GUIDE() {
 
-        return USPIncResolutionGuideMap.GetResolutionGuide(AFFECTED_ITEM, PROBLEM);
+        return RESOLUTION_GUIDE = USPIncResolutionGuideMap.GetResolutionGuide(getAFFECTED_ITEM(), getPROBLEM());
     }
 
     public String getAFFECTED_ITEM() {
