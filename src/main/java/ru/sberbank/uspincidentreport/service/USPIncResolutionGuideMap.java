@@ -9,7 +9,7 @@ public class USPIncResolutionGuideMap {
    static Map<String, String> CI02192117KafkaMap  = new HashMap<>() {{
         put("Disk inode is more than", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521473");
         put("Memory Utilization >", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521996");
-        put("EventQueueSize", "https://confluence.ca.sbrf.ru/display/SberInfra/Apache+Kafka.+%5BAI%5DEventQueueSize");
+        put("EventQueueSize", "https://confluence.ca.sbrf.ru/display/SberInfra/Apache+Kafka.+EventQueueSize");
         put("CPU Utilization", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518847");
         put("Disk space is more than 85% full on volume", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518859");
         put("Disk space is more than 95% full on volume", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518871");
