@@ -181,7 +181,11 @@ public class UspIncidentData {
 
     public String getRESOLUTION_GUIDE() {
 
-        return RESOLUTION_GUIDE = USPIncResolutionGuideMap.GetResolutionGuide(getAFFECTED_ITEM(), getPROBLEM());
+        try {
+            return RESOLUTION_GUIDE = USPIncResolutionGuideMap.GetResolutionGuide(getAFFECTED_ITEM(), getPROBLEM());
+        } catch (Exception e) {
+            return RESOLUTION_GUIDE = "https://confluence.ca.sbrf.ru/";
+        }
     }
 
     public String getAFFECTED_ITEM() {

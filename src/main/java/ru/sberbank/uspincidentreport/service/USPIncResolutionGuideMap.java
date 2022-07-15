@@ -119,14 +119,26 @@ public class USPIncResolutionGuideMap {
         put("CI02021291", CI02021291MQMap);
     }};
 
-    public static String GetResolutionGuide(String Affected_Item, String Problem){
-        for (Map.Entry<String, String> entry : USPIncResolutionGuideMap.get(Affected_Item).entrySet()) {
-            if (Problem.contains(entry.getKey())){
-                return entry.getValue();
+    public static String GetResolutionGuide(String Affected_Item, String Problem) {
+
+
+        try  {
+            if (Affected_Item.equals("CI02192117") ||
+                    Affected_Item.equals("CI02192118") ||
+                    Affected_Item.equals("CI02021290")||
+                    Affected_Item.equals("CI02021291")) {
+
+                for (Map.Entry<String, String> entry : USPIncResolutionGuideMap.get(Affected_Item).entrySet()) {
+                    if (Problem.contains(entry.getKey())) {
+                        return entry.getValue();
+                    }
+                }
+                return "https://confluence.ca.sbrf.ru/";
             }
+        } catch (Exception e) {
+            return "https://confluence.ca.sbrf.ru/";
         }
         return "https://confluence.ca.sbrf.ru/";
-
     }
 
 }
