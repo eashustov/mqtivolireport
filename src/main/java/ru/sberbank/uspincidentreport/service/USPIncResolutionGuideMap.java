@@ -110,6 +110,12 @@ public class USPIncResolutionGuideMap {
         put("Пользователем mqm запущено более", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521879");
     }};
 
+    //Инциденты для CI02021302 Nginx
+    static Map<String, String> CI02021302NginxMap  = new HashMap<>() {{
+        put("Любая проблема. Одна интрукция на все события", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=4152461104#");
+
+    }};
+
 
     //Инциденты УСП
    static Map<String, Map<String, String>> USPIncResolutionGuideMap  = new HashMap<>() {{
@@ -117,6 +123,7 @@ public class USPIncResolutionGuideMap {
         put("CI02192118", CI02192118SOWAMap);
         put("CI02021290", CI02021290DPMap);
         put("CI02021291", CI02021291MQMap);
+        put("CI02021302", CI02021302NginxMap);
     }};
 
     public static String GetResolutionGuide(String Affected_Item, String Problem) {
@@ -126,10 +133,13 @@ public class USPIncResolutionGuideMap {
             if (Affected_Item.equals("CI02192117") ||
                     Affected_Item.equals("CI02192118") ||
                     Affected_Item.equals("CI02021290")||
-                    Affected_Item.equals("CI02021291")) {
+                    Affected_Item.equals("CI02021291")||
+                    Affected_Item.equals("CI02021302")) {
 
                 for (Map.Entry<String, String> entry : USPIncResolutionGuideMap.get(Affected_Item).entrySet()) {
                     if (Problem.contains(entry.getKey())) {
+                        return entry.getValue();
+                    } else if (Affected_Item.equals("CI02021302")) {
                         return entry.getValue();
                     }
                 }
