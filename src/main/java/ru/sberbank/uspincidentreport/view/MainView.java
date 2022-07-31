@@ -87,39 +87,43 @@ public class MainView extends VerticalLayout {
 
         IncidentContextMenu incContextMenu = new IncidentContextMenu(grid);
         Grid.Column<UspIncidentData> NUMBER = grid
-                .addColumn(UspIncidentData::getNUMBER).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getNUMBER).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Номер инцидента");
         Grid.Column<UspIncidentData> BRIEF_DESCRIPTION = grid
-                .addColumn(UspIncidentData::getBRIEF_DESCRIPTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getBRIEF_DESCRIPTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Краткое описание");
         Grid.Column<UspIncidentData> PRIORITY_CODE = grid
-                .addColumn(UspIncidentData::getPRIORITY_CODE).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getPRIORITY_CODE).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Важность");
         Grid.Column<UspIncidentData> OPEN_TIME = grid
-                .addColumn(UspIncidentData::getOPEN_TIME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getOPEN_TIME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Время регистрации");
         Grid.Column<UspIncidentData> ASSIGNEE_NAME = grid
-                .addColumn(UspIncidentData::getHPC_ASSIGNEE_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getHPC_ASSIGNEE_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Исполнитель");
         Grid.Column<UspIncidentData> ASSIGNMENT = grid
-                .addColumn(UspIncidentData::getHPC_ASSIGNMENT).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getHPC_ASSIGNMENT).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Назначен в группу");
         Grid.Column<UspIncidentData> CREATED_BY_NAME = grid
-                .addColumn(UspIncidentData::getHPC_CREATED_BY_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getHPC_CREATED_BY_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Инициатор");
+        CREATED_BY_NAME.setVisible(false);
         Grid.Column<UspIncidentData> ZABBIX_HISTORY = grid
-                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getZABBIX_HISTORY(), "История проблем по хосту")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getZABBIX_HISTORY(), "История в Zabbix"))))
+                .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("История в Zabbix");
         ZABBIX_HISTORY.setVisible(false);
         Grid.Column<UspIncidentData> STATUS = grid
-                .addColumn(UspIncidentData::getHPC_STATUS).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getHPC_STATUS).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Статус");
         Grid.Column<UspIncidentData> RESOLUTION = grid
-                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION(), "Сценарий устранения")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION(), "Сценарий устранения"))))
+                .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Сценарий устранения");
         RESOLUTION.setVisible(false);
         Grid.Column<UspIncidentData> ACTION = grid
-                .addColumn(UspIncidentData::getACTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getACTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Подробное описание");
         ACTION.setVisible(false);
         Grid.Column<UspIncidentData> HOST = grid
-                .addColumn(UspIncidentData::getHOST).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getHOST).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Сервер");
         Grid.Column<UspIncidentData> PROBLEM = grid
-                .addColumn(UspIncidentData::getPROBLEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getPROBLEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Проблема");
         PROBLEM.setVisible(false);
         Grid.Column<UspIncidentData> AFFECTED_ITEM = grid
-                .addColumn(UspIncidentData::getAFFECTED_ITEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(UspIncidentData::getAFFECTED_ITEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("ИТ-услуга");
         Grid.Column<UspIncidentData> RESOLUTION_GUIDE = grid
-                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION_GUIDE(), "Инструкция для устранения")))).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START);
+                .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION_GUIDE(), "Инструкция для устранения"))))
+                .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Инструкция для устранения");
         RESOLUTION_GUIDE.setVisible(false);
 
 //        GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll(assignmentGroup));
@@ -127,6 +131,7 @@ public class MainView extends VerticalLayout {
         personFilter = new PersonFilter(dataView);
 
         //Create headers for Grid
+
         grid.getHeaderRows().clear();
         HeaderRow headerRow = grid.appendHeaderRow();
         headerRow.getCell(NUMBER)
@@ -150,7 +155,7 @@ public class MainView extends VerticalLayout {
         headerRow.getCell(RESOLUTION)
                 .setComponent(createFilterHeader("Сценарий устранения", personFilter::setResolution));
         headerRow.getCell(RESOLUTION_GUIDE)
-                .setComponent(createFilterHeader("Инструкция для устранения", personFilter::setAffectedItem));
+                .setComponent(createFilterHeader("Инструкция для устранения", personFilter::setResolutionGuide));
         headerRow.getCell(ACTION)
                 .setComponent(createFilterHeader("Подробное описание", personFilter::setAction));
         headerRow.getCell(HOST)
@@ -158,7 +163,10 @@ public class MainView extends VerticalLayout {
         headerRow.getCell(PROBLEM)
                 .setComponent(createFilterHeader("Проблема", personFilter::setProblem));
         headerRow.getCell(AFFECTED_ITEM)
-                .setComponent(createFilterHeader("ИТ-услуга", personFilter::setAffectedItem));
+                .setComponent(FilterActiveIncident.createFilterHeader("ИТ-услуга", personFilter::setAffectedItem, dataView));
+        //        AFFECTED_ITEM.setHeader(FilterActiveIncident.createFilterHeader("ИТ-услуга", personFilter::setAffectedItem, dataView));
+//        headerRow.getCell(AFFECTED_ITEM)
+//                .setComponent(createFilterHeader("ИТ-услуга", personFilter::setAffectedItem));
 
 
         // Вывод подробной информации по инциденту по выделению строки таблицы
@@ -349,7 +357,7 @@ public class MainView extends VerticalLayout {
         filterField.setWidthFull();
         filterField.getStyle().set("max-width", "100%");
 //        filterField.setPlaceholder("Поиск");
-//        filterField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
+        filterField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
         filterField.addValueChangeListener(
                 e -> filterChangeConsumer.accept(e.getValue()));
         VerticalLayout layout = new VerticalLayout(label, filterField);

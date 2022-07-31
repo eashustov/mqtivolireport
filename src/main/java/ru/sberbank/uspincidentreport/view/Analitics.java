@@ -707,38 +707,12 @@ public class Analitics extends VerticalLayout {
         Label label = new Label(labelText);
         label.getStyle().set("padding-top", "var(--lumo-space-m)")
                 .set("font-size", "var(--lumo-font-size-xs)");
-        Map<String,String> affectedItemMap = new HashMap<>(){{
-            put("CI02021304", "IBM WebSphere Portal");
-            put("CI02584076", "IBM HTTP Server");
-            put("CI02584077", "LDAP ADAM");
-            put("CI02584078", "Oracle Web Tier");
-            put("CI02021298", "Oracle Application Server BI");
-            put("CI02021301", "Платформа GridGain (native)");
-            put("CI02021292", "WildFly");
-            put("CI02021302", "Nginx");
-            put("CI02021294", "Oracle WebLogic Server");
-            put("CI02021296", "Oracle Siebel CRM");
-            put("CI02021299", "IBM WebSphere Application Server");
-            put("CI02021293", "IBM BPM – Pega");
-            put("CI02021295", "IBM FileNet Content Manager");
-            put("CI02192117", "Apache Kafka");
-            put("CI02021290", "IBM DataPower");
-            put("CI02021291", "IBM WebSphere MQ");
-            put("CI02021300", "Apache Zookeeper");
-            put("CI02192118", "SOWA");
-            put("CI02021306", "Сервисы интеграции приложений WebSphere (IBM App services)");
-            put("CI00737141", "Специализированные платформы серверов приложений (IBM Portal, Oracle Siebel CRM, Teradat, IBM FileNet)");
-            put("CI00737140", "Интеграционные платформы серверов приложений (WMQ, WMB, DataPower, Pega PRPC)");
-            put("CI00737137", "Стандартные платформы серверов приложений (WAS, WLS)");
-            put("CI02008623", "Мониторинг использования лицензий (МИЛИ)");
-            put("CI01563053", "Платформа управления контейнерами (Terra)");
-        }};
 
         Set<String> affectedItem = new HashSet<>(incTop10DataViewFiltered.getItems()
                 .map(item -> item.getAffected_Item())
                 .collect(Collectors.toSet()));
         Set<String> affectedItemHuman = new HashSet<String>(affectedItem.stream()
-                .map(item -> affectedItemMap.get(item))
+                .map(item -> FilterActiveIncident.affectedItemMap.get(item))
                 .collect(Collectors.toSet()));
 
 
@@ -750,7 +724,7 @@ public class Analitics extends VerticalLayout {
         incTop10DilterComboBox.setWidthFull();
         incTop10DilterComboBox.getStyle().set("max-width", "100%");
 
-        incTop10DilterComboBox.addValueChangeListener(e -> filterChangeConsumer.accept(getAffectedItem(affectedItemMap, e.getValue())));
+        incTop10DilterComboBox.addValueChangeListener(e -> filterChangeConsumer.accept(getAffectedItem(FilterActiveIncident.affectedItemMap, e.getValue())));
 
         VerticalLayout layout = new VerticalLayout(incTop10DilterComboBox);
         layout.getThemeList().clear();
