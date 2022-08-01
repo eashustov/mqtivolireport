@@ -45,6 +45,9 @@ public class FilterActiveIncident {
         put("CI01563053", "Платформа управления контейнерами (Terra)");
     }};
 
+    static Set<String> affectedItem;
+    static Set<String> affectedItemHuman;
+
 
     //Меттод создания динамического фильтра
 
@@ -53,10 +56,17 @@ public class FilterActiveIncident {
         label.getStyle().set("padding-top", "var(--lumo-space-m)")
                 .set("font-size", "var(--lumo-font-size-xs)");
 
-        Set<String> affectedItem = new HashSet<>(AffectedItemDataViewFiltered.getItems()
+//        Set<String> affectedItem = new HashSet<>(AffectedItemDataViewFiltered.getItems()
+//                .map(item -> item.getAFFECTED_ITEM())
+//                .collect(Collectors.toSet()));
+//        Set<String> affectedItemHuman = new HashSet<String>(affectedItem.stream()
+//                .map(item -> affectedItemMap.get(item))
+//                .collect(Collectors.toSet()));
+
+        affectedItem = new HashSet<>(AffectedItemDataViewFiltered.getItems()
                 .map(item -> item.getAFFECTED_ITEM())
                 .collect(Collectors.toSet()));
-        Set<String> affectedItemHuman = new HashSet<String>(affectedItem.stream()
+        affectedItemHuman = new HashSet<String>(affectedItem.stream()
                 .map(item -> affectedItemMap.get(item))
                 .collect(Collectors.toSet()));
 

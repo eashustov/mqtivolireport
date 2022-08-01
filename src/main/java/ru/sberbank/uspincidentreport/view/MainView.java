@@ -360,7 +360,7 @@ public class MainView extends VerticalLayout {
         filterField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
         filterField.addValueChangeListener(
                 e -> filterChangeConsumer.accept(e.getValue()));
-        VerticalLayout layout = new VerticalLayout(label, filterField);
+        VerticalLayout layout = new VerticalLayout(filterField);
         layout.getThemeList().clear();
         layout.getThemeList().add("spacing-xs");
         layout.setJustifyContentMode(JustifyContentMode.START);
@@ -568,6 +568,14 @@ public class MainView extends VerticalLayout {
 
                         ui.access(() -> {
                             view.remove(incFilteredCount, incCount, span);
+                            FilterActiveIncident.affectedItem.clear();
+                            FilterActiveIncident.affectedItemHuman.clear();
+                            FilterActiveIncident.affectedItem = dataView.getItems()
+                                    .map(item -> FilterActiveIncident.affectedItemMap.get(item))
+                                    .collect(Collectors.toSet());
+                            FilterActiveIncident.affectedItemHuman = FilterActiveIncident.affectedItem.stream()
+                                    .map(item -> FilterActiveIncident.affectedItemMap.get(item))
+                                    .collect(Collectors.toSet());
                             span.setText(message);
                             incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
                             personFilter.dataViewFiltered.removeItems(personFilter.dataViewFiltered.getItems().collect(Collectors.toList()));
@@ -584,6 +592,14 @@ public class MainView extends VerticalLayout {
                         personFilter.dataViewFiltered.removeItems(personFilter.dataViewFiltered.getItems().collect(Collectors.toList()));
 //                        view.dataView = grid.setItems(repo.findAll(assignmentGroup));
 //                        personFilter.dataViewFiltered.addItems(repo.findAll(assignmentGroup));
+                        FilterActiveIncident.affectedItem.clear();
+                        FilterActiveIncident.affectedItemHuman.clear();
+                        FilterActiveIncident.affectedItem = dataView.getItems()
+                                .map(item -> FilterActiveIncident.affectedItemMap.get(item))
+                                .collect(Collectors.toSet());
+                        FilterActiveIncident.affectedItemHuman = FilterActiveIncident.affectedItem.stream()
+                                .map(item -> FilterActiveIncident.affectedItemMap.get(item))
+                                .collect(Collectors.toSet());
                         view.dataView = grid.setItems(repo.findAll());
                         personFilter.dataViewFiltered.addItems(repo.findAll());
                         Notification.show("Данные обновлены", 1000, Notification.Position.TOP_CENTER);
