@@ -1,4 +1,7 @@
 package ru.sberbank.uspincidentreport.view;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -34,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
 import java.io.*;
+import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -368,9 +372,14 @@ public class MainView extends VerticalLayout {
     }
 
     private void affectedItemFilterRefresh(){
+        String selectedItem;
         try {
             FilterActiveIncident.affectedItem.clear();
             FilterActiveIncident.affectedItemHuman.clear();
+            if (FilterActiveIncident.filterAffectedItemComboBox.getElement().getProperty("selectedItem")!=null) {
+                HashMap selectedItemMap = new ObjectMapper().readValue(FilterActiveIncident.filterAffectedItemComboBox.getElement().getProperty("selectedItem"), HashMap.class);
+                selectedItem = selectedItemMap.get("label").toString();
+            }else {selectedItem = "";}
             if (dataView.getItems().count() != 0) {
                 FilterActiveIncident.affectedItem = dataView.getItems()
                         .map(item -> item.getAFFECTED_ITEM())
@@ -379,10 +388,15 @@ public class MainView extends VerticalLayout {
                         .map(item -> FilterActiveIncident.affectedItemMap.get(item))
                         .collect(Collectors.toSet());
                 FilterActiveIncident.filterAffectedItemComboBox.setItems(FilterActiveIncident.affectedItemHuman);
+                FilterActiveIncident.filterAffectedItemComboBox.setValue(selectedItem);
             } else {FilterActiveIncident.filterAffectedItemComboBox.setItems("");}
-        } catch (NullPointerException e) {FilterActiveIncident.filterAffectedItemComboBox.setItems("");}
-    }
+        } catch (NullPointerException e) {FilterActiveIncident.filterAffectedItemComboBox.setItems("");} catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
+    }
 
     private static class PersonFilter {
 
