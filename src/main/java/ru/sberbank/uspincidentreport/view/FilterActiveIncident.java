@@ -47,6 +47,7 @@ public class FilterActiveIncident {
 
     static Set<String> affectedItem;
     static Set<String> affectedItemHuman;
+    static ComboBox<String> filterAffectedItemComboBox;
 
 
     //Меттод создания динамического фильтра
@@ -73,7 +74,7 @@ public class FilterActiveIncident {
         Label acceptedItemLabel = new Label("ИТ-услуга");
         acceptedItemLabel.getStyle().set("padding-top", "var(--lumo-space-m)")
                 .set("font-size", "var(--lumo-font-size-xs)");
-        ComboBox<String> filterAffectedItemComboBox = new ComboBox<>();
+        filterAffectedItemComboBox = new ComboBox<>();
         filterAffectedItemComboBox.setPlaceholder("Выберите ИТ-услугу");
         filterAffectedItemComboBox.setItems(affectedItemHuman);
         filterAffectedItemComboBox.setClearButtonVisible(true);

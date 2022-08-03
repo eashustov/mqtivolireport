@@ -368,14 +368,19 @@ public class MainView extends VerticalLayout {
     }
 
     private void affectedItemFilterRefresh(){
-        FilterActiveIncident.affectedItem.clear();
-        FilterActiveIncident.affectedItemHuman.clear();
-        FilterActiveIncident.affectedItem = dataView.getItems()
-                .map(item -> FilterActiveIncident.affectedItemMap.get(item))
-                .collect(Collectors.toSet());
-        FilterActiveIncident.affectedItemHuman = FilterActiveIncident.affectedItem.stream()
-                .map(item -> FilterActiveIncident.affectedItemMap.get(item))
-                .collect(Collectors.toSet());
+        try {
+            FilterActiveIncident.affectedItem.clear();
+            FilterActiveIncident.affectedItemHuman.clear();
+            if (dataView.getItems().count() != 0) {
+                FilterActiveIncident.affectedItem = dataView.getItems()
+                        .map(item -> item.getAFFECTED_ITEM())
+                        .collect(Collectors.toSet());
+                FilterActiveIncident.affectedItemHuman = FilterActiveIncident.affectedItem.stream()
+                        .map(item -> FilterActiveIncident.affectedItemMap.get(item))
+                        .collect(Collectors.toSet());
+                FilterActiveIncident.filterAffectedItemComboBox.setItems(FilterActiveIncident.affectedItemHuman);
+            } else {FilterActiveIncident.filterAffectedItemComboBox.setItems("");}
+        } catch (NullPointerException e) {FilterActiveIncident.filterAffectedItemComboBox.setItems("");}
     }
 
 
