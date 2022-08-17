@@ -384,9 +384,19 @@ public class MainView extends VerticalLayout {
                 FilterActiveIncident.affectedItem = dataView.getItems()
                         .map(item -> item.getAFFECTED_ITEM())
                         .collect(Collectors.toSet());
-                FilterActiveIncident.affectedItemHuman = FilterActiveIncident.affectedItem.stream()
-                        .map(item -> FilterActiveIncident.affectedItemMap.get(item))
-                        .collect(Collectors.toSet());
+                FilterActiveIncident.affectedItem.stream()
+                        .forEach(item -> {
+                            //Проверка на услугу не принадлежащую УСП
+                            if (FilterActiveIncident.affectedItemMap.get(item)==null){
+                                FilterActiveIncident.affectedItemHuman.add("*");
+                            }else {
+                                FilterActiveIncident.affectedItemHuman.add(FilterActiveIncident.affectedItemMap.get(item));
+                            }
+                        });
+//                FilterActiveIncident.affectedItemHuman = FilterActiveIncident.affectedItem.stream()
+//                        .map(item -> FilterActiveIncident.affectedItemMap.get(item))
+//                        .collect(Collectors.toSet());
+                if (FilterActiveIncident.affectedItemHuman.contains("*")) FilterActiveIncident.affectedItemHuman.remove("*");
                 FilterActiveIncident.filterAffectedItemComboBox.setItems(FilterActiveIncident.affectedItemHuman);
                 FilterActiveIncident.filterAffectedItemComboBox.setValue(selectedItem);
             } else {FilterActiveIncident.filterAffectedItemComboBox.setItems("");}

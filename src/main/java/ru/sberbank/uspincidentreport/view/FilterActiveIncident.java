@@ -67,15 +67,27 @@ public class FilterActiveIncident {
         affectedItem = new HashSet<>(AffectedItemDataViewFiltered.getItems()
                 .map(item -> item.getAFFECTED_ITEM())
                 .collect(Collectors.toSet()));
-        affectedItemHuman = new HashSet<String>(affectedItem.stream()
-                .map(item -> affectedItemMap.get(item))
-                .collect(Collectors.toSet()));
+
+        affectedItemHuman = new HashSet<>();
+        affectedItem.stream()
+                .forEach(item -> {
+                    //Проверка на услугу не принадлежащую УСП
+                    if (affectedItemMap.get(item)==null){
+                        affectedItemHuman.add("*");
+                    }else {
+                        affectedItemHuman.add(affectedItemMap.get(item));
+                    }
+                });
+//        affectedItemHuman = new HashSet<String>(affectedItem.stream()
+//                .map(item -> affectedItemMap.get(item))
+//                .collect(Collectors.toSet()));
 
         Label acceptedItemLabel = new Label("ИТ-услуга");
         acceptedItemLabel.getStyle().set("padding-top", "var(--lumo-space-m)")
                 .set("font-size", "var(--lumo-font-size-xs)");
         filterAffectedItemComboBox = new ComboBox<>();
         filterAffectedItemComboBox.setPlaceholder("Выберите ИТ-услугу");
+        if (affectedItemHuman.contains("*")) affectedItemHuman.remove("*");
         filterAffectedItemComboBox.setItems(affectedItemHuman);
         filterAffectedItemComboBox.setClearButtonVisible(true);
         filterAffectedItemComboBox.addThemeVariants(ComboBoxVariant.LUMO_SMALL);
