@@ -186,6 +186,10 @@ public class ZabbixAPI {
     }
 
     public static int getPercentOfCoverTriggersByInc(String severity, String tag, String value, String... groups) throws JsonProcessingException {
+        int countTriggersAllForGroupIDs = 0;
+        int countTriggersWithIncForGroupID = 0;
+        int countTriggerprototypeAllForGroupIDs = 0;
+        int countriggerprototypeWithIncidentTagForGroupIDs = 0;
 
         List<String> groupids = getHostGropuIDbyName(getHostGroups(groups));
 
@@ -200,9 +204,10 @@ public class ZabbixAPI {
                 .build();
         JSONObject getResponseCountTriggersAllForGroupIDs = zabbixApi.call(getRequestCountTriggersAllForGroupIDs);
 
-        int countTriggersAllForGroupIDs = Integer.parseInt(getResponseCountTriggersAllForGroupIDs.get("result").toString());
-
-        System.out.println("Количество триггеров по IDs групп: " + countTriggersAllForGroupIDs);
+        try {
+            countTriggersAllForGroupIDs = Integer.parseInt(getResponseCountTriggersAllForGroupIDs.get("result").toString());
+            System.out.println("Количество триггеров по IDs групп: " + countTriggersAllForGroupIDs);
+        } catch (NumberFormatException nfe){return 0;}
 
 
 //        getTriggersAllWithIncidentTagForGroupIDs
@@ -223,9 +228,10 @@ public class ZabbixAPI {
                 .build();
         JSONObject getResponseCountTriggersWithIncForGroupID = zabbixApi.call(getRequestCountTriggersWithIncForGroupID);
 
-        int countTriggersWithIncForGroupID = Integer.parseInt(getResponseCountTriggersWithIncForGroupID.get("result").toString());
-
+        try {
+        countTriggersWithIncForGroupID = Integer.parseInt(getResponseCountTriggersWithIncForGroupID.get("result").toString());
         System.out.println("Количество триггеров c инцидентами по IDs групп: " + countTriggersWithIncForGroupID);
+        } catch (NumberFormatException nfe){return 0;}
 
 
         //Получение прототипа триггеров-------------------------------------------------------------------------------------
@@ -240,9 +246,10 @@ public class ZabbixAPI {
                 .build();
         JSONObject getResponseCountTriggerprototypeAllForGroupID = zabbixApi.call(getRequestCountTriggerprototypeAllForGroupIDs);
 
-        int countTriggerprototypeAllForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeAllForGroupID.get("result").toString());
-
+        try {
+        countTriggerprototypeAllForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeAllForGroupID.get("result").toString());
         System.out.println("Количество прототипов триггеров по IDs групп: " + countTriggerprototypeAllForGroupIDs);
+        } catch (NumberFormatException nfe){return 0;}
 
 
 //       getTriggerprototypeWithIncidentTagForGroupIDs
@@ -256,9 +263,10 @@ public class ZabbixAPI {
                 .build();
         JSONObject getResponseCountTriggerprototypeWithIncidentTagForGroupIDs = zabbixApi.call(getRequestCountTriggerprototypeWithIncidentTagForGroupIDs);
 
-        int countriggerprototypeWithIncidentTagForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeWithIncidentTagForGroupIDs.get("result").toString());
-
+        try {
+        countriggerprototypeWithIncidentTagForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeWithIncidentTagForGroupIDs.get("result").toString());
         System.out.println("Количество прототипов триггеров с инцидентами по IDs групп: " + countriggerprototypeWithIncidentTagForGroupIDs);
+        } catch (NumberFormatException nfe){return 0;}
 
 //        Расчет процента покрытия
         int percentOfCoverByIncident = (int) (((float) (countTriggersWithIncForGroupID + countriggerprototypeWithIncidentTagForGroupIDs) /
