@@ -1050,8 +1050,11 @@ public class Analitics extends VerticalLayout {
         });
 
         HorizontalLayout triggersWithIncHeaderLayout = new HorizontalLayout(VerticalBarChartIncCoverHeader);
-        HorizontalLayout comboBoxLayout = new HorizontalLayout(triggersSeverityComboBox, buttonTriggersListBuild);
-        comboBoxLayout.setVerticalComponentAlignment(Alignment.END,triggersSeverityComboBox, buttonTriggersListBuild);
+        HorizontalLayout comboBoxLayout = new HorizontalLayout(triggersSeverityComboBox);
+        comboBoxLayout.setVerticalComponentAlignment(Alignment.END,triggersSeverityComboBox);
+        //Ниже строчки используются при получении списка триггеров. В ПРОМ это очень долго, поэтому такой функционал скрыт.
+//        HorizontalLayout comboBoxLayout = new HorizontalLayout(triggersSeverityComboBox, buttonTriggersListBuild);
+//        comboBoxLayout.setVerticalComponentAlignment(Alignment.END,triggersSeverityComboBox, buttonTriggersListBuild);
         setHorizontalComponentAlignment(Alignment.CENTER, comboBoxLayout);
         triggersWithIncHeaderLayout.setVerticalComponentAlignment(Alignment.END, VerticalBarChartIncCoverHeader);
         setHorizontalComponentAlignment(Alignment.CENTER, triggersWithIncHeaderLayout);
@@ -1068,7 +1071,7 @@ public class Analitics extends VerticalLayout {
     private ApexCharts VerticalBarChartIncCoverInit(String severity) throws JsonProcessingException {
 //        ZabbixAPI.ZabbixAPIRegistration();
 //        ZabbixAPI.getTriggerStatistic(severity);
-        ZabbixAPI.getTriggerListForGroupUSP (severity);
+//        ZabbixAPI.getTriggerListForGroupUSP (severity);
 
         VerticalBarChartIncCover = ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get()
@@ -1087,19 +1090,19 @@ public class Analitics extends VerticalLayout {
                         .withWidth(2.0)
                         .withColors("transparent")
                         .build())
-                .withSeries(
-                        // Столбцы продуктов ОИП
-                        new Series<>( "SOWA", ZabbixAPI.percentOfCoverByIncidentForSOWA),
-                        new Series<>("Kafka", ZabbixAPI.percentOfCoverByIncidentForKafka),
-                        new Series<>("MQSeries", ZabbixAPI.percentOfCoverByIncidentForMQ),
-                        new Series<>("DataPower", ZabbixAPI.percentOfCoverByIncidentForDP),
-                        //Столбцы продуктов Стандартных платформ
-                        new Series<>("Nginx","", ZabbixAPI.percentOfCoverByIncidentForNginx),
-                        new Series<>("WAS","", ZabbixAPI.percentOfCoverByIncidentForWAS),
-                        new Series<>("WildFly","", ZabbixAPI.percentOfCoverByIncidentForWildFly),
-                        new Series<>("WebLogic","", ZabbixAPI.percentOfCoverByIncidentForWebLogic),
-                        //Столбцы OpenShift
-                        new Series<>("OpenShift","","", ZabbixAPI.percentOfCoverByIncidentForOpenShift))
+//                .withSeries(
+//                        // Столбцы продуктов ОИП
+//                        new Series<>( "SOWA", ZabbixAPI.percentOfCoverByIncidentForSOWA),
+//                        new Series<>("Kafka", ZabbixAPI.percentOfCoverByIncidentForKafka),
+//                        new Series<>("MQSeries", ZabbixAPI.percentOfCoverByIncidentForMQ),
+//                        new Series<>("DataPower", ZabbixAPI.percentOfCoverByIncidentForDP),
+//                        //Столбцы продуктов Стандартных платформ
+//                        new Series<>("Nginx","", ZabbixAPI.percentOfCoverByIncidentForNginx),
+//                        new Series<>("WAS","", ZabbixAPI.percentOfCoverByIncidentForWAS),
+//                        new Series<>("WildFly","", ZabbixAPI.percentOfCoverByIncidentForWildFly),
+//                        new Series<>("WebLogic","", ZabbixAPI.percentOfCoverByIncidentForWebLogic),
+//                        //Столбцы OpenShift
+//                        new Series<>("OpenShift","","", ZabbixAPI.percentOfCoverByIncidentForOpenShift))
                 .withYaxis(YAxisBuilder.get()
                         .withTitle(TitleBuilder.get()
                                 .withText("%")
@@ -1113,6 +1116,91 @@ public class Analitics extends VerticalLayout {
                 .build();
         VerticalBarChartIncCover.setColors("#FF0000", "#800000", "#FF8C00", "#808000", "#00FF00", "#008000",
                 "#00FFFF", "#008080", "#0000FF", "#000080", "#800080", "#FF00FF", "#808080", "#000000");
+        if (severity.equals("0")) {
+            VerticalBarChartIncCover.setSeries(
+                    // Столбцы продуктов ОИП
+                    new Series<>("SOWA", ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_0),
+                    new Series<>("Kafka", ZabbixAPI.percentOfCoverByIncidentForKafka_sev_0),
+                    new Series<>("MQSeries", ZabbixAPI.percentOfCoverByIncidentForMQ_sev_0),
+                    new Series<>("DataPower", ZabbixAPI.percentOfCoverByIncidentForDP_sev_0),
+                    //Столбцы продуктов Стандартных платформ
+                    new Series<>("Nginx", "", ZabbixAPI.percentOfCoverByIncidentForNginx_sev_0),
+                    new Series<>("WAS", "", ZabbixAPI.percentOfCoverByIncidentForWAS_sev_0),
+                    new Series<>("WildFly", "", ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_0),
+                    new Series<>("WebLogic", "", ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_0),
+                    //Столбцы OpenShift
+                    new Series<>("OpenShift", "", "", ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_0));
+        } else if (severity.equals("1")) {
+            VerticalBarChartIncCover.setSeries(
+                    // Столбцы продуктов ОИП
+                    new Series<>("SOWA", ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_1),
+                    new Series<>("Kafka", ZabbixAPI.percentOfCoverByIncidentForKafka_sev_1),
+                    new Series<>("MQSeries", ZabbixAPI.percentOfCoverByIncidentForMQ_sev_1),
+                    new Series<>("DataPower", ZabbixAPI.percentOfCoverByIncidentForDP_sev_1),
+                    //Столбцы продуктов Стандартных платформ
+                    new Series<>("Nginx", "", ZabbixAPI.percentOfCoverByIncidentForNginx_sev_1),
+                    new Series<>("WAS", "", ZabbixAPI.percentOfCoverByIncidentForWAS_sev_1),
+                    new Series<>("WildFly", "", ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_1),
+                    new Series<>("WebLogic", "", ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_1),
+                    //Столбцы OpenShift
+                    new Series<>("OpenShift", "", "", ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_1));
+        } else if (severity.equals("2")) {
+            VerticalBarChartIncCover.setSeries(
+                    // Столбцы продуктов ОИП
+                    new Series<>("SOWA", ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_2),
+                    new Series<>("Kafka", ZabbixAPI.percentOfCoverByIncidentForKafka_sev_2),
+                    new Series<>("MQSeries", ZabbixAPI.percentOfCoverByIncidentForMQ_sev_2),
+                    new Series<>("DataPower", ZabbixAPI.percentOfCoverByIncidentForDP_sev_2),
+                    //Столбцы продуктов Стандартных платформ
+                    new Series<>("Nginx", "", ZabbixAPI.percentOfCoverByIncidentForNginx_sev_2),
+                    new Series<>("WAS", "", ZabbixAPI.percentOfCoverByIncidentForWAS_sev_2),
+                    new Series<>("WildFly", "", ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_2),
+                    new Series<>("WebLogic", "", ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_2),
+                    //Столбцы OpenShift
+                    new Series<>("OpenShift", "", "", ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_2));
+        } else if (severity.equals("3")) {
+            VerticalBarChartIncCover.setSeries(
+                    // Столбцы продуктов ОИП
+                    new Series<>("SOWA", ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_3),
+                    new Series<>("Kafka", ZabbixAPI.percentOfCoverByIncidentForKafka_sev_3),
+                    new Series<>("MQSeries", ZabbixAPI.percentOfCoverByIncidentForMQ_sev_3),
+                    new Series<>("DataPower", ZabbixAPI.percentOfCoverByIncidentForDP_sev_3),
+                    //Столбцы продуктов Стандартных платформ
+                    new Series<>("Nginx", "", ZabbixAPI.percentOfCoverByIncidentForNginx_sev_3),
+                    new Series<>("WAS", "", ZabbixAPI.percentOfCoverByIncidentForWAS_sev_3),
+                    new Series<>("WildFly", "", ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_3),
+                    new Series<>("WebLogic", "", ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_3),
+                    //Столбцы OpenShift
+                    new Series<>("OpenShift", "", "", ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_3));
+        } else if (severity.equals("4")) {
+            VerticalBarChartIncCover.setSeries(
+                    // Столбцы продуктов ОИП
+                    new Series<>("SOWA", ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_4),
+                    new Series<>("Kafka", ZabbixAPI.percentOfCoverByIncidentForKafka_sev_4),
+                    new Series<>("MQSeries", ZabbixAPI.percentOfCoverByIncidentForMQ_sev_4),
+                    new Series<>("DataPower", ZabbixAPI.percentOfCoverByIncidentForDP_sev_4),
+                    //Столбцы продуктов Стандартных платформ
+                    new Series<>("Nginx", "", ZabbixAPI.percentOfCoverByIncidentForNginx_sev_4),
+                    new Series<>("WAS", "", ZabbixAPI.percentOfCoverByIncidentForWAS_sev_4),
+                    new Series<>("WildFly", "", ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_4),
+                    new Series<>("WebLogic", "", ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_4),
+                    //Столбцы OpenShift
+                    new Series<>("OpenShift", "", "", ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_4));
+        } else if (severity.equals("5")) {
+            VerticalBarChartIncCover.setSeries(
+                    // Столбцы продуктов ОИП
+                    new Series<>("SOWA", ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_5),
+                    new Series<>("Kafka", ZabbixAPI.percentOfCoverByIncidentForKafka_sev_5),
+                    new Series<>("MQSeries", ZabbixAPI.percentOfCoverByIncidentForMQ_sev_5),
+                    new Series<>("DataPower", ZabbixAPI.percentOfCoverByIncidentForDP_sev_5),
+                    //Столбцы продуктов Стандартных платформ
+                    new Series<>("Nginx", "", ZabbixAPI.percentOfCoverByIncidentForNginx_sev_5),
+                    new Series<>("WAS", "", ZabbixAPI.percentOfCoverByIncidentForWAS_sev_5),
+                    new Series<>("WildFly", "", ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_5),
+                    new Series<>("WebLogic", "", ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_5),
+                    //Столбцы OpenShift
+                    new Series<>("OpenShift", "", "", ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_5));
+        }
 
         return VerticalBarChartIncCover;
     }

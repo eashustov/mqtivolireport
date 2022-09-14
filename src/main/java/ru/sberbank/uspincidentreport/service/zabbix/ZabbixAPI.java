@@ -43,6 +43,30 @@ public class ZabbixAPI {
     public volatile static int percentOfCoverByIncidentForKafka;
     public volatile static int percentOfCoverByIncidentForMQ;
     public volatile static int percentOfCoverByIncidentForDP;
+    public volatile static int percentOfCoverByIncidentForSOWA_sev_0;
+    public volatile static int percentOfCoverByIncidentForKafka_sev_0;
+    public volatile static int percentOfCoverByIncidentForMQ_sev_0;
+    public volatile static int percentOfCoverByIncidentForDP_sev_0;
+    public volatile static int percentOfCoverByIncidentForSOWA_sev_1;
+    public volatile static int percentOfCoverByIncidentForKafka_sev_1;
+    public volatile static int percentOfCoverByIncidentForMQ_sev_1;
+    public volatile static int percentOfCoverByIncidentForDP_sev_1;
+    public volatile static int percentOfCoverByIncidentForSOWA_sev_2;
+    public volatile static int percentOfCoverByIncidentForKafka_sev_2;
+    public volatile static int percentOfCoverByIncidentForMQ_sev_2;
+    public volatile static int percentOfCoverByIncidentForDP_sev_2;
+    public volatile static int percentOfCoverByIncidentForSOWA_sev_3;
+    public volatile static int percentOfCoverByIncidentForKafka_sev_3;
+    public volatile static int percentOfCoverByIncidentForMQ_sev_3;
+    public volatile static int percentOfCoverByIncidentForDP_sev_3;
+    public volatile static int percentOfCoverByIncidentForSOWA_sev_4;
+    public volatile static int percentOfCoverByIncidentForKafka_sev_4;
+    public volatile static int percentOfCoverByIncidentForMQ_sev_4;
+    public volatile static int percentOfCoverByIncidentForDP_sev_4;
+    public volatile static int percentOfCoverByIncidentForSOWA_sev_5;
+    public volatile static int percentOfCoverByIncidentForKafka_sev_5;
+    public volatile static int percentOfCoverByIncidentForMQ_sev_5;
+    public volatile static int percentOfCoverByIncidentForDP_sev_5;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -72,6 +96,30 @@ public class ZabbixAPI {
     public volatile static int percentOfCoverByIncidentForWildFly;
     public volatile static int percentOfCoverByIncidentForWAS;
     public volatile static int percentOfCoverByIncidentForWebLogic;
+    public volatile static int percentOfCoverByIncidentForNginx_sev_0;
+    public volatile static int percentOfCoverByIncidentForWildFly_sev_0;
+    public volatile static int percentOfCoverByIncidentForWAS_sev_0;
+    public volatile static int percentOfCoverByIncidentForWebLogic_sev_0;
+    public volatile static int percentOfCoverByIncidentForNginx_sev_1;
+    public volatile static int percentOfCoverByIncidentForWildFly_sev_1;
+    public volatile static int percentOfCoverByIncidentForWAS_sev_1;
+    public volatile static int percentOfCoverByIncidentForWebLogic_sev_1;
+    public volatile static int percentOfCoverByIncidentForNginx_sev_2;
+    public volatile static int percentOfCoverByIncidentForWildFly_sev_2;
+    public volatile static int percentOfCoverByIncidentForWAS_sev_2;
+    public volatile static int percentOfCoverByIncidentForWebLogic_sev_2;
+    public volatile static int percentOfCoverByIncidentForNginx_sev_3;
+    public volatile static int percentOfCoverByIncidentForWildFly_sev_3;
+    public volatile static int percentOfCoverByIncidentForWAS_sev_3;
+    public volatile static int percentOfCoverByIncidentForWebLogic_sev_3;
+    public volatile static int percentOfCoverByIncidentForNginx_sev_4;
+    public volatile static int percentOfCoverByIncidentForWildFly_sev_4;
+    public volatile static int percentOfCoverByIncidentForWAS_sev_4;
+    public volatile static int percentOfCoverByIncidentForWebLogic_sev_4;
+    public volatile static int percentOfCoverByIncidentForNginx_sev_5;
+    public volatile static int percentOfCoverByIncidentForWildFly_sev_5;
+    public volatile static int percentOfCoverByIncidentForWAS_sev_5;
+    public volatile static int percentOfCoverByIncidentForWebLogic_sev_5;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -85,6 +133,12 @@ public class ZabbixAPI {
     public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForOpenShift;
     //Расчет процента покрытия по продуктам Платформа управления контейнерами (Terra)
     public volatile static int percentOfCoverByIncidentForOpenShift;
+    public volatile static int percentOfCoverByIncidentForOpenShift_sev_0;
+    public volatile static int percentOfCoverByIncidentForOpenShift_sev_1;
+    public volatile static int percentOfCoverByIncidentForOpenShift_sev_2;
+    public volatile static int percentOfCoverByIncidentForOpenShift_sev_3;
+    public volatile static int percentOfCoverByIncidentForOpenShift_sev_4;
+    public volatile static int percentOfCoverByIncidentForOpenShift_sev_5;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -131,6 +185,91 @@ public class ZabbixAPI {
         System.out.println("login:" + login);
     }
 
+    public static int getPercentOfCoverTriggersByInc(String severity, String tag, String value, String... groups) throws JsonProcessingException {
+
+        List<String> groupids = getHostGropuIDbyName(getHostGroups(groups));
+
+//        getTriggersAllForGroupIDs
+
+        Request getRequestCountTriggersAllForGroupIDs = RequestBuilder.newBuilder()
+                .method("trigger.get")
+                .paramEntry("countOutput", "Output")
+                .paramEntry("groupids", groupids)
+                .paramEntry("min_severity", severity)
+//                .paramEntry("tags", tagJSONArray)
+                .build();
+        JSONObject getResponseCountTriggersAllForGroupIDs = zabbixApi.call(getRequestCountTriggersAllForGroupIDs);
+
+        int countTriggersAllForGroupIDs = Integer.parseInt(getResponseCountTriggersAllForGroupIDs.get("result").toString());
+
+        System.out.println("Количество триггеров по IDs групп: " + countTriggersAllForGroupIDs);
+
+
+//        getTriggersAllWithIncidentTagForGroupIDs
+
+        JSONArray tagJSONArray = new JSONArray();
+        tagJSONArray.add(new JSONObject() {{
+            put("tag", tag);
+            put("value", value);
+            put("operator", "0");
+        }});
+
+        Request getRequestCountTriggersWithIncForGroupID = RequestBuilder.newBuilder()
+                .method("trigger.get")
+                .paramEntry("countOutput", "Output")
+                .paramEntry("groupids", groupids)
+                .paramEntry("min_severity", severity)
+                .paramEntry("tags", tagJSONArray)
+                .build();
+        JSONObject getResponseCountTriggersWithIncForGroupID = zabbixApi.call(getRequestCountTriggersWithIncForGroupID);
+
+        int countTriggersWithIncForGroupID = Integer.parseInt(getResponseCountTriggersWithIncForGroupID.get("result").toString());
+
+        System.out.println("Количество триггеров c инцидентами по IDs групп: " + countTriggersWithIncForGroupID);
+
+
+        //Получение прототипа триггеров-------------------------------------------------------------------------------------
+//        getTriggerprototypeAllForGroupIDs
+
+        Request getRequestCountTriggerprototypeAllForGroupIDs = RequestBuilder.newBuilder()
+                .method("triggerprototype.get")
+                .paramEntry("countOutput", "Output")
+                .paramEntry("groupids", groupids)
+                .paramEntry("min_severity", severity)
+//                .paramEntry("tags", tagJSONArray)
+                .build();
+        JSONObject getResponseCountTriggerprototypeAllForGroupID = zabbixApi.call(getRequestCountTriggerprototypeAllForGroupIDs);
+
+        int countTriggerprototypeAllForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeAllForGroupID.get("result").toString());
+
+        System.out.println("Количество прототипов триггеров по IDs групп: " + countTriggerprototypeAllForGroupIDs);
+
+
+//       getTriggerprototypeWithIncidentTagForGroupIDs
+
+        Request getRequestCountTriggerprototypeWithIncidentTagForGroupIDs = RequestBuilder.newBuilder()
+                .method("triggerprototype.get")
+                .paramEntry("countOutput", "Output")
+                .paramEntry("groupids", groupids)
+                .paramEntry("min_severity", severity)
+                .paramEntry("tags", tagJSONArray)
+                .build();
+        JSONObject getResponseCountTriggerprototypeWithIncidentTagForGroupIDs = zabbixApi.call(getRequestCountTriggerprototypeWithIncidentTagForGroupIDs);
+
+        int countriggerprototypeWithIncidentTagForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeWithIncidentTagForGroupIDs.get("result").toString());
+
+        System.out.println("Количество прототипов триггеров с инцидентами по IDs групп: " + countriggerprototypeWithIncidentTagForGroupIDs);
+
+//        Расчет процента покрытия
+        int percentOfCoverByIncident = (int) (((float) (countTriggersWithIncForGroupID + countriggerprototypeWithIncidentTagForGroupIDs) /
+                (float) (countTriggersAllForGroupIDs + countTriggerprototypeAllForGroupIDs)) * 100);
+
+        System.out.println("Процент покрытия для групп " + groupids + " " + percentOfCoverByIncident);
+
+        return percentOfCoverByIncident;
+
+    }
+//Метод используется при получении списка триггеров. На ПРОДе работает очень медленно. Не реально
     public static int percentOfCoverByIncident(List<Trigger> listTriggersAllOfProduct, List<Trigger> listTriggersWithIncOfProduct) {
         long countTriggersWithIncident = listTriggersWithIncOfProduct.stream().count();
         long countAllTrigger = listTriggersAllOfProduct.stream().count();
