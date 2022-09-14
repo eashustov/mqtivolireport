@@ -207,7 +207,7 @@ public class ZabbixAPI {
         try {
             countTriggersAllForGroupIDs = Integer.parseInt(getResponseCountTriggersAllForGroupIDs.get("result").toString());
             System.out.println("Количество триггеров по IDs групп: " + countTriggersAllForGroupIDs);
-        } catch (NumberFormatException nfe){return 0;}
+        } catch (NumberFormatException nfe){return countTriggersAllForGroupIDs = 0;}
 
 
 //        getTriggersAllWithIncidentTagForGroupIDs
@@ -231,7 +231,7 @@ public class ZabbixAPI {
         try {
         countTriggersWithIncForGroupID = Integer.parseInt(getResponseCountTriggersWithIncForGroupID.get("result").toString());
         System.out.println("Количество триггеров c инцидентами по IDs групп: " + countTriggersWithIncForGroupID);
-        } catch (NumberFormatException nfe){return 0;}
+        } catch (NumberFormatException nfe){return countTriggersWithIncForGroupID = 0;}
 
 
         //Получение прототипа триггеров-------------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ public class ZabbixAPI {
         try {
         countTriggerprototypeAllForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeAllForGroupID.get("result").toString());
         System.out.println("Количество прототипов триггеров по IDs групп: " + countTriggerprototypeAllForGroupIDs);
-        } catch (NumberFormatException nfe){return 0;}
+        } catch (NumberFormatException nfe){return countTriggerprototypeAllForGroupIDs = 0;}
 
 
 //       getTriggerprototypeWithIncidentTagForGroupIDs
@@ -266,7 +266,7 @@ public class ZabbixAPI {
         try {
         countriggerprototypeWithIncidentTagForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeWithIncidentTagForGroupIDs.get("result").toString());
         System.out.println("Количество прототипов триггеров с инцидентами по IDs групп: " + countriggerprototypeWithIncidentTagForGroupIDs);
-        } catch (NumberFormatException nfe){return 0;}
+        } catch (NumberFormatException nfe){return countriggerprototypeWithIncidentTagForGroupIDs = 0;}
 
 //        Расчет процента покрытия
         int percentOfCoverByIncident = (int) (((float) (countTriggersWithIncForGroupID + countriggerprototypeWithIncidentTagForGroupIDs) /
