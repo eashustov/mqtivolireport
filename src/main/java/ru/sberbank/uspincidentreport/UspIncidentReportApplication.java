@@ -113,6 +113,13 @@ public class UspIncidentReportApplication {
         zabbixGroupsOpenShift = groupsName;
     }
 
+    //Период опроса Zabbix серверов
+    static int zabbixRequestInterval;
+    @Value("${zabbix.api.request.interval}")
+    private void setZabbixGroupsOpenShift(int requestInterval){
+        zabbixRequestInterval = requestInterval;
+    }
+
     public static void main(String[] args) {
         context = SpringApplication.run(UspIncidentReportApplication.class, args);
 
@@ -139,7 +146,7 @@ public class UspIncidentReportApplication {
                     }
                     try {
     //                    Thread.sleep(7200000);
-                        Thread.sleep(600000);
+                        Thread.sleep(zabbixRequestInterval*60000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

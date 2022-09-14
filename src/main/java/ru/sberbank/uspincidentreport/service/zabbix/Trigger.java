@@ -1,5 +1,8 @@
 package ru.sberbank.uspincidentreport.service.zabbix;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Trigger {
     String description;
     String priority;

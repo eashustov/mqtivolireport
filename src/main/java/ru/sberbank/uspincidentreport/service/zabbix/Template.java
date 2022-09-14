@@ -1,5 +1,8 @@
 package ru.sberbank.uspincidentreport.service.zabbix;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Template {
     String host;
     String name;
