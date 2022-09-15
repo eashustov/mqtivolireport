@@ -8,14 +8,35 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.hengyunabc.zabbix.api.DefaultZabbixApi;
 import io.github.hengyunabc.zabbix.api.Request;
 import io.github.hengyunabc.zabbix.api.RequestBuilder;
-import ru.sberbank.uspincidentreport.view.Analitics;
-
-import java.awt.image.ImageProducer;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class ZabbixAPI {
+    //Из application.properties нельзя вставить значение в статическую переменную напряму.
+    // Поэтому требуется метод setURLs, setUser, setPassword
+    private static String[] urls;
+    @Value("${zabbix.api.url}")
+    private void setURLs(String[] zabbix_urls){
+        urls = zabbix_urls;
+    }
+
+    private static String user;
+    @Value("${zabbix.api.user}")
+    private void setUser(String zabbix_user){
+        user = zabbix_user;
+    }
+
+    private static String password;
+    @Value("${zabbix.api.password}")
+    private void setPassword(String zabbix_password){
+        password = zabbix_password;
+    }
+
+    static List<String> groupids;
 
     public static DefaultZabbixApi zabbixApi;
     //Переменные статистики по дефолтных с уровнем критичности 0 триггерам продуктов ОИП
@@ -186,87 +207,125 @@ public class ZabbixAPI {
     }
 
     public static int getPercentOfCoverTriggersByInc(String severity, String tag, String value, String... groups) throws JsonProcessingException {
+
         int countTriggersAllForGroupIDs = 0;
         int countTriggersWithIncForGroupID = 0;
         int countTriggerprototypeAllForGroupIDs = 0;
         int countriggerprototypeWithIncidentTagForGroupIDs = 0;
 
-        List<String> groupids = getHostGropuIDbyName(getHostGroups(groups));
+        for(String url:urls) {
 
+            try {
+                ZabbixAPI.ZabbixAPIRegistration(url, user, password);
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+            groupids = getHostGropuIDbyName(getHostGroups(groups));
 //        getTriggersAllForGroupIDs
 
-        Request getRequestCountTriggersAllForGroupIDs = RequestBuilder.newBuilder()
-                .method("trigger.get")
-                .paramEntry("countOutput", "Output")
-                .paramEntry("groupids", groupids)
-                .paramEntry("min_severity", severity)
+            Request getRequestCountTriggersAllForGroupIDs = RequestBuilder.newBuilder()
+                    .method("trigger.get")
+                    .paramEntry("countOutput", "Output")
+                    .paramEntry("groupids", groupids)
+                    .paramEntry("min_severity", severity)
 //                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponseCountTriggersAllForGroupIDs = zabbixApi.call(getRequestCountTriggersAllForGroupIDs);
+                    .build();
+            try {
+                JSONObject getResponseCountTriggersAllForGroupIDs = zabbixApi.call(getRequestCountTriggersAllForGroupIDs);
 
-        try {
-            countTriggersAllForGroupIDs = Integer.parseInt(getResponseCountTriggersAllForGroupIDs.get("result").toString());
-            System.out.println("Количество триггеров по IDs групп: " + countTriggersAllForGroupIDs);
-        } catch (NumberFormatException nfe){return countTriggersAllForGroupIDs = 0;}
-
+                try {
+                    countTriggersAllForGroupIDs += Integer.parseInt(getResponseCountTriggersAllForGroupIDs.get("result").toString());
+                    System.out.println("Количество триггеров по IDs групп: " + countTriggersAllForGroupIDs);
+                } catch (NumberFormatException nfe) {
+                    nfe.printStackTrace();
+                    return 0;
+                }
+            } catch (com.alibaba.fastjson.JSONException jsone) {
+                jsone.printStackTrace();
+            }
 
 //        getTriggersAllWithIncidentTagForGroupIDs
 
-        JSONArray tagJSONArray = new JSONArray();
-        tagJSONArray.add(new JSONObject() {{
-            put("tag", tag);
-            put("value", value);
-            put("operator", "0");
-        }});
+            JSONArray tagJSONArray = new JSONArray();
+            tagJSONArray.add(new JSONObject() {{
+                put("tag", tag);
+                put("value", value);
+                put("operator", "0");
+            }});
 
-        Request getRequestCountTriggersWithIncForGroupID = RequestBuilder.newBuilder()
-                .method("trigger.get")
-                .paramEntry("countOutput", "Output")
-                .paramEntry("groupids", groupids)
-                .paramEntry("min_severity", severity)
-                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponseCountTriggersWithIncForGroupID = zabbixApi.call(getRequestCountTriggersWithIncForGroupID);
+            Request getRequestCountTriggersWithIncForGroupID = RequestBuilder.newBuilder()
+                    .method("trigger.get")
+                    .paramEntry("countOutput", "Output")
+                    .paramEntry("groupids", groupids)
+                    .paramEntry("min_severity", severity)
+                    .paramEntry("tags", tagJSONArray)
+                    .build();
+            try {
+                JSONObject getResponseCountTriggersWithIncForGroupID = zabbixApi.call(getRequestCountTriggersWithIncForGroupID);
 
-        try {
-        countTriggersWithIncForGroupID = Integer.parseInt(getResponseCountTriggersWithIncForGroupID.get("result").toString());
-        System.out.println("Количество триггеров c инцидентами по IDs групп: " + countTriggersWithIncForGroupID);
-        } catch (NumberFormatException nfe){return countTriggersWithIncForGroupID = 0;}
+                try {
+                    countTriggersWithIncForGroupID += Integer.parseInt(getResponseCountTriggersWithIncForGroupID.get("result").toString());
+                    System.out.println("Количество триггеров c инцидентами по IDs групп: " + countTriggersWithIncForGroupID);
+                } catch (NumberFormatException nfe) {
+                    nfe.printStackTrace();
+                    return 0;
+                }
+            } catch (com.alibaba.fastjson.JSONException jsone) {
+                jsone.printStackTrace();
+            }
 
 
-        //Получение прототипа триггеров-------------------------------------------------------------------------------------
+            //Получение прототипа триггеров-------------------------------------------------------------------------------------
 //        getTriggerprototypeAllForGroupIDs
 
-        Request getRequestCountTriggerprototypeAllForGroupIDs = RequestBuilder.newBuilder()
-                .method("triggerprototype.get")
-                .paramEntry("countOutput", "Output")
-                .paramEntry("groupids", groupids)
-                .paramEntry("min_severity", severity)
+            Request getRequestCountTriggerprototypeAllForGroupIDs = RequestBuilder.newBuilder()
+                    .method("triggerprototype.get")
+                    .paramEntry("countOutput", "Output")
+                    .paramEntry("groupids", groupids)
+                    .paramEntry("min_severity", severity)
 //                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponseCountTriggerprototypeAllForGroupID = zabbixApi.call(getRequestCountTriggerprototypeAllForGroupIDs);
+                    .build();
+            try {
+                JSONObject getResponseCountTriggerprototypeAllForGroupID = zabbixApi.call(getRequestCountTriggerprototypeAllForGroupIDs);
 
-        try {
-        countTriggerprototypeAllForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeAllForGroupID.get("result").toString());
-        System.out.println("Количество прототипов триггеров по IDs групп: " + countTriggerprototypeAllForGroupIDs);
-        } catch (NumberFormatException nfe){return countTriggerprototypeAllForGroupIDs = 0;}
+                try {
+                    countTriggerprototypeAllForGroupIDs += Integer.parseInt(getResponseCountTriggerprototypeAllForGroupID.get("result").toString());
+                    System.out.println("Количество прототипов триггеров по IDs групп: " + countTriggerprototypeAllForGroupIDs);
+                } catch (NumberFormatException nfe) {
+                    nfe.printStackTrace();
+                    return 0;
+                }
+            } catch (com.alibaba.fastjson.JSONException jsone) {
+                jsone.printStackTrace();
+            }
 
 
 //       getTriggerprototypeWithIncidentTagForGroupIDs
 
-        Request getRequestCountTriggerprototypeWithIncidentTagForGroupIDs = RequestBuilder.newBuilder()
-                .method("triggerprototype.get")
-                .paramEntry("countOutput", "Output")
-                .paramEntry("groupids", groupids)
-                .paramEntry("min_severity", severity)
-                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponseCountTriggerprototypeWithIncidentTagForGroupIDs = zabbixApi.call(getRequestCountTriggerprototypeWithIncidentTagForGroupIDs);
+            Request getRequestCountTriggerprototypeWithIncidentTagForGroupIDs = RequestBuilder.newBuilder()
+                    .method("triggerprototype.get")
+                    .paramEntry("countOutput", "Output")
+                    .paramEntry("groupids", groupids)
+                    .paramEntry("min_severity", severity)
+                    .paramEntry("tags", tagJSONArray)
+                    .build();
+            try {
+                JSONObject getResponseCountTriggerprototypeWithIncidentTagForGroupIDs = zabbixApi.call(getRequestCountTriggerprototypeWithIncidentTagForGroupIDs);
 
-        try {
-        countriggerprototypeWithIncidentTagForGroupIDs = Integer.parseInt(getResponseCountTriggerprototypeWithIncidentTagForGroupIDs.get("result").toString());
-        System.out.println("Количество прототипов триггеров с инцидентами по IDs групп: " + countriggerprototypeWithIncidentTagForGroupIDs);
-        } catch (NumberFormatException nfe){return countriggerprototypeWithIncidentTagForGroupIDs = 0;}
+                try {
+                    countriggerprototypeWithIncidentTagForGroupIDs += Integer.parseInt(getResponseCountTriggerprototypeWithIncidentTagForGroupIDs.get("result").toString());
+                    System.out.println("Количество прототипов триггеров с инцидентами по IDs групп: " + countriggerprototypeWithIncidentTagForGroupIDs);
+                } catch (NumberFormatException nfe) {
+                    nfe.printStackTrace();
+                    return 0;
+                }
+            } catch (com.alibaba.fastjson.JSONException jsone) {
+                jsone.printStackTrace();
+            }
+            zabbixApi.destroy();
+        }
+
 
 //        Расчет процента покрытия
         int percentOfCoverByIncident = (int) (((float) (countTriggersWithIncForGroupID + countriggerprototypeWithIncidentTagForGroupIDs) /
