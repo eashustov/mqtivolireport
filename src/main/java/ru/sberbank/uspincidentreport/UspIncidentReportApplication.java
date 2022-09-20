@@ -13,25 +13,25 @@ public class UspIncidentReportApplication {
 
     private static ConfigurableApplicationContext context;
 
-//    //Из application.properties нельзя вставить значение в статическую переменную напряму.
-//    // Поэтому требуется метод setURLs, setUser, setPassword
-//    private static String[] urls;
-//    @Value("${zabbix.api.url}")
-//    private void setURLs(String[] zabbix_urls){
-//        urls = zabbix_urls;
-//    }
-//
-//    private static String user;
-//    @Value("${zabbix.api.user}")
-//    private void setUser(String zabbix_user){
-//        user = zabbix_user;
-//    }
-//
-//    private static String password;
-//    @Value("${zabbix.api.password}")
-//    private void setPassword(String zabbix_password){
-//        password = zabbix_password;
-//    }
+    //Из application.properties нельзя вставить значение в статическую переменную напряму.
+    // Поэтому требуется метод setURLs, setUser, setPassword
+    private static String[] urls;
+    @Value("${zabbix.api.url}")
+    private void setURLs(String[] zabbix_urls){
+        urls = zabbix_urls;
+    }
+
+    private static String user;
+    @Value("${zabbix.api.user}")
+    private void setUser(String zabbix_user){
+        user = zabbix_user;
+    }
+
+    private static String password;
+    @Value("${zabbix.api.password}")
+    private void setPassword(String zabbix_password){
+        password = zabbix_password;
+    }
 
     //Выставление значений тега из appliation.properties
     //Из application.properties нельзя вставить значение в статическую переменную напряму.
@@ -113,6 +113,60 @@ public class UspIncidentReportApplication {
         zabbixGroupsOpenShift = groupsName;
     }
 
+    static String zabbixHostSOWA;
+    @Value("${zabbix.api.hostname.sowa}")
+    private void setHostSOWA(String hostName){
+        zabbixHostSOWA = hostName;
+    }
+
+    static String zabbixHostKafka;
+    @Value("${zabbix.api.hostname.kafka}")
+    private void setGroupsKafka(String hostName){
+        zabbixHostKafka = hostName;
+    }
+
+    static String zabbixHostMQ;
+    @Value("${zabbix.api.hostname.mq}")
+    private void setGroupsMQ(String hostName){
+        zabbixHostMQ = hostName;
+    }
+
+    static String zabbixHostDP;
+    @Value("${zabbix.api.hostname.dp}")
+    private void setGroupsDP(String hostName){
+        zabbixHostDP = hostName;
+    }
+
+    //Стандартные платформы
+    static String zabbixHostNginx;
+    @Value("${zabbix.api.hostname.nginx}")
+    private void setZabbixGroupsNginx(String hostName){
+        zabbixHostNginx = hostName;
+    }
+
+    static String zabbixHostWAS;
+    @Value("${zabbix.api.hostname.was}")
+    private void setZabbixGroupsWAS(String hostName){
+        zabbixHostWAS = hostName;
+    }
+
+    static String zabbixHostWildFly;
+    @Value("${zabbix.api.hostname.wildfly}")
+    private void setZabbixGroupsWildFly(String hostName){
+        zabbixHostWildFly = hostName;
+    }
+
+    static String zabbixHostWeblogic;
+    @Value("${zabbix.api.hostname.weblogic}")
+    private void setZabbixGroupsWeblogic(String hostName){
+        zabbixHostWeblogic = hostName;
+    }
+    //Платформа управления контейнерами (Terra)
+    static String zabbixHostOpenShift;
+    @Value("${zabbix.api.hostname.openshift}")
+    private void setZabbixGroupsOpenShift(String hostName){
+        zabbixHostOpenShift = hostName;
+    }
     //Период опроса Zabbix серверов
     static int zabbixRequestInterval;
     @Value("${zabbix.api.request.interval}")
@@ -126,202 +180,51 @@ public class UspIncidentReportApplication {
         //Получение статистики Zabbix
         Runnable ZabbixAPIGetStatistic = ()->{
                 while (true) {
-//                    for(String url:urls) {
-//                        try {
-//                            ZabbixAPI.ZabbixAPIRegistration(url, user, password);
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                            continue;
-//                        }
+                    for(String url:urls) {
                         try {
-                            ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_0 =
-                                        ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsSOWA);
-                            ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_1 =
-                                        ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsSOWA);
-                            ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsSOWA);
-                            ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsSOWA);
-                            ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsSOWA);
-                            ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsSOWA);
-                            ZabbixAPI.percentOfCoverByIncidentForKafka_sev_0 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsKafka);
-                            ZabbixAPI.percentOfCoverByIncidentForKafka_sev_1 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsKafka);
-                            ZabbixAPI.percentOfCoverByIncidentForKafka_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsKafka);
-                            ZabbixAPI.percentOfCoverByIncidentForKafka_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsKafka);
-                            ZabbixAPI.percentOfCoverByIncidentForKafka_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsKafka);
-                            ZabbixAPI.percentOfCoverByIncidentForKafka_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsKafka);
-                            ZabbixAPI.percentOfCoverByIncidentForMQ_sev_0 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsMQ);
-                            ZabbixAPI.percentOfCoverByIncidentForMQ_sev_1 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsMQ);
-                            ZabbixAPI.percentOfCoverByIncidentForMQ_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsMQ);
-                            ZabbixAPI.percentOfCoverByIncidentForMQ_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsMQ);
-                            ZabbixAPI.percentOfCoverByIncidentForMQ_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsMQ);
-                            ZabbixAPI.percentOfCoverByIncidentForMQ_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsMQ);
-                            ZabbixAPI.percentOfCoverByIncidentForDP_sev_0 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsDP);
-                            ZabbixAPI.percentOfCoverByIncidentForDP_sev_1 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsDP);
-                            ZabbixAPI.percentOfCoverByIncidentForDP_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsDP);
-                            ZabbixAPI.percentOfCoverByIncidentForDP_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsDP);
-                            ZabbixAPI.percentOfCoverByIncidentForDP_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsDP);
-                            ZabbixAPI.percentOfCoverByIncidentForDP_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsDP);
-                            //Для стандартных платформ
-                            ZabbixAPI.percentOfCoverByIncidentForNginx_sev_0 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsNginx);
-                            ZabbixAPI.percentOfCoverByIncidentForNginx_sev_1 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsNginx);
-                            ZabbixAPI.percentOfCoverByIncidentForNginx_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsNginx);
-                            ZabbixAPI.percentOfCoverByIncidentForNginx_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsNginx);
-                            ZabbixAPI.percentOfCoverByIncidentForNginx_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsNginx);
-                            ZabbixAPI.percentOfCoverByIncidentForNginx_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsNginx);
-                            ZabbixAPI.percentOfCoverByIncidentForWAS_sev_0 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWAS);
-                            ZabbixAPI.percentOfCoverByIncidentForWAS_sev_1 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWAS);
-                            ZabbixAPI.percentOfCoverByIncidentForWAS_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWAS);
-                            ZabbixAPI.percentOfCoverByIncidentForWAS_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWAS);
-                            ZabbixAPI.percentOfCoverByIncidentForWAS_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWAS);
-                            ZabbixAPI.percentOfCoverByIncidentForWAS_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWAS);
-                            ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_0 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWildFly);
-                            ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_1 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWildFly);
-                            ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWildFly);
-                            ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWildFly);
-                            ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWildFly);
-                            ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWildFly);
-                            ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_0 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWeblogic);
-                            ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_1 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWeblogic);
-                            ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWeblogic);
-                            ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWeblogic);
-                            ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWeblogic);
-                            ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsWeblogic);
-                            //Для OpenShift
-                            ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_0 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("0", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsOpenShift);
-                            ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_1 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("1", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsOpenShift);
-                            ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_2 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("2", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsOpenShift);
-                            ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_3 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("3", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsOpenShift);
-                            ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_4 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("4", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsOpenShift);
-                            ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_5 =
-                                    ZabbixAPI.getPercentOfCoverTriggersByInc("5", zabbixAPITagName, zabbixAPITagValue, zabbixGroupsOpenShift);
-//Ниже код используется при получении по API списка триггеров. В ПРОМ очень долго. ПОэтому данный функуионал убран
-//                            ZabbixAPI.getTriggerStatisticDefault(zabbixAPITriggersSeverityDefaultValue, zabbixAPITagName,
-//                                    zabbixAPITagValue, zabbixGroupsSOWA, zabbixGroupsKafka, zabbixGroupsMQ, zabbixGroupsDP,
-//                                    zabbixGroupsNginx, zabbixGroupsWAS, zabbixGroupsWildFly, zabbixGroupsWeblogic,
-//                                    zabbixGroupsOpenShift);
-//                            ZabbixAPI.zabbixApi.destroy();
-
+                            ZabbixAPI.ZabbixAPIRegistration(url, user, password);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            continue;
+                        }
+                        try {
+                            ZabbixAPI.getTriggerStatisticDefault(zabbixAPITriggersSeverityDefaultValue, zabbixAPITagName,
+                                    zabbixAPITagValue, zabbixHostSOWA, zabbixHostKafka, zabbixHostMQ, zabbixHostDP,
+                                    zabbixHostNginx, zabbixHostWAS, zabbixHostWildFly, zabbixHostWeblogic,
+                                    zabbixHostOpenShift);
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
                             continue;
                         }
-//                    }
+                    }
                     try {
-    //                    Thread.sleep(7200000);
                         System.out.println("Пауза между опросами " + zabbixRequestInterval + " минут");
                         Thread.sleep(zabbixRequestInterval*60000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     try {
-                        ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForKafka_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForMQ_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForDP_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForKafka_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForMQ_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForDP_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForKafka_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForMQ_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForDP_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForKafka_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForMQ_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForDP_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForKafka_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForMQ_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForDP_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForSOWA_sev_5 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForKafka_sev_5 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForMQ_sev_5 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForDP_sev_5 = 0;
-
-                        ZabbixAPI.percentOfCoverByIncidentForNginx_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWAS_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForNginx_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWAS_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForNginx_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWAS_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForNginx_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWAS_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForNginx_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWAS_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForNginx_sev_5 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWildFly_sev_5 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWAS_sev_5 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForWebLogic_sev_5 = 0;
-
-                        ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_0 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_1 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_2 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_3 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_4 = 0;
-                        ZabbixAPI.percentOfCoverByIncidentForOpenShift_sev_5 = 0;
+                        ZabbixAPI.listTriggersForSOWA.clear();
+                        ZabbixAPI.listTriggersForKafka.clear();
+                        ZabbixAPI.listTriggersForMQ.clear();
+                        ZabbixAPI.listTriggersForDP.clear();
+                        ZabbixAPI.listTriggersWithIncForSOWA.clear();
+                        ZabbixAPI.listTriggersWithIncForKafka.clear();
+                        ZabbixAPI.listTriggersWithIncForMQ.clear();
+                        ZabbixAPI.listTriggersWithIncForDP.clear();
+                        ZabbixAPI.listTriggersForNginx.clear();
+                        ZabbixAPI.listTriggersForWAS.clear();
+                        ZabbixAPI.listTriggersForWildFly.clear();
+                        ZabbixAPI.listTriggersForWebLogic.clear();
+                        ZabbixAPI.listTriggersWithIncForNginx.clear();
+                        ZabbixAPI.listTriggersWithIncForWAS.clear();
+                        ZabbixAPI.listTriggersWithIncForWildFly.clear();
+                        ZabbixAPI.listTriggersWithIncForWebLogic.clear();
+                        ZabbixAPI.listTriggersForOpenShift.clear();
+                        ZabbixAPI.listTriggersWithIncForOpenShift.clear();
                     } catch (Exception e) {
                         e.printStackTrace();
+                        continue;
                     }
                 }
             };

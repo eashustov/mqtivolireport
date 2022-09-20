@@ -10,193 +10,102 @@ import io.github.hengyunabc.zabbix.api.Request;
 import io.github.hengyunabc.zabbix.api.RequestBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Component
 public class ZabbixAPI {
-    //Из application.properties нельзя вставить значение в статическую переменную напряму.
-    // Поэтому требуется метод setURLs, setUser, setPassword
-    private static String[] urls;
-    @Value("${zabbix.api.url}")
-    private void setURLs(String[] zabbix_urls){
-        urls = zabbix_urls;
-    }
-
-    private static String user;
-    @Value("${zabbix.api.user}")
-    private void setUser(String zabbix_user){
-        user = zabbix_user;
-    }
-
-    private static String password;
-    @Value("${zabbix.api.password}")
-    private void setPassword(String zabbix_password){
-        password = zabbix_password;
-    }
-
-    static List<String> groupids;
 
     public static DefaultZabbixApi zabbixApi;
     //Переменные статистики по дефолтных с уровнем критичности 0 триггерам продуктов ОИП
-    public volatile static List<Trigger> listTriggersForSOWA = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersForKafka = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersForMQ = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersForDP = new ArrayList<>();
+    public volatile static Set<Trigger> listTriggersForSOWA = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersForKafka = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersForMQ = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersForDP = new HashSet<>();
     //Создание списка дефолтных с уровнем критичности 0 триггеров с инцидентами по продуктам ОИП
-    public volatile static List<Trigger> listTriggersWithIncForSOWA = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersWithIncForKafka = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersWithIncForMQ = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersWithIncForDP = new ArrayList<>();
+    public volatile static Set<Trigger> listTriggersWithIncForSOWA = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersWithIncForKafka = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersWithIncForMQ = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersWithIncForDP = new HashSet<>();
     //Создание списка триггеров по продуктам ОИП с заданным уровнем критичности
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForSOWA;
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForKafka;
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForMQ;
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForDP;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForSOWA;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForKafka;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForMQ;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForDP;
     //Создание списка триггеров с инцидентами по продуктам ОИП с заданным уровнем критичности
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForSOWA;
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForKafka;
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForMQ;
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForDP;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForSOWA;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForKafka;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForMQ;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForDP;
     //Расчет процента покрытия по продуктам ОИП
     public volatile static int percentOfCoverByIncidentForSOWA;
     public volatile static int percentOfCoverByIncidentForKafka;
     public volatile static int percentOfCoverByIncidentForMQ;
     public volatile static int percentOfCoverByIncidentForDP;
-    public volatile static int percentOfCoverByIncidentForSOWA_sev_0;
-    public volatile static int percentOfCoverByIncidentForKafka_sev_0;
-    public volatile static int percentOfCoverByIncidentForMQ_sev_0;
-    public volatile static int percentOfCoverByIncidentForDP_sev_0;
-    public volatile static int percentOfCoverByIncidentForSOWA_sev_1;
-    public volatile static int percentOfCoverByIncidentForKafka_sev_1;
-    public volatile static int percentOfCoverByIncidentForMQ_sev_1;
-    public volatile static int percentOfCoverByIncidentForDP_sev_1;
-    public volatile static int percentOfCoverByIncidentForSOWA_sev_2;
-    public volatile static int percentOfCoverByIncidentForKafka_sev_2;
-    public volatile static int percentOfCoverByIncidentForMQ_sev_2;
-    public volatile static int percentOfCoverByIncidentForDP_sev_2;
-    public volatile static int percentOfCoverByIncidentForSOWA_sev_3;
-    public volatile static int percentOfCoverByIncidentForKafka_sev_3;
-    public volatile static int percentOfCoverByIncidentForMQ_sev_3;
-    public volatile static int percentOfCoverByIncidentForDP_sev_3;
-    public volatile static int percentOfCoverByIncidentForSOWA_sev_4;
-    public volatile static int percentOfCoverByIncidentForKafka_sev_4;
-    public volatile static int percentOfCoverByIncidentForMQ_sev_4;
-    public volatile static int percentOfCoverByIncidentForDP_sev_4;
-    public volatile static int percentOfCoverByIncidentForSOWA_sev_5;
-    public volatile static int percentOfCoverByIncidentForKafka_sev_5;
-    public volatile static int percentOfCoverByIncidentForMQ_sev_5;
-    public volatile static int percentOfCoverByIncidentForDP_sev_5;
 
     //------------------------------------------------------------------------------------------------------------------
 
     //Переменные статистики по дефолтных с уровнем критичности 0 продуктов Стандартных платформ
-    public volatile static List<Trigger> listTriggersForNginx = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersForWildFly = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersForWAS = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersForWebLogic = new ArrayList<>();
+    public volatile static Set<Trigger> listTriggersForNginx = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersForWildFly = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersForWAS = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersForWebLogic = new HashSet<>();
     //Создание списка дефолтных с уровнем критичности 0 триггеров с инцидентами по продуктам Стандартных платформ
-    public volatile static List<Trigger> listTriggersWithIncForNginx = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersWithIncForWildFly = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersWithIncForWAS = new ArrayList<>();
-    public volatile static List<Trigger> listTriggersWithIncForWebLogic = new ArrayList<>();
+    public volatile static Set<Trigger> listTriggersWithIncForNginx = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersWithIncForWildFly = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersWithIncForWAS = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersWithIncForWebLogic = new HashSet<>();
     //Создание списка триггеров по продуктам Стандартных платформ c заданным уровнем критичности
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForNginx;
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForWAS;
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForWildFly;
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForWebLogic;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForNginx;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForWAS;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForWildFly;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForWebLogic;
 
     //Создание списка триггеров с инцидентами по продуктам Стандартных платформ c заданным уровнем критичности
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForNginx;
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForWAS;
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForWildFly;
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForWebLogic;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForNginx;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForWAS;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForWildFly;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForWebLogic;
     //Расчет процента покрытия по продуктам Стандартных платформ
     public volatile static int percentOfCoverByIncidentForNginx;
     public volatile static int percentOfCoverByIncidentForWildFly;
     public volatile static int percentOfCoverByIncidentForWAS;
     public volatile static int percentOfCoverByIncidentForWebLogic;
-    public volatile static int percentOfCoverByIncidentForNginx_sev_0;
-    public volatile static int percentOfCoverByIncidentForWildFly_sev_0;
-    public volatile static int percentOfCoverByIncidentForWAS_sev_0;
-    public volatile static int percentOfCoverByIncidentForWebLogic_sev_0;
-    public volatile static int percentOfCoverByIncidentForNginx_sev_1;
-    public volatile static int percentOfCoverByIncidentForWildFly_sev_1;
-    public volatile static int percentOfCoverByIncidentForWAS_sev_1;
-    public volatile static int percentOfCoverByIncidentForWebLogic_sev_1;
-    public volatile static int percentOfCoverByIncidentForNginx_sev_2;
-    public volatile static int percentOfCoverByIncidentForWildFly_sev_2;
-    public volatile static int percentOfCoverByIncidentForWAS_sev_2;
-    public volatile static int percentOfCoverByIncidentForWebLogic_sev_2;
-    public volatile static int percentOfCoverByIncidentForNginx_sev_3;
-    public volatile static int percentOfCoverByIncidentForWildFly_sev_3;
-    public volatile static int percentOfCoverByIncidentForWAS_sev_3;
-    public volatile static int percentOfCoverByIncidentForWebLogic_sev_3;
-    public volatile static int percentOfCoverByIncidentForNginx_sev_4;
-    public volatile static int percentOfCoverByIncidentForWildFly_sev_4;
-    public volatile static int percentOfCoverByIncidentForWAS_sev_4;
-    public volatile static int percentOfCoverByIncidentForWebLogic_sev_4;
-    public volatile static int percentOfCoverByIncidentForNginx_sev_5;
-    public volatile static int percentOfCoverByIncidentForWildFly_sev_5;
-    public volatile static int percentOfCoverByIncidentForWAS_sev_5;
-    public volatile static int percentOfCoverByIncidentForWebLogic_sev_5;
 
     //------------------------------------------------------------------------------------------------------------------
 
     //Создание списка дефолтных с уровнем критичности 0 триггеров продуктов Платформа управления контейнерами (Terra)
-    public volatile static List<Trigger> listTriggersForOpenShift = new ArrayList<>();
+    public volatile static Set<Trigger> listTriggersForOpenShift = new HashSet<>();
     //Создание списка дефолтных с уровнем критичности 0 триггеров с инцидентами по продуктам Платформа управления контейнерами (Terra)
-    public volatile static List<Trigger> listTriggersWithIncForOpenShift = new ArrayList<>();
+    public volatile static Set<Trigger> listTriggersWithIncForOpenShift = new HashSet<>();
     //Создание списка триггеров по продуктам Платформа управления контейнерами (Terra)
-    public volatile static List<Trigger> listTriggersWithCustomSeverityForOpenShift;
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForOpenShift;
     //Создание списка триггеров с инцидентами по продуктам Платформа управления контейнерами (Terra) c заданным уровнем критичности
-    public volatile static List<Trigger> listTriggersWithIncWithCustomSeverityForOpenShift;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForOpenShift;
     //Расчет процента покрытия по продуктам Платформа управления контейнерами (Terra)
     public volatile static int percentOfCoverByIncidentForOpenShift;
-    public volatile static int percentOfCoverByIncidentForOpenShift_sev_0;
-    public volatile static int percentOfCoverByIncidentForOpenShift_sev_1;
-    public volatile static int percentOfCoverByIncidentForOpenShift_sev_2;
-    public volatile static int percentOfCoverByIncidentForOpenShift_sev_3;
-    public volatile static int percentOfCoverByIncidentForOpenShift_sev_4;
-    public volatile static int percentOfCoverByIncidentForOpenShift_sev_5;
 
-    //------------------------------------------------------------------------------------------------------------------
+    static List<Discoveryrule> listLLD = new ArrayList<>();
 
+    //Выставление значений тега из appliation.properties
+    //Из application.properties нельзя вставить значение в статическую переменную напряму.
+    // Поэтому требуется метод setURLs, setUser, setPassword
+    static String zabbixAPITagName;
+    @Value("${zabbix.api.tag.name}")
+    private void setTagName(String zabbixTagName){
+        zabbixAPITagName = zabbixTagName;
+    }
 
-//    public static void main(String[] args) throws JsonProcessingException {
-//
-//        ZabbixAPIRegistration();
-//
-////        long countTriggersWithIncident = getTriggersForGroupNameWithIncidentTag("Linux servers", "scope", "availability").stream().count();
-////        long countAllTrigger = getTriggersForGroupName("Linux servers").stream().count();
-////        int percentOfCoverByIncident = (int)(((float)countTriggersWithIncident/(float)countAllTrigger)*100);
-////        System.out.println("Триггеры с инцидентами: " + countTriggersWithIncident);
-////        System.out.println("Все триггеры: " + countAllTrigger);
-////        System.out.println("Процент покрытия: " + percentOfCoverByIncident);
-//
-////        List<Trigger> triggers_1 = getTriggersAllForGroupIDs(getHostGropuIDbyName(getHostGroups("Zabbix servers", "Linux servers")));
-////        List<Trigger> triggers_2 = getTriggesWithIncidentTagForGroupIDs(getHostGropuIDbyName(getHostGroups("Zabbix servers", "Linux servers")),
-////                "scope", "availability");
-//
-////        System.out.println(getTriggersWithSeverity(getTriggersAllForGroupIDs(getHostGropuIDbyName(getHostGroups("Zabbix servers",
-////                "Linux servers"))),
-////                "3"));
-//
-////        System.out.println("Триггеры:" + getTriggersWithSeverity(
-////                getTriggersAllForGroupIDs(getHostGropuIDbyName(getHostGroups("Zabbix servers","Linux servers"))),
-////                "3"));
-//
-////        System.out.println("Имя шаблона" + getTemplatebyID("17491").getName());
-//
-//        //Триггеры для хостгрупп без учета наличия тега
-//        triggerListWithTemplateName ("3", "Zabbix servers",
-//                "Linux servers");
-//
-//        //Триггеры для хостгрупп с учетом тега
-//        triggerListWithIncidentTagWithTemplateName("scope", "availability", "3", "Zabbix servers","Linux servers");
-//
-//    }
+    static String zabbixAPITagValue;
+    @Value("${zabbix.api.tag.value}")
+    private void setTagValue(String zabbixTagValue){
+        zabbixAPITagValue = zabbixTagValue;
+    }
 
 
     public static void ZabbixAPIRegistration(String url, String user, String password) {
@@ -206,138 +115,187 @@ public class ZabbixAPI {
         System.out.println("login:" + login);
     }
 
-    public static int getPercentOfCoverTriggersByInc(String severity, String tag, String value, String... groups) throws JsonProcessingException {
+    static Set<Trigger> getTriggersAllForHostName(String hostName) throws JsonProcessingException {
+        Set<Trigger> listTrigger = new HashSet<>();
+        Request getRequest = RequestBuilder.newBuilder()
+                .method("trigger.get")
+                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
+                .paramEntry("host", hostName)
+                .build();
+        try{
 
-        int countTriggersAllForGroupIDs = 0;
-        int countTriggersWithIncForGroupID = 0;
-        int countTriggerprototypeAllForGroupIDs = 0;
-        int countriggerprototypeWithIncidentTagForGroupIDs = 0;
+            JSONObject getResponse = zabbixApi.call(getRequest);
 
-        for(String url:urls) {
+            String triggers = getResponse.getJSONArray("result").toJSONString();
+            ObjectMapper objectMapper = new ObjectMapper();
 
-            try {
-                ZabbixAPI.ZabbixAPIRegistration(url, user, password);
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
-            }
-            groupids = getHostGropuIDbyName(getHostGroups(groups));
-//        getTriggersAllForGroupIDs
-
-            Request getRequestCountTriggersAllForGroupIDs = RequestBuilder.newBuilder()
-                    .method("trigger.get")
-                    .paramEntry("countOutput", "Output")
-                    .paramEntry("groupids", groupids)
-                    .paramEntry("min_severity", severity)
-//                .paramEntry("tags", tagJSONArray)
-                    .build();
-            try {
-                JSONObject getResponseCountTriggersAllForGroupIDs = zabbixApi.call(getRequestCountTriggersAllForGroupIDs);
-
-                try {
-                    countTriggersAllForGroupIDs += Integer.parseInt(getResponseCountTriggersAllForGroupIDs.get("result").toString());
-                    System.out.println("Количество триггеров по IDs групп: " + countTriggersAllForGroupIDs);
-                } catch (NumberFormatException nfe) {
-                    nfe.printStackTrace();
-                    return 0;
-                }
-            } catch (com.alibaba.fastjson.JSONException jsone) {
-                jsone.printStackTrace();
-            }
-
-//        getTriggersAllWithIncidentTagForGroupIDs
-
-            JSONArray tagJSONArray = new JSONArray();
-            tagJSONArray.add(new JSONObject() {{
-                put("tag", tag);
-                put("value", value);
-                put("operator", "0");
-            }});
-
-            Request getRequestCountTriggersWithIncForGroupID = RequestBuilder.newBuilder()
-                    .method("trigger.get")
-                    .paramEntry("countOutput", "Output")
-                    .paramEntry("groupids", groupids)
-                    .paramEntry("min_severity", severity)
-                    .paramEntry("tags", tagJSONArray)
-                    .build();
-            try {
-                JSONObject getResponseCountTriggersWithIncForGroupID = zabbixApi.call(getRequestCountTriggersWithIncForGroupID);
-
-                try {
-                    countTriggersWithIncForGroupID += Integer.parseInt(getResponseCountTriggersWithIncForGroupID.get("result").toString());
-                    System.out.println("Количество триггеров c инцидентами по IDs групп: " + countTriggersWithIncForGroupID);
-                } catch (NumberFormatException nfe) {
-                    nfe.printStackTrace();
-                    return 0;
-                }
-            } catch (com.alibaba.fastjson.JSONException jsone) {
-                jsone.printStackTrace();
-            }
-
-
-            //Получение прототипа триггеров-------------------------------------------------------------------------------------
-//        getTriggerprototypeAllForGroupIDs
-
-            Request getRequestCountTriggerprototypeAllForGroupIDs = RequestBuilder.newBuilder()
-                    .method("triggerprototype.get")
-                    .paramEntry("countOutput", "Output")
-                    .paramEntry("groupids", groupids)
-                    .paramEntry("min_severity", severity)
-//                .paramEntry("tags", tagJSONArray)
-                    .build();
-            try {
-                JSONObject getResponseCountTriggerprototypeAllForGroupID = zabbixApi.call(getRequestCountTriggerprototypeAllForGroupIDs);
-
-                try {
-                    countTriggerprototypeAllForGroupIDs += Integer.parseInt(getResponseCountTriggerprototypeAllForGroupID.get("result").toString());
-                    System.out.println("Количество прототипов триггеров по IDs групп: " + countTriggerprototypeAllForGroupIDs);
-                } catch (NumberFormatException nfe) {
-                    nfe.printStackTrace();
-                    return 0;
-                }
-            } catch (com.alibaba.fastjson.JSONException jsone) {
-                jsone.printStackTrace();
-            }
-
-
-//       getTriggerprototypeWithIncidentTagForGroupIDs
-
-            Request getRequestCountTriggerprototypeWithIncidentTagForGroupIDs = RequestBuilder.newBuilder()
-                    .method("triggerprototype.get")
-                    .paramEntry("countOutput", "Output")
-                    .paramEntry("groupids", groupids)
-                    .paramEntry("min_severity", severity)
-                    .paramEntry("tags", tagJSONArray)
-                    .build();
-            try {
-                JSONObject getResponseCountTriggerprototypeWithIncidentTagForGroupIDs = zabbixApi.call(getRequestCountTriggerprototypeWithIncidentTagForGroupIDs);
-
-                try {
-                    countriggerprototypeWithIncidentTagForGroupIDs += Integer.parseInt(getResponseCountTriggerprototypeWithIncidentTagForGroupIDs.get("result").toString());
-                    System.out.println("Количество прототипов триггеров с инцидентами по IDs групп: " + countriggerprototypeWithIncidentTagForGroupIDs);
-                } catch (NumberFormatException nfe) {
-                    nfe.printStackTrace();
-                    return 0;
-                }
-            } catch (com.alibaba.fastjson.JSONException jsone) {
-                jsone.printStackTrace();
-            }
-            zabbixApi.destroy();
+            listTrigger = objectMapper.readValue(triggers, new TypeReference<Set<Trigger>>() {
+            });
+            System.out.println("Все триггеры по по имени хоста: " + listTrigger);
+            return listTrigger;
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+            return listTrigger;
         }
 
+    }
 
-//        Расчет процента покрытия
-        int percentOfCoverByIncident = (int) (((float) (countTriggersWithIncForGroupID + countriggerprototypeWithIncidentTagForGroupIDs) /
-                (float) (countTriggersAllForGroupIDs + countTriggerprototypeAllForGroupIDs)) * 100);
+    static Set<Trigger> getTriggersAllWithIncidentTagForHostName(String hostName, String tag, String value) throws JsonProcessingException {
+        Set<Trigger> listTrigger = new HashSet<>();
+        JSONArray tagJSONArray = new JSONArray();
+        tagJSONArray.add(new JSONObject() {{
+            put("tag", tag);
+            put("value", value);
+            put("operator", "0");
+        }});
 
-        System.out.println("Процент покрытия для групп " + groupids + " " + percentOfCoverByIncident);
+        Request getRequest = RequestBuilder.newBuilder()
+                .method("trigger.get")
+                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
+                .paramEntry("host", hostName)
+                .paramEntry("tags", tagJSONArray)
+                .build();
+        try{
+            JSONObject getResponse = zabbixApi.call(getRequest);
 
-        return percentOfCoverByIncident;
+            String triggers = getResponse.getJSONArray("result").toJSONString();
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            listTrigger = objectMapper.readValue(triggers, new TypeReference<Set<Trigger>>() {
+            });
+            System.out.println("Все триггеры c инцидентами по по имени хоста: " + listTrigger);
+            return listTrigger;
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+            return listTrigger;
+        }
+    }
+
+    //Получение списка LLDId по хосту
+
+    static List<Discoveryrule> getLLDId(String hostName){
+        listLLD.clear();
+        String hostID;
+        JSONObject filterHost = new JSONObject();
+        filterHost.put("host", new String[] {hostName});
+
+        //Получение hostID
+        Request getRequestHostID = RequestBuilder.newBuilder()
+                .method("host.get")
+                .paramEntry("output", "hostid")
+                .paramEntry("filter", filterHost)
+                .build();
+        try {
+            JSONObject getResponseHostID = zabbixApi.call(getRequestHostID);
+            hostID = getResponseHostID.getJSONArray("result").getJSONObject(0).getString("hostid");
+            System.out.println("Хост ID: " + hostID);
+        } catch (Exception e) {
+            hostID="";
+            e.printStackTrace();
+        }
+
+        //Получение списка правил обнаоужения LLD по hostID
+        Request getRequestLLD = RequestBuilder.newBuilder()
+                .method("discoveryrule.get")
+                .paramEntry("output", "itemid")
+                .paramEntry("hostids", hostID)
+                .build();
+        try {
+            JSONObject getResponseLLD = zabbixApi.call(getRequestLLD);
+
+            String triggers = getResponseLLD.getJSONArray("result").toJSONString();
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            listLLD = objectMapper.readValue(triggers, new TypeReference<List<Discoveryrule>>() {
+            });
+            System.out.println("Все LLD по hostID: " + listLLD);
+        } catch (NullPointerException | JsonProcessingException npe) {
+            npe.printStackTrace();
+            return listLLD;
+        }
+        return listLLD;
+    }
+
+    //Получение прототипа триггеров-------------------------------------------------------------------------------------
+    static Set<Trigger> getTriggerprototypeAllForHostName() throws JsonProcessingException {
+        Set<Trigger> listTrigger = new HashSet<>();
+
+        Request getRequest = RequestBuilder.newBuilder()
+                .method("triggerprototype.get")
+                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
+                .paramEntry("discoveryids", listLLD.stream().map(item->item.getItemid()).toArray(String[]::new))
+                .build();
+        try {
+            JSONObject getResponse = zabbixApi.call(getRequest);
+
+            String triggers = getResponse.getJSONArray("result").toJSONString();
+            System.out.println("Прототипы триггеров с тегом: " + triggers);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            listTrigger = objectMapper.readValue(triggers, new TypeReference<Set<Trigger>>() {
+            });
+            System.out.println("Все прототипы триггеров по по имени хоста: " + listTrigger);
+
+            return listTrigger;
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+            return listTrigger;
+        }
 
     }
-//Метод используется при получении списка триггеров. На ПРОДе работает очень медленно. Не реально
-    public static int percentOfCoverByIncident(List<Trigger> listTriggersAllOfProduct, List<Trigger> listTriggersWithIncOfProduct) {
+
+    static Set<Trigger> getTriggerprototypeWithIncidentTagForHostName(String tag, String value) throws JsonProcessingException {
+        Set<Trigger> listTrigger;
+        Set<Trigger> listTriggerWithInc = new HashSet<>();
+        JSONArray tagJSONArray = new JSONArray();
+        tagJSONArray.add(new JSONObject() {{
+            put("tag", tag);
+            put("value", value);
+            put("operator", "0");
+        }});
+
+        Request getRequest = RequestBuilder.newBuilder()
+                .method("triggerprototype.get")
+                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
+                .paramEntry("discoveryids", listLLD.stream().map(item->item.getItemid()).toArray(String[]::new))
+                .paramEntry("selectTags", "extend")
+//                .paramEntry("tags", tagJSONArray)
+                .build();
+        try {
+            JSONObject getResponse = zabbixApi.call(getRequest);
+
+            String triggers = getResponse.getJSONArray("result").toJSONString();
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            listTrigger = objectMapper.readValue(triggers, new TypeReference<Set<Trigger>>() {
+            });
+
+            listTrigger.
+                    forEach(trigger -> {
+                        AtomicBoolean inc = new AtomicBoolean(false);
+                        trigger.getTags()
+                                .stream()
+                                .forEach(map->{
+                                    if(map.containsValue(zabbixAPITagName)&&map.containsValue(zabbixAPITagValue)){
+                                        inc.set(true);
+                                    }
+                                });
+                        if (inc.get()) {
+                            listTriggerWithInc.add(trigger);
+                        }
+                    });
+
+            System.out.println("Все прототипы триггеров c инцидентами по имени хоста: " + listTriggerWithInc);
+            return listTriggerWithInc;
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+            return listTriggerWithInc;
+        }
+
+    }
+
+
+    public static int percentOfCoverByIncident(Set<Trigger> listTriggersAllOfProduct, Set<Trigger> listTriggersWithIncOfProduct) {
         long countTriggersWithIncident = listTriggersWithIncOfProduct.stream().count();
         long countAllTrigger = listTriggersAllOfProduct.stream().count();
 
@@ -347,212 +305,10 @@ public class ZabbixAPI {
     }
 
 
-    static List<Trigger> getTriggersAllForGroupIDs(List<String> groupids) throws JsonProcessingException {
-
-        Request getRequest = RequestBuilder.newBuilder()
-                .method("trigger.get")
-                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
-                .paramEntry("groupids", groupids)
-//                .paramEntry("min_severity", 2)
-//                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponse = zabbixApi.call(getRequest);
-
-        String triggers = getResponse.getJSONArray("result").toJSONString();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<Trigger> listTrigger = objectMapper.readValue(triggers, new TypeReference<List<Trigger>>() {
-        });
-        System.out.println("Все триггеры по IDs групп: " + listTrigger);
-
-        return listTrigger;
-
-
-    }
-
-    static List<Trigger> getTriggersAllWithIncidentTagForGroupIDs(List<String> groupids, String tag, String value) throws JsonProcessingException {
-
-        JSONArray tagJSONArray = new JSONArray();
-        tagJSONArray.add(new JSONObject() {{
-            put("tag", tag);
-            put("value", value);
-            put("operator", "0");
-        }});
-
-        Request getRequest = RequestBuilder.newBuilder()
-                .method("trigger.get")
-                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
-                .paramEntry("groupids", groupids)
-//                .paramEntry("min_severity", severity)
-                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponse = zabbixApi.call(getRequest);
-
-        String triggers = getResponse.getJSONArray("result").toJSONString();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<Trigger> listTrigger = objectMapper.readValue(triggers, new TypeReference<List<Trigger>>() {
-        });
-        System.out.println("Все триггеры c инцидентами по IDs групп: " + listTrigger);
-
-        return listTrigger;
-
-    }
-
-    //Получение прототипа триггеров-------------------------------------------------------------------------------------
-    static List<Trigger> getTriggerprototypeAllForGroupIDs(List<String> groupids) throws JsonProcessingException {
-
-        Request getRequest = RequestBuilder.newBuilder()
-                .method("triggerprototype.get")
-                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
-                .paramEntry("groupids", groupids)
-//                .paramEntry("min_severity", 2)
-//                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponse = zabbixApi.call(getRequest);
-
-        String triggers = getResponse.getJSONArray("result").toJSONString();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<Trigger> listTrigger = objectMapper.readValue(triggers, new TypeReference<List<Trigger>>() {
-        });
-        System.out.println("Все прототипы триггеров по IDs групп: " + listTrigger);
-
-        return listTrigger;
-
-
-    }
-
-    static List<Trigger> getTriggerprototypeWithIncidentTagForGroupIDs(List<String> groupids, String tag, String value) throws JsonProcessingException {
-
-        JSONArray tagJSONArray = new JSONArray();
-        tagJSONArray.add(new JSONObject() {{
-            put("tag", tag);
-            put("value", value);
-            put("operator", "0");
-        }});
-
-        Request getRequest = RequestBuilder.newBuilder()
-                .method("triggerprototype.get")
-                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
-                .paramEntry("groupids", groupids)
-//                .paramEntry("min_severity", severity)
-                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponse = zabbixApi.call(getRequest);
-
-        String triggers = getResponse.getJSONArray("result").toJSONString();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<Trigger> listTrigger = objectMapper.readValue(triggers, new TypeReference<List<Trigger>>() {
-        });
-        System.out.println("Все прототипы триггеров c инцидентами по IDs групп: " + listTrigger);
-
-        return listTrigger;
-
-    }
-
-    //Получение хост групп
-
-    static List<HostGroup> getHostGroups(String... groups) throws JsonProcessingException {
-
-        JSONObject filter = new JSONObject();
-        List<String> listGroups = new ArrayList<>();
-        for (String group : groups) {
-            listGroups.add(group);
-        }
-
-        filter.put("name", listGroups);
-
-        Request getRequest = RequestBuilder.newBuilder()
-                .method("hostgroup.get")
-                .paramEntry("output", "extend")
-                .paramEntry("filter", filter)
-                .build();
-        JSONObject getResponse = zabbixApi.call(getRequest);
-
-        String triggers = getResponse.getJSONArray("result").toJSONString();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<HostGroup> listHostGroup = objectMapper.readValue(triggers, new TypeReference<List<HostGroup>>() {
-        });
-        System.out.println("Хостгруппы: " + listHostGroup);
-
-        return listHostGroup;
-
-
-    }
-
-    static List<String> getHostGropuIDbyName(List<HostGroup> hostGroups) {
-
-        List<String> hostGroupIDs = hostGroups.stream()
-                .map(hostgroup -> hostgroup.groupid)
-                .collect(Collectors.toList());
-        return hostGroupIDs;
-
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    static List<Trigger> getTriggersForGroupNameWithIncidentTag(String group, String tag, String value) throws JsonProcessingException {
-
-        JSONArray tagJSONArray = new JSONArray();
-        tagJSONArray.add(new JSONObject() {{
-            put("tag", tag);
-            put("value", value);
-            put("operator", "0");
-        }});
-
-        Request getRequest = RequestBuilder.newBuilder()
-//                .method("host.get").paramEntry("filter", filter)
-                .method("trigger.get")
-                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
-                .paramEntry("group", group)
-//                .paramEntry("min_severity", 2)
-                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponse = zabbixApi.call(getRequest);
-//            System.err.println(getResponse);
-//              System.out.println(getResponse);
-//        String hostid = getResponse.getJSONArray("result")
-//                .getJSONObject(0).getString("hostid");
-        String triggers = getResponse.getJSONArray("result").toJSONString();
-//        System.out.println(triggers);
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<Trigger> listTrigger = objectMapper.readValue(triggers, new TypeReference<List<Trigger>>() {
-        });
-        System.out.println("Триггеры с инцидентами: " + listTrigger);
-
-        return listTrigger;
-    }
-
-    static List<Trigger> getTriggersForGroupName(String group) throws JsonProcessingException {
-
-        Request getRequest = RequestBuilder.newBuilder()
-//                .method("host.get").paramEntry("filter", filter)
-                .method("trigger.get")
-                .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
-                .paramEntry("group", group)
-//                .paramEntry("min_severity", 2)
-//                .paramEntry("tags", tagJSONArray)
-                .build();
-        JSONObject getResponse = zabbixApi.call(getRequest);
-
-        String triggers = getResponse.getJSONArray("result").toJSONString();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<Trigger> listTrigger = objectMapper.readValue(triggers, new TypeReference<List<Trigger>>() {
-        });
-        System.out.println("Все триггеры: " + listTrigger);
-
-        return listTrigger;
-    }
-
-    static List<Trigger> getTriggersWithSeverity(List<Trigger> listTriggers, String severity) {
-        List<Trigger> listTriggersWithSeverity = listTriggers.stream()
+    static Set<Trigger> getTriggersWithSeverity(Set<Trigger> listTriggers, String severity) {
+        Set<Trigger> listTriggersWithSeverity = listTriggers.stream()
                 .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         System.out.println("Триггеры с минимальным уровнем критичности: " + severity + listTriggersWithSeverity);
         return listTriggersWithSeverity;
     }
@@ -584,11 +340,10 @@ public class ZabbixAPI {
         return template;
     }
 
-    public static List<Trigger> triggerListWithTemplateName(String severity, String... groups) throws JsonProcessingException {
-        List<Trigger> triggerListWithTemplateName = new ArrayList<>();
-        List<Trigger> triggerprototypeListWithTemplateName = new ArrayList<>();
-        getTriggersWithSeverity(getTriggersAllForGroupIDs(getHostGropuIDbyName(getHostGroups(groups))),
-                severity)
+    public static Set<Trigger> triggerListWithTemplateName(String severity, String hostName) throws JsonProcessingException {
+        Set<Trigger> triggerListWithTemplateName = new HashSet<>();
+        Set<Trigger> triggerprototypeListWithTemplateName = new HashSet<>();
+        getTriggersWithSeverity(getTriggersAllForHostName(hostName), severity)
                 .stream()
                 .forEach(trigger -> {
                     try {
@@ -598,9 +353,8 @@ public class ZabbixAPI {
                         e.printStackTrace();
                     }
                 });
-
-        getTriggersWithSeverity(getTriggerprototypeAllForGroupIDs(getHostGropuIDbyName(getHostGroups(groups))),
-                severity)
+        getLLDId(hostName);
+        getTriggersWithSeverity(getTriggerprototypeAllForHostName(), severity)
                 .stream()
                 .forEach(trigger -> {
                     try {
@@ -617,10 +371,10 @@ public class ZabbixAPI {
 
     }
 
-    public static List<Trigger> triggerListWithIncidentTagWithTemplateName(String tag, String value, String severity, String... groups) throws JsonProcessingException {
-        List<Trigger> triggerListWithIncidentTagWithTemplateName = new ArrayList<>();
-        List<Trigger> triggerprototypeListWithTemplateName = new ArrayList<>();
-        getTriggersWithSeverity(getTriggersAllWithIncidentTagForGroupIDs(getHostGropuIDbyName(getHostGroups(groups)), tag, value), severity)
+    public static Set<Trigger> triggerListWithIncidentTagWithTemplateName(String tag, String value, String severity, String hostName) throws JsonProcessingException {
+        Set<Trigger> triggerListWithIncidentTagWithTemplateName = new HashSet<>();
+        Set<Trigger> triggerprototypeListWithTemplateName = new HashSet<>();
+        getTriggersWithSeverity(getTriggersAllWithIncidentTagForHostName(hostName, tag, value), severity)
                 .stream()
                 .forEach(trigger -> {
                     try {
@@ -630,7 +384,8 @@ public class ZabbixAPI {
                         e.printStackTrace();
                     }
                 });
-        getTriggersWithSeverity(getTriggerprototypeWithIncidentTagForGroupIDs(getHostGropuIDbyName(getHostGroups(groups)), tag, value), severity)
+        getLLDId(hostName);
+        getTriggersWithSeverity(getTriggerprototypeWithIncidentTagForHostName(tag, value), severity)
                 .stream()
                 .forEach(trigger -> {
                     try {
@@ -648,7 +403,7 @@ public class ZabbixAPI {
 
     }
 
-    public static void getTriggerListForGroupUSP(String severity) throws JsonProcessingException {
+    public static void getTriggerListUSP(String severity) throws JsonProcessingException {
         //Создание списка всех триггеров по продуктам ОИП c заданным уровнем критичности
         listTriggersWithCustomSeverityForSOWA = getTriggersWithSeverity(listTriggersForSOWA, severity);
         listTriggersWithCustomSeverityForKafka = getTriggersWithSeverity(listTriggersForKafka, severity);
@@ -703,158 +458,64 @@ public class ZabbixAPI {
 
     }
 
-    public static List<Trigger> listTriggersWithoutIncWithCustomSeverity(List<Trigger> listTriggersWithCustomSeverity, List<Trigger> listTriggersWithIncWithCustomSeverity)
-    {
-    //Создание списка триггеров без инцидента по продуктам заданным уровнем критичности
-    List<Trigger> listTriggersWithoutIncWithCustomSeverity = listTriggersWithCustomSeverity.stream()
-            .filter(element -> !listTriggersWithIncWithCustomSeverity.toString().contains(element.toString()))
-            .collect(Collectors.toList());
+    public static Set<Trigger> listTriggersWithoutIncWithCustomSeverity(Set<Trigger> listTriggersWithCustomSeverity, Set<Trigger> listTriggersWithIncWithCustomSeverity) {
+        //Создание списка триггеров без инцидента по продуктам заданным уровнем критичности
+        Set<Trigger> listTriggersWithoutIncWithCustomSeverity = listTriggersWithCustomSeverity.stream()
+                .filter(element -> !listTriggersWithIncWithCustomSeverity.contains(element))
+                .collect(Collectors.toSet());
         System.out.println("Все триггеры" + listTriggersWithCustomSeverity + " ;" + "Триггеры с инцидентами: " +
-                listTriggersWithIncWithCustomSeverity);
-//        List<Trigger> listTriggersWithoutIncWithCustomSeverity = new ArrayList<>(listTriggersWithCustomSeverity);
-//        listTriggersWithoutIncWithCustomSeverity.removeAll(listTriggersWithIncWithCustomSeverity);
-    return listTriggersWithoutIncWithCustomSeverity;
+                listTriggersWithIncWithCustomSeverity + "Тригегры без инцидентов: " + listTriggersWithoutIncWithCustomSeverity);
+        return listTriggersWithoutIncWithCustomSeverity;
     }
 
     //Этот метод запускается при старте приложения и собирает сатистику по триггерам с уровнем критичности 0
-    public static void getTriggerStatisticDefault(String severity, String tagName, String tagValue, String[] zabbixGroupsSOWA,
-    String[] zabbixGroupsKafka, String[] zabbixGroupsMQ, String[] zabbixGroupsDP, String[] zabbixGroupsNginx, String[] zabbixGroupsWAS,
-    String[] zabbixGroupsWildFly, String[] zabbixGroupsWeblogic, String[] zabbixGroupsOpenShift) throws JsonProcessingException {
+    public static void getTriggerStatisticDefault(String severity, String tagName, String tagValue, String hostSOWA,
+                                                  String hostKafka, String hostMQ, String hostDP, String hostNginx, String hostWAS,
+                                                  String hostWildFly, String hostWeblogic, String hostOpenShift) throws JsonProcessingException {
 
         //Создание списка всех триггеров по продуктам ОИП
-        listTriggersForSOWA.addAll(triggerListWithTemplateName (severity, zabbixGroupsSOWA));
-        listTriggersForKafka.addAll(triggerListWithTemplateName (severity, zabbixGroupsKafka));
-        listTriggersForMQ.addAll(triggerListWithTemplateName (severity, zabbixGroupsMQ));
-        listTriggersForDP.addAll(triggerListWithTemplateName (severity, zabbixGroupsDP));
+        listTriggersForSOWA.addAll(triggerListWithTemplateName(severity, hostSOWA));
+        listTriggersForKafka.addAll(triggerListWithTemplateName(severity, hostKafka));
+        listTriggersForMQ.addAll(triggerListWithTemplateName(severity, hostMQ));
+        listTriggersForDP.addAll(triggerListWithTemplateName(severity, hostDP));
 
         //Создание списка триггеров с инцидентами по продуктам ОИП
         listTriggersWithIncForSOWA.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsSOWA));
+                severity, hostSOWA));
         listTriggersWithIncForKafka.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsKafka));
+                severity, hostKafka));
         listTriggersWithIncForMQ.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsMQ));
+                severity, hostMQ));
         listTriggersWithIncForDP.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsDP));
+                severity, hostDP));
 
         //--------------------------------------------------------------------------------------------------------------
 
         //Создание списка всех триггеров по продуктам Стандартных платформ
-        listTriggersForNginx.addAll(triggerListWithTemplateName (severity, zabbixGroupsNginx));
-        listTriggersForWAS.addAll(triggerListWithTemplateName (severity, zabbixGroupsWAS));
-        listTriggersForWildFly.addAll(triggerListWithTemplateName (severity, zabbixGroupsWildFly));
-        listTriggersForWebLogic.addAll(triggerListWithTemplateName (severity, zabbixGroupsWeblogic));
+        listTriggersForNginx.addAll(triggerListWithTemplateName(severity, hostNginx));
+        listTriggersForWAS.addAll(triggerListWithTemplateName(severity, hostWAS));
+        listTriggersForWildFly.addAll(triggerListWithTemplateName(severity, hostWildFly));
+        listTriggersForWebLogic.addAll(triggerListWithTemplateName(severity, hostWeblogic));
 
         //Создание списка триггеров с инцидентами по продуктам Стандартных платформ
         listTriggersWithIncForNginx.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsNginx));
+                severity, hostNginx));
         listTriggersWithIncForWAS.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsWAS));
+                severity, hostWAS));
         listTriggersWithIncForWildFly.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsWildFly));
+                severity, hostWildFly));
         listTriggersWithIncForWebLogic.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsWeblogic));
+                severity, hostWeblogic));
 
         //--------------------------------------------------------------------------------------------------------------
 
         //Создание списка всех триггеров по продуктам Платформа управления контейнерами (Terra)
-        listTriggersForOpenShift.addAll(triggerListWithTemplateName (severity, zabbixGroupsOpenShift));
+        listTriggersForOpenShift.addAll(triggerListWithTemplateName(severity, hostOpenShift));
         //Создание списка триггеров с инцидентами по продуктам Платформа управления контейнерами (Terra)
         listTriggersWithIncForOpenShift.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
-                severity, zabbixGroupsOpenShift));
+                severity, hostOpenShift));
 
         zabbixApi.destroy();
-
-
-//        //Создание списка всех триггеров по продуктам ОИП
-//        listTriggersForSOWA =  triggerListWithTemplateName (severity, "IS SOWA/OS");
-//        listTriggersForKafka =  triggerListWithTemplateName (severity, "IS Kafka/OS",
-//                "IS Kafka/App", "Kafka Clusters");
-//        listTriggersForMQ =  triggerListWithTemplateName (severity, "IS IBM MQ/OS", "Tivoli MQ");
-//        listTriggersForDP =  triggerListWithTemplateName (severity, "IS DataPower/DP", "Tivoli DP");
-//
-//        //Создание списка триггеров с инцидентами по продуктам ОИП
-//        listTriggersWithIncForSOWA =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "IS SOWA/OS");
-//        listTriggersWithIncForKafka =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "IS Kafka/OS",
-//                "IS Kafka/App", "Kafka Clusters");
-//        listTriggersWithIncForMQ =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "IS IBM MQ/OS", "Tivoli MQ");
-//        listTriggersWithIncForDP =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "IS DataPower/DP", "Tivoli DP");
-//
-////        //Расчет процента покрытия по продуктам ОИП
-////        percentOfCoverByIncidentForSOWA = percentOfCoverByIncident(listTriggersForSOWA, listTriggersWithIncForSOWA);
-////        percentOfCoverByIncidentForKafka =percentOfCoverByIncident(listTriggersForKafka, listTriggersWithIncForKafka);
-////        percentOfCoverByIncidentForMQ = percentOfCoverByIncident(listTriggersForMQ, listTriggersWithIncForMQ);
-////        percentOfCoverByIncidentForDP = percentOfCoverByIncident(listTriggersForDP, listTriggersWithIncForDP);
-//
-//        //--------------------------------------------------------------------------------------------------------------
-//
-//        //Создание списка всех триггеров по продуктам Стандартных платформ
-//        listTriggersForNginx =  triggerListWithTemplateName (severity, "IS SOWA/OS");
-//        listTriggersForWAS =  triggerListWithTemplateName (severity, "IS Kafka/OS",
-//                "IS Kafka/App", "Kafka Clusters");
-//        listTriggersForWildFly =  triggerListWithTemplateName (severity, "IS IBM MQ/OS", "Tivoli MQ");
-//        listTriggersForWebLogic =  triggerListWithTemplateName (severity, "IS DataPower/DP", "Tivoli DP");
-//
-//        //Создание списка триггеров по продуктам Стандартных платформ
-//        listTriggersWithIncForNginx =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "IS NGINX/OS");
-//        listTriggersWithIncForWAS =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "IS WebSphere Universal/OS");
-//        listTriggersWithIncForWildFly =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "IS WildFly/OS", "IS WildFly/App");
-//        listTriggersWithIncForWebLogic =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "IS Weblogic/OS", "IS Weblogic/App");
-//
-////        //Расчет процента покрытия по продуктам Стандартных платформ
-////        percentOfCoverByIncidentForNginx = percentOfCoverByIncident(listTriggersForNginx, listTriggersWithIncForNginx);
-////        percentOfCoverByIncidentForWAS =percentOfCoverByIncident(listTriggersForWAS, listTriggersWithIncForWAS);
-////        percentOfCoverByIncidentForWildFly = percentOfCoverByIncident(listTriggersForWildFly, listTriggersWithIncForWildFly);
-////        percentOfCoverByIncidentForSiebel = percentOfCoverByIncident(listTriggersForSiebel, listTriggersWithIncForSiebel);
-//
-//        //--------------------------------------------------------------------------------------------------------------
-//
-//        //Создание списка всех триггеров по продуктам Платформа управления контейнерами (Terra)
-//        listTriggersForOpenShift =  triggerListWithTemplateName (severity, "OpenShift", "Sigma servers");
-//        //Создание списка триггеров по продуктам Платформа управления контейнерами (Terra)
-//        listTriggersWithIncForOpenShift =  triggerListWithIncidentTagWithTemplateName("scope", "availability",
-//                severity, "OpenShift", "Sigma servers");
-//
-//
-////        //Расчет процента покрытия по продуктам Платформа управления контейнерами (Terra)
-////        percentOfCoverByIncidentForOpenShift = percentOfCoverByIncident(listTriggersForOpenShift, listTriggersWithIncForOpenShift);
-
-    };
-
-
+    }
 }
 
-
-
-//        String host = "192.168.66.29";
-//        JSONObject filter = new JSONObject();
-//
-//        filter.put("host", new String[] { host });
-
-//        tag.keySet().forEach(keyStr->
-//        {
-//            Object keyvalue = tag.get(keyStr);
-//            System.out.println("key: "+ keyStr + " value: " + keyvalue);
-//
-//        });
-
-
-//        Map<String, String> tags = new HashMap<String, String>() {{
-//            put("tag", "scope");
-//            put("value", "availability");
-//            put("operator", "0");
-//        }};
-
-
-//        JSONObject tag = new JSONObject();
-//        tag.put("tag", "scope");
-//        tag.put("value", "availability");
-//        tag.put("operator", "0");

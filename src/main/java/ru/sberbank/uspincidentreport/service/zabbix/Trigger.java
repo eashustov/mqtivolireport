@@ -2,14 +2,23 @@ package ru.sberbank.uspincidentreport.service.zabbix;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Trigger {
     String description;
     String priority;
     String templateid;
     String triggerid;
-//
     String templateName;
+    List<HashMap> tags;
+
+    public void setTags(List<HashMap> tags) {
+        this.tags = tags;
+    }
 
     public String getTemplateName() {
         return templateName;
@@ -51,6 +60,10 @@ public class Trigger {
         return triggerid;
     }
 
+    public List<HashMap> getTags() {
+        return tags;
+    }
+
     @Override
     public String toString() {
         return "Trigger{" +
@@ -59,7 +72,21 @@ public class Trigger {
                 ", templateid='" + templateid + '\'' +
                 ", triggerid='" + triggerid + '\'' +
                 ", templateName='" + templateName + '\'' +
+                ", tags=" + tags +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Trigger)) return false;
+        Trigger trigger = (Trigger) o;
+        return Objects.equals(description, trigger.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description);
     }
 
 }
