@@ -231,7 +231,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "\t'Сопровождение Платформы управления контейнерами (00018435)',\n" +
            "\t'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)')) \n" +
            "WHERE\n" +
-           "\tPROBLEM LIKE :triggerDescription\n" +
+           "\tPROBLEM LIKE REPLACE (:triggerDescription, '\"', '*')\n" +
            "\tAND\n" +
            "\tOPENED_BY = 'int_zabbix_si' AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS')" +
            " AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')" , nativeQuery = true)

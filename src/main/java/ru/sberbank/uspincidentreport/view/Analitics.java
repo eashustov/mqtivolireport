@@ -1390,11 +1390,15 @@ public class Analitics extends VerticalLayout {
                             .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Инструкция для устранения");
                     RESOLUTION_GUIDE.setVisible(false);
 
+                    String triggerDescription = "%" + StringUtils.substringBefore(
+                            StringUtils.substringBefore(trigger.getDescription(), "{"), "{" + "%") + "%" +
+                            StringUtils.substringAfter(StringUtils.substringAfter(trigger.getDescription(), "}"), "}") + "%"
+                            .replaceAll(":", "%");
+
                     GridListDataView<UspIncidentData> triggerIncGridDataView = triggerIncGrid.setItems(
-                            repo.findIncByTrigger(startDate, endDate, "%" + StringUtils.substringBefore(trigger.getDescription(), "{") + "%" +
-                                    StringUtils.substringAfter(trigger.getDescription(), "}") + "%".replace("\"", "*")));
-                    System.out.println("Описание триггера:" + "%" + StringUtils.substringBefore(trigger.getDescription(), "{") + "%" +
-                            StringUtils.substringAfter(trigger.getDescription(), "}") + "%".replace("\"", "*"));
+                            repo.findIncByTrigger(startDate, endDate, triggerDescription));
+
+                    System.out.println("Описание триггера:" + triggerDescription);
                     MainView.PersonFilter personFilter = new MainView.PersonFilter(triggerIncGridDataView);
 
                     //Create headers for Grid
@@ -1455,9 +1459,9 @@ public class Analitics extends VerticalLayout {
                     setHorizontalComponentAlignment(Alignment.CENTER, incListHeaderForTriggers);
 
                     //Кнопка закрытия диалога
-                    Button closeButton = new Button(new Icon("lumo", "cross"), (event) -> listTriggerDialog.close());
-                    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-                    setHorizontalComponentAlignment(Alignment.END, closeButton);
+                    Button listTriggerIncDialogCloseButton = new Button(new Icon("lumo", "cross"), (event) -> listTriggerIncDialog.close());
+                    listTriggerIncDialogCloseButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                    setHorizontalComponentAlignment(Alignment.END, listTriggerIncDialogCloseButton);
 
                     //Anchor block
                     Anchor listTriggersDownloadToCSV = new Anchor(exportToCSV(triggerIncGridDataView), "Сохранить в CSV" );
@@ -1474,7 +1478,7 @@ public class Analitics extends VerticalLayout {
                     setHorizontalComponentAlignment(Alignment.CENTER, HeaderAndDownloadCSVLayout);
                     Label countTriggers = new Label("Найдено инцидентов: " + triggerIncGridDataView.getItemCount());
 
-                    incListGridByTriggerlayout.add(closeButton, HeaderAndDownloadCSVLayout);
+                    incListGridByTriggerlayout.add(listTriggerIncDialogCloseButton, HeaderAndDownloadCSVLayout);
 
                     listTriggerIncDialog.add(incListGridByTriggerlayout, triggerIncGrid, countTriggers, incContextMenu);
                     listTriggerIncDialog.open();
