@@ -350,7 +350,7 @@ public class MainView extends VerticalLayout {
 //        }
 //    }
 
-    private Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer) {
+    static Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer) {
         Label label = new Label(labelText);
         label.getStyle().set("padding-top", "var(--lumo-space-m)")
                 .set("font-size", "var(--lumo-font-size-xs)");
@@ -408,7 +408,7 @@ public class MainView extends VerticalLayout {
 
     }
 
-    private static class PersonFilter {
+    static class PersonFilter {
 
 
         private GridListDataView<UspIncidentData> dataViewFiltered;

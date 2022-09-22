@@ -32,6 +32,7 @@ import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H4;
@@ -39,6 +40,7 @@ import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -48,24 +50,18 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataTop10;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
-import ru.sberbank.uspincidentreport.repo.UspIncidentDataCountPerMonthRepo;
-import ru.sberbank.uspincidentreport.repo.UspIncidentDataTop10Repo;
-import ru.sberbank.uspincidentreport.repo.UspIncidentDataTotalCountRepo;
-import ru.sberbank.uspincidentreport.repo.UspIncidentAnaliticsRepo;
+import ru.sberbank.uspincidentreport.repo.*;
 import ru.sberbank.uspincidentreport.service.ExporToCSV;
 import ru.sberbank.uspincidentreport.service.zabbix.ExportToCSV;
 import ru.sberbank.uspincidentreport.service.zabbix.Trigger;
 import ru.sberbank.uspincidentreport.service.zabbix.ZabbixAPI;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -74,7 +70,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import java.util.stream.Stream;
+import static ru.sberbank.uspincidentreport.service.ExporToCSV.exportToCSV;
 
 
 @Route(value = "analitics")
@@ -103,6 +99,8 @@ public class Analitics extends VerticalLayout {
     private UspIncidentAnaliticsRepo repoAnalitics;
     @Autowired
     private UspIncidentDataTop10Repo dataTop10IncRepo;
+    @Autowired
+    private UspIncidentRepo repo;
 
     private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
 
@@ -121,12 +119,8 @@ public class Analitics extends VerticalLayout {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
-//        DatePicker.DatePickerI18n singleFormatI18n = new DatePicker.DatePickerI18n();
-//        singleFormatI18n.setDateFormat("dd.MM.yyyy");
         start_Date = new DatePicker("Начало");
-//        start_Date.setI18n(singleFormatI18n);
         end_Date = new DatePicker("Конец");
-//        end_Date.setI18n(singleFormatI18n);
         end_Date.setMax(now);
         end_Date.setValue(now);
         start_Date.setMax(now);
@@ -141,10 +135,6 @@ public class Analitics extends VerticalLayout {
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
         this.repoAnalitics = repoAnalitics;
         this.dataTop10IncRepo = dataTop10IncRepo;
-//        getTotalCountAnaliticsData(start_Date,end_Date);
-//        this.assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
-//        this.donutChart = donutChartInit(seriesData,labelsData);
-//        this.lineChart = LineChartInit();
 
         //Кнопка поиска
         TextField searchField = new TextField();
@@ -160,7 +150,7 @@ public class Analitics extends VerticalLayout {
         buttonQuery.setText("Запрос данных");
 
         //Anchor block
-        Anchor downloadToCSV = new Anchor(ExporToCSV.exportToCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
+        Anchor downloadToCSV = new Anchor(exportToCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
         Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
         buttonDownloadCSV.setText("Сохранить в CSV");
         buttonDownloadCSV.setEnabled(false);
@@ -283,7 +273,7 @@ public class Analitics extends VerticalLayout {
         MainView.IncidentContextMenu searchGridContextMenu = new MainView.IncidentContextMenu(searchGrid);
 
         //Anchor block
-        Anchor searchDownloadToCSV = new Anchor(ExporToCSV.exportToCSV(searchDataView), "Сохранить в CSV" );
+        Anchor searchDownloadToCSV = new Anchor(exportToCSV(searchDataView), "Сохранить в CSV" );
         Button searchButtonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
         searchButtonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
         searchDownloadToCSV.removeAll();
@@ -313,8 +303,6 @@ public class Analitics extends VerticalLayout {
                                 .build())
 //                        .withOffsetX(-100.0)
                         .withOffsetY(-30.0) //-30 Это смешение вверх
-//                        .withWidth("700px")
-//                        .withHeight("400px")
                         .build())
                 .withTitle(TitleSubtitleBuilder.get()
                         .withText("Количество автоинцидентов за период " + periodDate)
@@ -391,11 +379,7 @@ public class Analitics extends VerticalLayout {
                         .withCategories(new ArrayList<String>(labels))
 //                    .withCategories("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep")
                         .build())
-
                 .withSeries(SetSeries(assignmentGroupMapToMonthData).stream().toArray(Series[]::new))
-
-//                    new Series<>("Компьютеры",20.0, 31.0, 45.0, 61.0, 29.0, 92.0, 39.0, 51.0, 248.0),
-//                    new Series<>("Desktops", 10.0, 41.0, 35.0, 51.0, 49.0, 62.0, 69.0, 91.0, 148.0))
                 .build();
         lineChart.setColors("#FF0000", "#800000", "#FF8C00", "#808000", "#00FF00", "#008000",
                 "#00FFFF", "#008080", "#0000FF", "#000080", "#800080", "#FF00FF", "#808080", "#000000");
@@ -544,30 +528,12 @@ public class Analitics extends VerticalLayout {
                         if(e.getHPC_Assignment().equals(assignmentGroup)) {
                             String year = e.getYear();
                             String month = e.getMonth_Number();
-//                        String month = e.getMonth()
-//                                .replace("January", "1")
-//                                .replace("February", "2")
-//                                .replace("March", "3")
-//                                .replace("April", "4")
-//                                .replace("May", "5")
-//                                .replace("June", "6")
-//                                .replace("July", "7")
-//                                .replace("August", "8")
-//                                .replace("September","9")
-//                                .replace("October","10")
-//                                .replace("November", "11")
-//                                .replace("December", "12");
                             Integer countInc = e.getCount_Inc();
                             monthYearCountInc.put(year + " " + month, countInc);
                         }
                     }
 
                     itemExecute.add(assignmentGroup);
-
-//                System.out.println(assignmentGroup);
-//
-//                System.out.println(monthYearCountInc);
-//                System.out.println(itemExecute.toString()+  " Список добавленных");
 
                 } else {
                     continue;
@@ -653,22 +619,6 @@ public class Analitics extends VerticalLayout {
 
                     }
                 });
-
-
-//        System.out.println("Временная шкала: " + labels);
-
-        //Определение максимального колиичества значений из всех групп.
-
-//        int maxData=0;
-//        int dataCount;
-//
-//        for (String key : valueMapToMonthData.keySet()) {
-//            dataCount = valueMapToMonthData.get(key).size();
-//            if (dataCount > maxData) maxData = dataCount;
-
-//            System.out.println(key + ":" + valueMapToMonthData.get(key).size());
-//        }
-//        System.out.println("Максимальное количество " + maxData);
 
 
         //Определение и форматирование данных для назначенных групп
@@ -794,6 +744,9 @@ public class Analitics extends VerticalLayout {
         VerticalLayout triggersListGridInitlayout = new VerticalLayout();
         Grid<Trigger> triggerWithIncGrid = new Grid<>(Trigger.class, false);
 
+        //Прикручиваем контекстное меню
+        TriggerIncidentContextMenu gridTriggerIncContextMenu = new TriggerIncidentContextMenu(triggerWithIncGrid);
+
         //Создание combobox для выбора продукта
         ComboBox<String> triggersByProductComboBox = new ComboBox<>();
         triggersByProductComboBox.setPlaceholder("ИТ-услуга");
@@ -810,8 +763,7 @@ public class Analitics extends VerticalLayout {
         triggersIncidentTagComboBox.setClearButtonVisible(false);
         triggersIncidentTagComboBox.setAllowCustomValue(false);
         triggersIncidentTagComboBox.addThemeVariants(ComboBoxVariant.LUMO_SMALL);
-//        triggersSeverityComboBox.setWidthFull();
-//        triggersSeverityComboBox.getStyle().set("max-width", "100%");
+
         H5 triggersWithIncHeader = new H5("Список триггеров для " + triggersByProductComboBox.getValue() + " (" + triggersIncidentTagComboBox.getValue() + "." +
                 " мин. уровень критичности: "  + triggersSeverityComboBox.getValue() + ")");
 
@@ -830,9 +782,10 @@ public class Analitics extends VerticalLayout {
 
         GridListDataView<Trigger> triggerWithIncDataView = triggerWithIncGrid.setItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
 
-        //Кнопка запроса триггеров
-        Button buttonTriggers = new Button();
-        buttonTriggers.setText("Список триггеров");
+//Убрать комментарии если нужна кнопка
+//        //Кнопка запроса триггеров
+//        Button buttonTriggers = new Button();
+//        buttonTriggers.setText("Список триггеров");
 
         //Кнопка закрытия диалога
         Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> listTriggerDialog.close());
@@ -847,20 +800,24 @@ public class Analitics extends VerticalLayout {
         listTriggersDownloadToCSV.add(listTriggersButtonDownloadCSV);
 
         setHorizontalComponentAlignment(Alignment.CENTER, triggersWithIncHeader);
-
+//Убрать комментарии если нужна кнопка
+//        HorizontalLayout comboBoxLayout = new HorizontalLayout(triggersByProductComboBox,
+//                triggersIncidentTagComboBox, buttonTriggers, listTriggersDownloadToCSV);
+//        comboBoxLayout.setVerticalComponentAlignment(Alignment.END, triggersByProductComboBox,
+//                triggersIncidentTagComboBox, buttonTriggers, listTriggersDownloadToCSV);
         HorizontalLayout comboBoxLayout = new HorizontalLayout(triggersByProductComboBox,
-                triggersIncidentTagComboBox, buttonTriggers, listTriggersDownloadToCSV);
+                triggersIncidentTagComboBox, listTriggersDownloadToCSV);
         comboBoxLayout.setVerticalComponentAlignment(Alignment.END, triggersByProductComboBox,
-                triggersIncidentTagComboBox, buttonTriggers, listTriggersDownloadToCSV);
+                triggersIncidentTagComboBox, listTriggersDownloadToCSV);
         setHorizontalComponentAlignment(Alignment.CENTER, comboBoxLayout);
         Label countTriggers = new Label("Найдено триггеров: " + triggerWithIncDataView.getItemCount());
         triggersListGridInitlayout.add(closeButton, triggersWithIncHeader, comboBoxLayout, triggerWithIncGrid,
-                countTriggers);
+                countTriggers, gridTriggerIncContextMenu);
 
-        buttonTriggers.addClickListener(e->{
+        triggersByProductComboBox.addValueChangeListener(changeEvent ->{
             try {
                 //Выставляются переменные статистики с заданным уровнем критичности
-                ZabbixAPI.getTriggerListUSP (triggersSeverityComboBoxHumanItemsMap
+                ZabbixAPI.getTriggerListUSP(triggersSeverityComboBoxHumanItemsMap
                         .entrySet()
                         .stream()
                         .filter(entry -> entry.getValue().equals(triggersSeverityComboBox.getValue()))
@@ -978,6 +935,250 @@ public class Analitics extends VerticalLayout {
                     countTriggers);
         });
 
+        triggersIncidentTagComboBox.addValueChangeListener(changeEvent ->{
+            try {
+                //Выставляются переменные статистики с заданным уровнем критичности
+                ZabbixAPI.getTriggerListUSP(triggersSeverityComboBoxHumanItemsMap
+                        .entrySet()
+                        .stream()
+                        .filter(entry -> entry.getValue().equals(triggersSeverityComboBox.getValue()))
+                        .map(Map.Entry::getKey)
+                        .findFirst().get());
+            } catch (JsonProcessingException jsonProcessingException) {
+                jsonProcessingException.printStackTrace();
+            }
+            //Очистка представления таблицы
+            triggerWithIncDataView.removeItems(triggerWithIncDataView.getItems().collect(Collectors.toList()));
+            System.out.println("Зашли в обработчик кнопки");
+            //Список триггеров с инцидентами
+            if (triggersIncidentTagComboBox.getValue().equals("с инцидентом")) {
+                System.out.println("Зашли в список триггеров с инцидентами");
+                //Условия для ОИП
+                if (triggersByProductComboBox.getValue().equals("SOWA")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
+                    System.out.println("Зашли в список триггеров с инцидентами SOWA" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
+                } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForKafka);
+                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere MQ")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForMQ);
+                } else if (triggersByProductComboBox.getValue().equals("IBM DataPower")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForDP);
+                    //Условия для Стандартных платформ
+                } else if (triggersByProductComboBox.getValue().equals("Nginx")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForNginx);
+                } else if (triggersByProductComboBox.getValue().equals("WildFly")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWildFly);
+                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere Application Server")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWAS);
+                } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWebLogic);
+                    //Условия для OpenShift
+                } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForOpenShift);
+                }
+                //Условие для всех триггеров
+            }else if (triggersIncidentTagComboBox.getValue().equals("все триггеры")) {
+                System.out.println("Зашли в список триггеров все триггеры");
+                //Условия для ОИП
+                if (triggersByProductComboBox.getValue().equals("SOWA")) {
+                    System.out.println("Зашли в список триггеров все триггеры SOWA");
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForSOWA);
+                } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForKafka);
+                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere MQ")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForMQ);
+                } else if (triggersByProductComboBox.getValue().equals("IBM DataPower")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForDP);
+                    //Условия для Стандартных платформ
+                } else if (triggersByProductComboBox.getValue().equals("Nginx")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForNginx);
+                } else if (triggersByProductComboBox.getValue().equals("WildFly")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWildFly);
+                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere Application Server")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWAS);
+                } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWebLogic);
+                    //Условия для OpenShift
+                } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForOpenShift);
+                    //Условие для триггеров без инцидента
+                }
+            }else if (triggersIncidentTagComboBox.getValue().equals("без инцидента")) {
+                System.out.println("Зашли в список триггеров без инцидента");
+                //Условия для ОИП
+                if (triggersByProductComboBox.getValue().equals("SOWA")) {
+                    System.out.println("Зашли в список триггеров без инцидента SOWA");
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForSOWA,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA));
+                } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForKafka,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForKafka));
+                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere MQ")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForMQ,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForMQ));
+                } else if (triggersByProductComboBox.getValue().equals("IBM DataPower")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForDP,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForDP));
+                    //Условия для Стандартных платформ
+                } else if (triggersByProductComboBox.getValue().equals("Nginx")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForNginx,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForNginx));
+                } else if (triggersByProductComboBox.getValue().equals("WildFly")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForWildFly,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForNginx));
+                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere Application Server")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForWAS,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForWAS));
+                } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForWebLogic,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForWebLogic));
+                    //Условия для OpenShift
+                } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForOpenShift,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForOpenShift));
+                }
+
+            }
+            triggersListGridInitlayout.removeAll();
+            countTriggers.setText("Найдено триггеров: " + triggerWithIncDataView.getItemCount());
+            triggersWithIncHeader.setText("Список триггеров для " + triggersByProductComboBox.getValue() + " (" + triggersIncidentTagComboBox.getValue() + "." +
+                    " мин. уровень критичности: "  + triggersSeverityComboBox.getValue() + ")");
+            triggersListGridInitlayout.add(closeButton, triggersWithIncHeader, comboBoxLayout, triggerWithIncGrid,
+                    countTriggers);
+        });
+
+        //Убрать комментарии если нужна кнопка
+////Метод вызова диалога отображения таблицы по кнопке
+//        buttonTriggers.addClickListener(e->{
+//            try {
+//                //Выставляются переменные статистики с заданным уровнем критичности
+//                ZabbixAPI.getTriggerListUSP (triggersSeverityComboBoxHumanItemsMap
+//                        .entrySet()
+//                        .stream()
+//                        .filter(entry -> entry.getValue().equals(triggersSeverityComboBox.getValue()))
+//                        .map(Map.Entry::getKey)
+//                        .findFirst().get());
+//            } catch (JsonProcessingException jsonProcessingException) {
+//                jsonProcessingException.printStackTrace();
+//            }
+//            //Очистка представления таблицы
+//            triggerWithIncDataView.removeItems(triggerWithIncDataView.getItems().collect(Collectors.toList()));
+//            System.out.println("Зашли в обработчик кнопки");
+//            //Список триггеров с инцидентами
+//            if (triggersIncidentTagComboBox.getValue().equals("с инцидентом")) {
+//                System.out.println("Зашли в список триггеров с инцидентами");
+//                //Условия для ОИП
+//                if (triggersByProductComboBox.getValue().equals("SOWA")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
+//                    System.out.println("Зашли в список триггеров с инцидентами SOWA" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
+//                } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForKafka);
+//                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere MQ")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForMQ);
+//                } else if (triggersByProductComboBox.getValue().equals("IBM DataPower")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForDP);
+//                    //Условия для Стандартных платформ
+//                } else if (triggersByProductComboBox.getValue().equals("Nginx")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForNginx);
+//                } else if (triggersByProductComboBox.getValue().equals("WildFly")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWildFly);
+//                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere Application Server")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWAS);
+//                } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWebLogic);
+//                    //Условия для OpenShift
+//                } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForOpenShift);
+//                }
+//                //Условие для всех триггеров
+//            }else if (triggersIncidentTagComboBox.getValue().equals("все триггеры")) {
+//                System.out.println("Зашли в список триггеров все триггеры");
+//                //Условия для ОИП
+//                if (triggersByProductComboBox.getValue().equals("SOWA")) {
+//                    System.out.println("Зашли в список триггеров все триггеры SOWA");
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForSOWA);
+//                } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForKafka);
+//                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere MQ")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForMQ);
+//                } else if (triggersByProductComboBox.getValue().equals("IBM DataPower")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForDP);
+//                    //Условия для Стандартных платформ
+//                } else if (triggersByProductComboBox.getValue().equals("Nginx")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForNginx);
+//                } else if (triggersByProductComboBox.getValue().equals("WildFly")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWildFly);
+//                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere Application Server")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWAS);
+//                } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWebLogic);
+//                    //Условия для OpenShift
+//                } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForOpenShift);
+//                    //Условие для триггеров без инцидента
+//                }
+//            }else if (triggersIncidentTagComboBox.getValue().equals("без инцидента")) {
+//                System.out.println("Зашли в список триггеров без инцидента");
+//                //Условия для ОИП
+//                if (triggersByProductComboBox.getValue().equals("SOWA")) {
+//                    System.out.println("Зашли в список триггеров без инцидента SOWA");
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForSOWA,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA));
+//                } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForKafka,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForKafka));
+//                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere MQ")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForMQ,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForMQ));
+//                } else if (triggersByProductComboBox.getValue().equals("IBM DataPower")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForDP,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForDP));
+//                    //Условия для Стандартных платформ
+//                } else if (triggersByProductComboBox.getValue().equals("Nginx")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForNginx,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForNginx));
+//                } else if (triggersByProductComboBox.getValue().equals("WildFly")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForWildFly,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForNginx));
+//                } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere Application Server")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForWAS,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForWAS));
+//                } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForWebLogic,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForWebLogic));
+//                    //Условия для OpenShift
+//                } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
+//                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+//                            ZabbixAPI.listTriggersWithCustomSeverityForOpenShift,
+//                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForOpenShift));
+//                }
+//
+//            }
+//            triggersListGridInitlayout.removeAll();
+//            countTriggers.setText("Найдено триггеров: " + triggerWithIncDataView.getItemCount());
+//            triggersWithIncHeader.setText("Список триггеров для " + triggersByProductComboBox.getValue() + " (" + triggersIncidentTagComboBox.getValue() + "." +
+//                    " мин. уровень критичности: "  + triggersSeverityComboBox.getValue() + ")");
+//            triggersListGridInitlayout.add(closeButton, triggersWithIncHeader, comboBoxLayout, triggerWithIncGrid,
+//                    countTriggers);
+//        });
+
         System.out.println("Содержание переменной ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA :" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
 
         return triggersListGridInitlayout;
@@ -1066,8 +1267,7 @@ public class Analitics extends VerticalLayout {
     }
 
     private ApexCharts VerticalBarChartIncCoverInit(String severity) throws JsonProcessingException {
-//        ZabbixAPI.ZabbixAPIRegistration();
-//        ZabbixAPI.getTriggerStatistic(severity);
+
         ZabbixAPI.getTriggerListUSP(severity);
 
         VerticalBarChartIncCover = ApexChartsBuilder.get()
@@ -1130,6 +1330,156 @@ public class Analitics extends VerticalLayout {
         listTriggerDialog.add(triggersListGridInit());
         listTriggerDialog.open();
 
+    }
+
+    //Контекстное меню для таблицы с триггерами
+    private class TriggerIncidentContextMenu extends GridContextMenu<Trigger> {
+        public TriggerIncidentContextMenu(Grid<Trigger> target) {
+            super(target);
+
+            addItem("Инциденты по триггеру", e -> e.getItem().ifPresent(trigger -> {
+                if (!trigger.getDescription().equals("")) {
+                    //Grid View
+                    Grid<UspIncidentData> triggerIncGrid = new Grid<>(UspIncidentData.class, false);
+                    triggerIncGrid.setHeight("77%");
+                    triggerIncGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
+                    triggerIncGrid.setColumnReorderingAllowed(true);
+
+                    MainView.IncidentContextMenu incContextMenu = new MainView.IncidentContextMenu(triggerIncGrid);
+                    Grid.Column<UspIncidentData> NUMBER = triggerIncGrid
+                            .addColumn(UspIncidentData::getNUMBER).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Номер инцидента");
+                    Grid.Column<UspIncidentData> BRIEF_DESCRIPTION = triggerIncGrid
+                            .addColumn(UspIncidentData::getBRIEF_DESCRIPTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Краткое описание");
+                    Grid.Column<UspIncidentData> PRIORITY_CODE = triggerIncGrid
+                            .addColumn(UspIncidentData::getPRIORITY_CODE).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Важность");
+                    Grid.Column<UspIncidentData> OPEN_TIME = triggerIncGrid
+                            .addColumn(UspIncidentData::getOPEN_TIME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Время регистрации");
+                    Grid.Column<UspIncidentData> ASSIGNEE_NAME = triggerIncGrid
+                            .addColumn(UspIncidentData::getHPC_ASSIGNEE_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Исполнитель");
+                    Grid.Column<UspIncidentData> ASSIGNMENT = triggerIncGrid
+                            .addColumn(UspIncidentData::getHPC_ASSIGNMENT).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Назначен в группу");
+                    Grid.Column<UspIncidentData> CREATED_BY_NAME = triggerIncGrid
+                            .addColumn(UspIncidentData::getHPC_CREATED_BY_NAME).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Инициатор");
+                    CREATED_BY_NAME.setVisible(false);
+                    Grid.Column<UspIncidentData> ZABBIX_HISTORY = triggerIncGrid
+                            .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getZABBIX_HISTORY(), "История в Zabbix"))))
+                            .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("История в Zabbix");
+                    ZABBIX_HISTORY.setVisible(false);
+                    Grid.Column<UspIncidentData> STATUS = triggerIncGrid
+                            .addColumn(UspIncidentData::getHPC_STATUS).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Статус");
+                    Grid.Column<UspIncidentData> RESOLUTION = triggerIncGrid
+                            .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION(), "Сценарий устранения"))))
+                            .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Сценарий устранения");
+                    RESOLUTION.setVisible(false);
+                    Grid.Column<UspIncidentData> ACTION = triggerIncGrid
+                            .addColumn(UspIncidentData::getACTION).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Подробное описание");
+                    ACTION.setVisible(false);
+                    Grid.Column<UspIncidentData> HOST = triggerIncGrid
+                            .addColumn(UspIncidentData::getHOST).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Сервер");
+                    Grid.Column<UspIncidentData> PROBLEM = triggerIncGrid
+                            .addColumn(UspIncidentData::getPROBLEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Проблема");
+                    PROBLEM.setVisible(false);
+                    Grid.Column<UspIncidentData> AFFECTED_ITEM = triggerIncGrid
+                            .addColumn(UspIncidentData::getAFFECTED_ITEM).setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("ИТ-услуга");
+                    Grid.Column<UspIncidentData> RESOLUTION_GUIDE = triggerIncGrid
+                            .addColumn(new ComponentRenderer<>(z -> (new Anchor(z.getRESOLUTION_GUIDE(), "Инструкция для устранения"))))
+                            .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Инструкция для устранения");
+                    RESOLUTION_GUIDE.setVisible(false);
+
+                    GridListDataView<UspIncidentData> triggerIncGridDataView = triggerIncGrid.setItems(
+                            repo.findIncByTrigger(startDate, endDate, "%" + StringUtils.substringBefore(trigger.getDescription(), " {#") + "%" +
+                                    StringUtils.substringAfter(trigger.getDescription(), "}: ") + "%"));
+                    System.out.println("Описание триггера:" + "%" + StringUtils.substringBefore(trigger.getDescription(), " {#") + "%" +
+                            StringUtils.substringAfter(trigger.getDescription(), "}: ") + "%");
+                    MainView.PersonFilter personFilter = new MainView.PersonFilter(triggerIncGridDataView);
+
+                    //Create headers for Grid
+
+                    triggerIncGrid.getHeaderRows().clear();
+                    HeaderRow headerRow = triggerIncGrid.appendHeaderRow();
+
+                    headerRow.getCell(NUMBER)
+                            .setComponent(MainView.createFilterHeader("Номер инцидента", personFilter::setNumber));
+                    headerRow.getCell(BRIEF_DESCRIPTION)
+                            .setComponent(MainView.createFilterHeader("Краткое описание", personFilter::setBriefDescription));
+                    headerRow.getCell(PRIORITY_CODE)
+                            .setComponent(MainView.createFilterHeader("Важность", personFilter::setPriorityCode));
+                    headerRow.getCell(OPEN_TIME)
+                            .setComponent(MainView.createFilterHeader("Время регистрации", personFilter::setOpenTime));
+                    headerRow.getCell(ASSIGNEE_NAME)
+                            .setComponent(MainView.createFilterHeader("Исполнитель", personFilter::setAssigneeName));
+                    headerRow.getCell(ASSIGNMENT)
+                            .setComponent(MainView.createFilterHeader("Назначен в группу", personFilter::setAssignment));
+                    headerRow.getCell(CREATED_BY_NAME)
+                            .setComponent(MainView.createFilterHeader("Инициатор", personFilter::setCreatedByName));
+                    headerRow.getCell(ZABBIX_HISTORY)
+                            .setComponent(MainView.createFilterHeader("История в Zabbix", personFilter::setZabbixHistory));
+                    headerRow.getCell(STATUS)
+                            .setComponent(MainView.createFilterHeader("Статус", personFilter::setStatus));
+                    headerRow.getCell(RESOLUTION)
+                            .setComponent(MainView.createFilterHeader("Сценарий устранения", personFilter::setResolution));
+                    headerRow.getCell(RESOLUTION_GUIDE)
+                            .setComponent(MainView.createFilterHeader("Инструкция для устранения", personFilter::setResolutionGuide));
+                    headerRow.getCell(ACTION)
+                            .setComponent(MainView.createFilterHeader("Подробное описание", personFilter::setAction));
+                    headerRow.getCell(HOST)
+                            .setComponent(MainView.createFilterHeader("Сервер", personFilter::setHost));
+                    headerRow.getCell(PROBLEM)
+                            .setComponent(MainView.createFilterHeader("Проблема", personFilter::setProblem));
+                    headerRow.getCell(AFFECTED_ITEM)
+                            .setComponent(FilterActiveIncident.createFilterHeader("ИТ-услуга", personFilter::setAffectedItem, triggerIncGridDataView));
+
+
+                    // Вывод подробной информации по инциденту по выделению строки таблицы
+                    triggerIncGrid.setItemDetailsRenderer(new ComponentRenderer<>(incident -> {
+                        VerticalLayout layout = new VerticalLayout();
+                        layout.add(new Label(incident.getACTION()));
+                        return layout;
+                    }));
+
+                    //Создание диалога поиска инцидентов по триггеру
+                    //Создание вертикальной сетки диалога
+                    VerticalLayout incListGridByTriggerlayout = new VerticalLayout();
+
+                    Dialog listTriggerIncDialog = new Dialog();
+                    listTriggerIncDialog.setWidth("90%");
+                    listTriggerIncDialog.setHeight("90%");
+                    listTriggerIncDialog.setDraggable(true);
+                    listTriggerIncDialog.setResizable(true);
+                    H5 incListHeaderForTriggers = new H5("Инциденты по триггеру " + "\"" + trigger.getDescription() + "\"" + " за период "
+                            + startDate + " - " + endDate);
+                    setHorizontalComponentAlignment(Alignment.CENTER, incListHeaderForTriggers);
+
+                    //Кнопка закрытия диалога
+                    Button closeButton = new Button(new Icon("lumo", "cross"), (event) -> listTriggerDialog.close());
+                    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                    setHorizontalComponentAlignment(Alignment.END, closeButton);
+
+                    //Anchor block
+                    Anchor listTriggersDownloadToCSV = new Anchor(exportToCSV(triggerIncGridDataView), "Сохранить в CSV" );
+                    Button listTriggersButtonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
+                    listTriggersButtonDownloadCSV.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON);
+                    listTriggersDownloadToCSV.removeAll();
+                    listTriggersDownloadToCSV.add(listTriggersButtonDownloadCSV);
+
+//                    setHorizontalComponentAlignment(Alignment.CENTER, incListHeaderForTriggers);
+
+                    HorizontalLayout HeaderAndDownloadCSVLayout = new HorizontalLayout(incListHeaderForTriggers, listTriggersDownloadToCSV);
+                    HeaderAndDownloadCSVLayout.setVerticalComponentAlignment(Alignment.START, incListHeaderForTriggers);
+                    HeaderAndDownloadCSVLayout.setVerticalComponentAlignment(Alignment.END, listTriggersDownloadToCSV);
+                    setHorizontalComponentAlignment(Alignment.CENTER, HeaderAndDownloadCSVLayout);
+                    Label countTriggers = new Label("Найдено инцидентов: " + triggerIncGridDataView.getItemCount());
+
+                    incListGridByTriggerlayout.add(closeButton, HeaderAndDownloadCSVLayout);
+
+                    listTriggerIncDialog.add(incListGridByTriggerlayout, triggerIncGrid, countTriggers, incContextMenu);
+                    listTriggerIncDialog.open();
+
+
+                } else {
+                    Notification.show("Нет описания триггера", 1000, Notification.Position.MIDDLE);}
+            }));
+        }
     }
 
 
