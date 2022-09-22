@@ -1316,7 +1316,7 @@ public class Analitics extends VerticalLayout {
         VerticalBarChartIncCover.setMaxWidth("100%");
         VerticalBarChartIncCover.setWidth("900px");
         VerticalBarChartIncCover.setMaxHeight("100%");
-        VerticalBarChartIncCover.setHeight("600px");
+        VerticalBarChartIncCover.setHeight("500px");
 
         return VerticalBarChartIncCover;
     }
