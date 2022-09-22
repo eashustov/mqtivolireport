@@ -1313,6 +1313,10 @@ public class Analitics extends VerticalLayout {
                 .build();
         VerticalBarChartIncCover.setColors("#FF0000", "#800000", "#FF8C00", "#808000", "#00FF00", "#008000",
                 "#00FFFF", "#008080", "#0000FF", "#000080", "#800080", "#FF00FF", "#808080", "#000000");
+        VerticalBarChartIncCover.setMaxWidth("100%");
+        VerticalBarChartIncCover.setWidth("900px");
+        VerticalBarChartIncCover.setMaxHeight("100%");
+        VerticalBarChartIncCover.setHeight("600px");
 
         return VerticalBarChartIncCover;
     }
@@ -1387,10 +1391,10 @@ public class Analitics extends VerticalLayout {
                     RESOLUTION_GUIDE.setVisible(false);
 
                     GridListDataView<UspIncidentData> triggerIncGridDataView = triggerIncGrid.setItems(
-                            repo.findIncByTrigger(startDate, endDate, "%" + StringUtils.substringBefore(trigger.getDescription(), " {#") + "%" +
-                                    StringUtils.substringAfter(trigger.getDescription(), "}: ") + "%"));
-                    System.out.println("Описание триггера:" + "%" + StringUtils.substringBefore(trigger.getDescription(), " {#") + "%" +
-                            StringUtils.substringAfter(trigger.getDescription(), "}: ") + "%");
+                            repo.findIncByTrigger(startDate, endDate, "%" + StringUtils.substringBefore(trigger.getDescription(), "{") + "%" +
+                                    StringUtils.substringAfter(trigger.getDescription(), "}") + "%".replace("\"", "*")));
+                    System.out.println("Описание триггера:" + "%" + StringUtils.substringBefore(trigger.getDescription(), "{") + "%" +
+                            StringUtils.substringAfter(trigger.getDescription(), "}") + "%".replace("\"", "*"));
                     MainView.PersonFilter personFilter = new MainView.PersonFilter(triggerIncGridDataView);
 
                     //Create headers for Grid
