@@ -1393,7 +1393,7 @@ public class Analitics extends VerticalLayout {
                     String triggerDescription = "%"+trigger.getDescription()+"%";
                     int countDelimeterChar = (int)trigger.getDescription().chars().filter(ch->ch=='{').count();
 
-                    for (int count = 0; count < countDelimeterChar; count++){
+                    for (int count = 0; count <= countDelimeterChar; count++){
                         triggerDescription = "%" +
                                 StringUtils.substringBefore(triggerDescription, "{") + "%" +
                                 StringUtils.substringAfter(triggerDescription, "}") + "%"
