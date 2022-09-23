@@ -1390,7 +1390,7 @@ public class Analitics extends VerticalLayout {
                             .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Инструкция для устранения");
                     RESOLUTION_GUIDE.setVisible(false);
 
-                    String triggerDescription = trigger.getDescription();
+                    String triggerDescription = "%"+trigger.getDescription()+"%";
                     int countDelimeterChar = (int)trigger.getDescription().chars().filter(ch->ch=='{').count();
 
                     for (int count = 0; count < countDelimeterChar; count++){
