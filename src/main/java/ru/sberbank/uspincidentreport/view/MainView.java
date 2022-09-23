@@ -85,7 +85,7 @@ public class MainView extends VerticalLayout {
 
 //Grid View
         Grid<UspIncidentData> grid = new Grid<>(UspIncidentData.class, false);
-        grid.setHeight("70%");
+        grid.setHeight("600px");
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
         grid.setColumnReorderingAllowed(true);
 
