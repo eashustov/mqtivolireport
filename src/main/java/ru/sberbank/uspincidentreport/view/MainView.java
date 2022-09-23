@@ -295,15 +295,6 @@ public class MainView extends VerticalLayout {
         columnToggleContextMenu.addColumnToggleItem("ИТ-услуга", AFFECTED_ITEM);
 
 
-        //Кнопка обновления
-//        Button refreshButton = new Button(new Icon(VaadinIcon.REFRESH));
-//        refreshButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-//        refreshButton.addClickListener(e -> {
-//            // Обновление таблицы
-//            counter.set(0);
-//            }
-//        );
-
         // build top HorizontalLayout
         HorizontalLayout actions = new HorizontalLayout(analiticsChart,menuBar);
         actions.setVerticalComponentAlignment(Alignment.END, menuBar);
@@ -334,21 +325,6 @@ public class MainView extends VerticalLayout {
 
     }
 
-//    public static void countRefresh(AtomicInteger counter){
-//        while (true) {
-//            // Update the data for a while
-//            while (counter.get() > 0) {
-//                // Sleep to emulate background work
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                counter.getAndDecrement();
-//
-//            }
-//        }
-//    }
 
     static Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer) {
         Label label = new Label(labelText);

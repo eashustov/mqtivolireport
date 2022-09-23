@@ -1346,7 +1346,7 @@ public class Analitics extends VerticalLayout {
                     //Grid View
                     Grid<UspIncidentData> triggerIncGrid = new Grid<>(UspIncidentData.class, false);
                     triggerIncGrid.setHeight("77%");
-                    triggerIncGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
+                    triggerIncGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
                     triggerIncGrid.setColumnReorderingAllowed(true);
 
                     MainView.IncidentContextMenu incContextMenu = new MainView.IncidentContextMenu(triggerIncGrid);
@@ -1390,10 +1390,16 @@ public class Analitics extends VerticalLayout {
                             .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Инструкция для устранения");
                     RESOLUTION_GUIDE.setVisible(false);
 
-                    String triggerDescription = "%" + StringUtils.substringBefore(
-                            StringUtils.substringBefore(trigger.getDescription(), "{"), "{" + "%") + "%" +
-                            StringUtils.substringAfter(StringUtils.substringAfter(trigger.getDescription(), "}"), "}") + "%"
-                            .replaceAll(":", "%");
+                    String triggerDescription = trigger.getDescription();
+                    int countDelimeterChar = (int)trigger.getDescription().chars().filter(ch->ch=='{').count();
+
+                    for (int count = 0; count < countDelimeterChar; count++){
+                        triggerDescription = "%" +
+                                StringUtils.substringBefore(triggerDescription, "{") + "%" +
+                                StringUtils.substringAfter(triggerDescription, "}") + "%"
+                                .replaceAll(":", "%");
+
+                    }
 
                     GridListDataView<UspIncidentData> triggerIncGridDataView = triggerIncGrid.setItems(
                             repo.findIncByTrigger(startDate, endDate, triggerDescription));
