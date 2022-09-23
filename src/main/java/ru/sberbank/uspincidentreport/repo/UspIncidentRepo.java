@@ -159,7 +159,8 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "\tHPC_CREATED_BY_NAME,\n" +
            "\t'RESOLUTION'                                                                \n" +
            "\tAS RESOLUTION,\n" +
-           "\tOPENED_BY \n" +
+           "\tOPENED_BY, \n" +
+           "\tAFFECTED_ITEM, 'RESOLUTION_GUIDE' AS RESOLUTION_GUIDE\n" +
            "FROM\n" +
            "\tsmprimary.probsummarym1 prob1 \n" +
            "WHERE\n" +
@@ -210,7 +211,8 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "\t'(') - 2)      AS HPC_ASSIGNMENT,\n" +
            "\tHPC_CREATED_BY_NAME,\n" +
            "\t'RESOLUTION'   AS RESOLUTION,\n" +
-           "\t'OPENED_BY'    AS OPENED_BY \n" +
+           "\t'OPENED_BY'    AS OPENED_BY, \n" +
+           "\tAFFECTED_ITEM, 'RESOLUTION_GUIDE' AS RESOLUTION_GUIDE\n" +
            "FROM\n" +
            "\tsmprimary.SBPROBSUMMARYTSM1 prob1 \n" +
            "WHERE\n" +
