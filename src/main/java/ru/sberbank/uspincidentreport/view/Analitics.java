@@ -238,7 +238,7 @@ public class Analitics extends VerticalLayout {
         GridListDataView<UspIncidentData> searchDataView = searchGrid.setItems(repoAnalitics.findIncBySearchFilter(startDate,endDate,searchValue));
 
 //        searchGrid.setAllRowsVisible(true); //Автоматическая высота таблицы в зависимости от количества строк
-        searchGrid.setHeight("70%");
+        searchGrid.setHeight("77%");
         searchGrid.setWidth("100%");
         searchGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
         searchGrid.setColumnReorderingAllowed(true);
@@ -1393,7 +1393,7 @@ public class Analitics extends VerticalLayout {
                     String triggerDescription = "%"+trigger.getDescription()+"%";
                     int countDelimeterChar = (int)trigger.getDescription().chars().filter(ch->ch=='{').count();
 
-                    for (int count = 0; count <= countDelimeterChar; count++){
+                    for (int count = 0; count < countDelimeterChar; count++){
                         triggerDescription = "%" +
                                 StringUtils.substringBefore(triggerDescription, "{") + "%" +
                                 StringUtils.substringAfter(triggerDescription, "}") + "%"
