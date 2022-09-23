@@ -81,12 +81,12 @@ public class Trigger {
         if (this == o) return true;
         if (!(o instanceof Trigger)) return false;
         Trigger trigger = (Trigger) o;
-        return Objects.equals(description, trigger.description);
+        return Objects.equals(description, trigger.description) &&
+                Objects.equals(priority, trigger.priority);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(description);
+        return Objects.hash(description, priority);
     }
-
 }
