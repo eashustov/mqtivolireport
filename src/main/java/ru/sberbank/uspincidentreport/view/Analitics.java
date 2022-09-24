@@ -743,7 +743,7 @@ public class Analitics extends VerticalLayout {
         //Таблица триггеров с автоинциденами вертикальная сетка
         VerticalLayout triggersListGridInitlayout = new VerticalLayout();
         Grid<Trigger> triggerWithIncGrid = new Grid<>(Trigger.class, false);
-        triggerWithIncGrid.setHeight("70%");
+        triggerWithIncGrid.setHeight("600px");
 
         //Прикручиваем контекстное меню
         TriggerIncidentContextMenu gridTriggerIncContextMenu = new TriggerIncidentContextMenu(triggerWithIncGrid);
