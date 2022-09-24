@@ -1198,8 +1198,8 @@ public class Analitics extends VerticalLayout {
             put("5", "Чрезвычайная");
         }};
         triggersSeverityComboBox = new ComboBox<>();
-        triggersSeverityComboBox.setLabel("Мин. критичность триггера");
-        triggersSeverityComboBox.setPlaceholder("Мин. критичность триггера");
+        triggersSeverityComboBox.setLabel("Критичность триггера");
+        triggersSeverityComboBox.setPlaceholder("Критичность триггера");
         triggersSeverityComboBox.setItems(
                 triggersSeverityComboBoxHumanItemsMap.get("0"),
                 triggersSeverityComboBoxHumanItemsMap.get("1"),
