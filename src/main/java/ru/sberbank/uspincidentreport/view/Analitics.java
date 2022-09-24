@@ -743,7 +743,7 @@ public class Analitics extends VerticalLayout {
         //Таблица триггеров с автоинциденами вертикальная сетка
         VerticalLayout triggersListGridInitlayout = new VerticalLayout();
         Grid<Trigger> triggerWithIncGrid = new Grid<>(Trigger.class, false);
-        triggerWithIncGrid.setHeight("500px");
+        triggerWithIncGrid.setHeight("480px");
 
         //Прикручиваем контекстное меню
         TriggerIncidentContextMenu gridTriggerIncContextMenu = new TriggerIncidentContextMenu(triggerWithIncGrid);
@@ -1198,8 +1198,8 @@ public class Analitics extends VerticalLayout {
             put("5", "Чрезвычайная");
         }};
         triggersSeverityComboBox = new ComboBox<>();
-        triggersSeverityComboBox.setLabel("Критичность триггера");
-        triggersSeverityComboBox.setPlaceholder("Критичность триггера");
+        triggersSeverityComboBox.setLabel("Мин. критичность триггера");
+        triggersSeverityComboBox.setPlaceholder("Мин. критичность триггера");
         triggersSeverityComboBox.setItems(
                 triggersSeverityComboBoxHumanItemsMap.get("0"),
                 triggersSeverityComboBoxHumanItemsMap.get("1"),
