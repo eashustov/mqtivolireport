@@ -121,7 +121,6 @@ public class ZabbixAPI {
                 .method("trigger.get")
                 .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
                 .paramEntry("host", hostName)
-                .paramEntry("inherited", true)
                 .build();
         try{
 
@@ -154,7 +153,6 @@ public class ZabbixAPI {
                 .method("trigger.get")
                 .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
                 .paramEntry("host", hostName)
-                .paramEntry("inherited", true)
                 .paramEntry("tags", tagJSONArray)
                 .build();
         try{
