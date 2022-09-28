@@ -136,7 +136,7 @@ public class ZabbixAPI {
 
             listTrigger = objectMapper.readValue(triggers, new TypeReference<Set<Trigger>>() {
             });
-            System.out.println("Все триггеры по по имени хоста: " + listTrigger);
+//            System.out.println("Все триггеры по по имени хоста: " + listTrigger);
             return listTrigger;
         } catch (NullPointerException npe) {
             npe.printStackTrace();
@@ -169,7 +169,7 @@ public class ZabbixAPI {
 
             listTrigger = objectMapper.readValue(triggers, new TypeReference<Set<Trigger>>() {
             });
-            System.out.println("Все триггеры c инцидентами по по имени хоста: " + listTrigger);
+//            System.out.println("Все триггеры c инцидентами по по имени хоста: " + listTrigger);
             return listTrigger;
         } catch (NullPointerException npe) {
             npe.printStackTrace();
@@ -194,7 +194,7 @@ public class ZabbixAPI {
         try {
             JSONObject getResponseHostID = zabbixApi.call(getRequestHostID);
             hostID = getResponseHostID.getJSONArray("result").getJSONObject(0).getString("hostid");
-            System.out.println("Хост ID: " + hostID);
+//            System.out.println("Хост ID: " + hostID);
         } catch (Exception e) {
             hostID="";
             e.printStackTrace();
@@ -214,7 +214,7 @@ public class ZabbixAPI {
 
             listLLD = objectMapper.readValue(triggers, new TypeReference<List<Discoveryrule>>() {
             });
-            System.out.println("Все LLD по hostID: " + listLLD);
+//            System.out.println("Все LLD по hostID: " + listLLD);
         } catch (NullPointerException | JsonProcessingException npe) {
             npe.printStackTrace();
             return listLLD;
@@ -235,12 +235,12 @@ public class ZabbixAPI {
             JSONObject getResponse = zabbixApi.call(getRequest);
 
             String triggers = getResponse.getJSONArray("result").toJSONString();
-            System.out.println("Прототипы триггеров с тегом: " + triggers);
+//            System.out.println("Прототипы триггеров с тегом: " + triggers);
             ObjectMapper objectMapper = new ObjectMapper();
 
             listTrigger = objectMapper.readValue(triggers, new TypeReference<Set<Trigger>>() {
             });
-            System.out.println("Все прототипы триггеров по по имени хоста: " + listTrigger);
+//            System.out.println("Все прототипы триггеров по по имени хоста: " + listTrigger);
 
             return listTrigger;
         } catch (NullPointerException npe) {
@@ -291,7 +291,7 @@ public class ZabbixAPI {
                         }
                     });
 
-            System.out.println("Все прототипы триггеров c инцидентами по имени хоста: " + listTriggerWithInc);
+//            System.out.println("Все прототипы триггеров c инцидентами по имени хоста: " + listTriggerWithInc);
             return listTriggerWithInc;
         } catch (NullPointerException npe) {
             npe.printStackTrace();
@@ -315,7 +315,7 @@ public class ZabbixAPI {
         Set<Trigger> listTriggersWithSeverity = listTriggers.stream()
                 .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
                 .collect(Collectors.toSet());
-        System.out.println("Триггеры с минимальным уровнем критичности: " + severity + listTriggersWithSeverity);
+//        System.out.println("Триггеры с минимальным уровнем критичности: " + severity + listTriggersWithSeverity);
         return listTriggersWithSeverity;
     }
 
@@ -372,7 +372,7 @@ public class ZabbixAPI {
                 });
         triggerListWithTemplateName.addAll(triggerprototypeListWithTemplateName);
 
-        System.out.println(triggerListWithTemplateName);
+//        System.out.println(triggerListWithTemplateName);
         return triggerListWithTemplateName;
 
     }
@@ -404,7 +404,6 @@ public class ZabbixAPI {
 
         triggerListWithIncidentTagWithTemplateName.addAll(triggerprototypeListWithTemplateName);
 
-        System.out.println(triggerListWithIncidentTagWithTemplateName);
         return triggerListWithIncidentTagWithTemplateName;
 
     }
@@ -473,8 +472,8 @@ public class ZabbixAPI {
         Set<Trigger> listTriggersWithoutIncWithCustomSeverity = listTriggersWithCustomSeverity.stream()
                 .filter(element -> !listTriggersWithIncWithCustomSeverity.contains(element))
                 .collect(Collectors.toSet());
-        System.out.println("Все триггеры" + listTriggersWithCustomSeverity + " ;" + "Триггеры с инцидентами: " +
-                listTriggersWithIncWithCustomSeverity + "Тригегры без инцидентов: " + listTriggersWithoutIncWithCustomSeverity);
+//        System.out.println("Все триггеры" + listTriggersWithCustomSeverity + " ;" + "Триггеры с инцидентами: " +
+//                listTriggersWithIncWithCustomSeverity + "Тригегры без инцидентов: " + listTriggersWithoutIncWithCustomSeverity);
         return listTriggersWithoutIncWithCustomSeverity;
     }
 

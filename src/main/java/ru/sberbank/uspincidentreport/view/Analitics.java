@@ -829,14 +829,14 @@ public class Analitics extends VerticalLayout {
             }
             //Очистка представления таблицы
             triggerWithIncDataView.removeItems(triggerWithIncDataView.getItems().collect(Collectors.toList()));
-            System.out.println("Зашли в обработчик ProductComboBox");
+//            System.out.println("Зашли в обработчик ProductComboBox");
             //Список триггеров с инцидентами
             if (triggersIncidentTagComboBox.getValue().equals("с инцидентом")) {
-                System.out.println("Зашли в список триггеров с инцидентами");
+//                System.out.println("Зашли в список триггеров с инцидентами");
                 //Условия для ОИП
                 if (triggersByProductComboBox.getValue().equals("SOWA")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
-                    System.out.println("Зашли в список триггеров с инцидентами SOWA" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
+//                    System.out.println("Зашли в список триггеров с инцидентами SOWA" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
                 } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForKafka);
                 } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere MQ")) {
@@ -860,10 +860,10 @@ public class Analitics extends VerticalLayout {
                 }
                 //Условие для всех триггеров
             }else if (triggersIncidentTagComboBox.getValue().equals("все триггеры")) {
-                System.out.println("Зашли в список триггеров все триггеры");
+//                System.out.println("Зашли в список триггеров все триггеры");
                 //Условия для ОИП
                 if (triggersByProductComboBox.getValue().equals("SOWA")) {
-                    System.out.println("Зашли в список триггеров все триггеры SOWA");
+//                    System.out.println("Зашли в список триггеров все триггеры SOWA");
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForSOWA);
                 } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForKafka);
@@ -888,10 +888,10 @@ public class Analitics extends VerticalLayout {
                     //Условие для триггеров без инцидента
                 }
             }else if (triggersIncidentTagComboBox.getValue().equals("без инцидента")) {
-                System.out.println("Зашли в список триггеров без инцидента");
+//                System.out.println("Зашли в список триггеров без инцидента");
                 //Условия для ОИП
                 if (triggersByProductComboBox.getValue().equals("SOWA")) {
-                    System.out.println("Зашли в список триггеров без инцидента SOWA");
+//                    System.out.println("Зашли в список триггеров без инцидента SOWA");
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
                             ZabbixAPI.listTriggersWithCustomSeverityForSOWA,
                             ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA));
@@ -958,14 +958,14 @@ public class Analitics extends VerticalLayout {
             }
             //Очистка представления таблицы
             triggerWithIncDataView.removeItems(triggerWithIncDataView.getItems().collect(Collectors.toList()));
-            System.out.println("Зашли в обработчик кнопки");
+//            System.out.println("Зашли в обработчик кнопки");
             //Список триггеров с инцидентами
             if (triggersIncidentTagComboBox.getValue().equals("с инцидентом")) {
-                System.out.println("Зашли в список триггеров с инцидентами");
+//                System.out.println("Зашли в список триггеров с инцидентами");
                 //Условия для ОИП
                 if (triggersByProductComboBox.getValue().equals("SOWA")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
-                    System.out.println("Зашли в список триггеров с инцидентами SOWA" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
+//                    System.out.println("Зашли в список триггеров с инцидентами SOWA" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
                 } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForKafka);
                 } else if (triggersByProductComboBox.getValue().equals("IBM WebSphere MQ")) {
@@ -989,10 +989,10 @@ public class Analitics extends VerticalLayout {
                 }
                 //Условие для всех триггеров
             }else if (triggersIncidentTagComboBox.getValue().equals("все триггеры")) {
-                System.out.println("Зашли в список триггеров все триггеры");
+//                System.out.println("Зашли в список триггеров все триггеры");
                 //Условия для ОИП
                 if (triggersByProductComboBox.getValue().equals("SOWA")) {
-                    System.out.println("Зашли в список триггеров все триггеры SOWA");
+//                    System.out.println("Зашли в список триггеров все триггеры SOWA");
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForSOWA);
                 } else if (triggersByProductComboBox.getValue().equals("Apache Kafka")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForKafka);
@@ -1017,10 +1017,10 @@ public class Analitics extends VerticalLayout {
                     //Условие для триггеров без инцидента
                 }
             }else if (triggersIncidentTagComboBox.getValue().equals("без инцидента")) {
-                System.out.println("Зашли в список триггеров без инцидента");
+//                System.out.println("Зашли в список триггеров без инцидента");
                 //Условия для ОИП
                 if (triggersByProductComboBox.getValue().equals("SOWA")) {
-                    System.out.println("Зашли в список триггеров без инцидента SOWA");
+//                    System.out.println("Зашли в список триггеров без инцидента SOWA");
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
                             ZabbixAPI.listTriggersWithCustomSeverityForSOWA,
                             ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA));
@@ -1196,7 +1196,7 @@ public class Analitics extends VerticalLayout {
 //                    countTriggers);
 //        });
 
-        System.out.println("Содержание переменной ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA :" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
+//        System.out.println("Содержание переменной ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA :" + ZabbixAPI.listTriggersWithIncWithCustomSeverityForSOWA);
 
         return triggersListGridInitlayout;
 
@@ -1422,7 +1422,7 @@ public class Analitics extends VerticalLayout {
                     GridListDataView<UspIncidentData> triggerIncGridDataView = triggerIncGrid.setItems(
                             repo.findIncByTrigger(startDate, endDate, triggerDescription));
 
-                    System.out.println("Описание триггера:" + triggerDescription);
+//                    System.out.println("Описание триггера:" + triggerDescription);
                     MainView.PersonFilter personFilter = new MainView.PersonFilter(triggerIncGridDataView);
 
                     //Create headers for Grid

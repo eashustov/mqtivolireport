@@ -115,70 +115,77 @@ public class UspIncidentReportApplication {
 
     static String zabbixHostSOWA;
     @Value("${zabbix.api.hostname.sowa}")
-    private void setHostSOWA(String hostName){
+    private void setZabbixHostSOWA(String hostName){
         zabbixHostSOWA = hostName;
     }
 
     static String zabbixHostKafka;
     @Value("${zabbix.api.hostname.kafka}")
-    private void setGroupsKafka(String hostName){
+    private void setZabbixHostKafka(String hostName){
         zabbixHostKafka = hostName;
     }
 
     static String zabbixHostMQ;
     @Value("${zabbix.api.hostname.mq}")
-    private void setGroupsMQ(String hostName){
+    private void setZabbixHostMQ(String hostName){
         zabbixHostMQ = hostName;
     }
 
     static String zabbixHostDP;
     @Value("${zabbix.api.hostname.dp}")
-    private void setGroupsDP(String hostName){
+    private void setZabbixHostDP(String hostName){
         zabbixHostDP = hostName;
     }
 
     //Стандартные платформы
     static String zabbixHostNginx;
     @Value("${zabbix.api.hostname.nginx}")
-    private void setZabbixGroupsNginx(String hostName){
+    private void setZabbixHostNginx(String hostName){
         zabbixHostNginx = hostName;
     }
 
     static String zabbixHostWAS;
     @Value("${zabbix.api.hostname.was}")
-    private void setZabbixGroupsWAS(String hostName){
+    private void setZabbixHostWAS(String hostName){
         zabbixHostWAS = hostName;
     }
 
     static String zabbixHostWildFly;
     @Value("${zabbix.api.hostname.wildfly}")
-    private void setZabbixGroupsWildFly(String hostName){
+    private void setZabbixHostWildFly(String hostName){
         zabbixHostWildFly = hostName;
     }
 
     static String zabbixHostWeblogic;
     @Value("${zabbix.api.hostname.weblogic}")
-    private void setZabbixGroupsWeblogic(String hostName){
+    private void setZabbixHostWeblogic(String hostName){
         zabbixHostWeblogic = hostName;
     }
 
     static String zabbixHostSiebel;
     @Value("${zabbix.api.hostname.siebel}")
-    private void setZabbixGroupsSiebel(String hostName){
+    private void setZabbixHostSiebel(String hostName){
         zabbixHostSiebel = hostName;
     }
 
     //Платформа управления контейнерами (Terra)
     static String zabbixHostOpenShift;
     @Value("${zabbix.api.hostname.openshift}")
-    private void setZabbixGroupsOpenShift(String hostName){
+    private void setZabbixHostOpenShift(String hostName){
         zabbixHostOpenShift = hostName;
     }
     //Период опроса Zabbix серверов
     static int zabbixRequestInterval;
     @Value("${zabbix.api.request.interval}")
-    private void setZabbixGroupsOpenShift(int requestInterval){
+    private void setZabbixRequestInterval(int requestInterval){
         zabbixRequestInterval = requestInterval;
+    }
+
+    //Период запуска GC
+    static int gcInterval;
+    @Value("${gc.interval}")
+    private void setGCInterval(int requestInterval){
+        gcInterval = requestInterval;
     }
 
     public static void main(String[] args) {
@@ -205,7 +212,7 @@ public class UspIncidentReportApplication {
                         }
                     }
                     try {
-                        System.out.println("Пауза между опросами " + zabbixRequestInterval + " минут");
+                        System.out.println("Пауза между опросами Zabbix: " + zabbixRequestInterval + " минут");
                         Thread.sleep(zabbixRequestInterval*60000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -239,25 +246,25 @@ public class UspIncidentReportApplication {
         //Запуск получения статистики Zabbix
         Thread zabbixAPIGetStatisticThread = new Thread(ZabbixAPIGetStatistic,"ZabbixAPIGetStatistic");
         zabbixAPIGetStatisticThread.start();
-        System.out.println("ZabbixAPIGetStatistic started...");
+//        System.out.println("ZabbixAPIGetStatistic started...");
 
         HeapControl ();
 
     }
 
     public static void HeapControl () {
-        System.out.println("Heap контроль запущен");
+//        System.out.println("Heap контроль запущен");
         while (true) {
 
             // Sleep to emulate background work
             try {
-                Thread.sleep(60000);
+                Thread.sleep(gcInterval*60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
             System.gc();
-            System.out.println("Запущен GC");
+//            System.out.println("Запущен GC");
 
             // Get current size of heap in bytes
             long heapSize = Runtime.getRuntime().totalMemory();
@@ -267,7 +274,7 @@ public class UspIncidentReportApplication {
 
             float usedHeapPrc = (float) heapSize / heapMaxSize;
 
-            System.out.println("totalMemory() :" + heapSize + " maxMemory(): " + heapMaxSize + " usedHeapPrc: " + usedHeapPrc);
+//            System.out.println("totalMemory() :" + heapSize + " maxMemory(): " + heapMaxSize + " usedHeapPrc: " + usedHeapPrc);
 
             if (usedHeapPrc > 0.80) {
                 //Если использование heap больше 80 процентов, выполнить рестарт приложения
