@@ -829,7 +829,7 @@ public class Analitics extends VerticalLayout {
             }
             //Очистка представления таблицы
             triggerWithIncDataView.removeItems(triggerWithIncDataView.getItems().collect(Collectors.toList()));
-            System.out.println("Зашли в обработчик кнопки");
+            System.out.println("Зашли в обработчик ProductComboBox");
             //Список триггеров с инцидентами
             if (triggersIncidentTagComboBox.getValue().equals("с инцидентом")) {
                 System.out.println("Зашли в список триггеров с инцидентами");
@@ -852,6 +852,8 @@ public class Analitics extends VerticalLayout {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWAS);
                 } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWebLogic);
+                } else if (triggersByProductComboBox.getValue().equals("Oracle Siebel CRM")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForSiebel);
                     //Условия для OpenShift
                 } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForOpenShift);
@@ -878,6 +880,8 @@ public class Analitics extends VerticalLayout {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWAS);
                 } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWebLogic);
+                } else if (triggersByProductComboBox.getValue().equals("Oracle Siebel CRM")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForSiebel);
                     //Условия для OpenShift
                 } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForOpenShift);
@@ -920,6 +924,10 @@ public class Analitics extends VerticalLayout {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
                             ZabbixAPI.listTriggersWithCustomSeverityForWebLogic,
                             ZabbixAPI.listTriggersWithIncWithCustomSeverityForWebLogic));
+                } else if (triggersByProductComboBox.getValue().equals("Oracle Siebel CRM")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForSiebel,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForSiebel));
                     //Условия для OpenShift
                 } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
@@ -973,6 +981,8 @@ public class Analitics extends VerticalLayout {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWAS);
                 } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForWebLogic);
+                } else if (triggersByProductComboBox.getValue().equals("Oracle Siebel CRM")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForSiebel);
                     //Условия для OpenShift
                 } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithIncWithCustomSeverityForOpenShift);
@@ -999,6 +1009,8 @@ public class Analitics extends VerticalLayout {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWAS);
                 } else if (triggersByProductComboBox.getValue().equals("Oracle WebLogic Server")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForWebLogic);
+                } else if (triggersByProductComboBox.getValue().equals("Oracle Siebel CRM")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForSiebel);
                     //Условия для OpenShift
                 } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithCustomSeverityForOpenShift);
@@ -1041,6 +1053,10 @@ public class Analitics extends VerticalLayout {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
                             ZabbixAPI.listTriggersWithCustomSeverityForWebLogic,
                             ZabbixAPI.listTriggersWithIncWithCustomSeverityForWebLogic));
+                } else if (triggersByProductComboBox.getValue().equals("Oracle Siebel CRM")) {
+                    triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
+                            ZabbixAPI.listTriggersWithCustomSeverityForSiebel,
+                            ZabbixAPI.listTriggersWithIncWithCustomSeverityForSiebel));
                     //Условия для OpenShift
                 } else if (triggersByProductComboBox.getValue().equals("Платформа управления контейнерами (Terra)")) {
                     triggerWithIncDataView.addItems(ZabbixAPI.listTriggersWithoutIncWithCustomSeverity(
@@ -1299,6 +1315,7 @@ public class Analitics extends VerticalLayout {
                         new Series<>("WAS","", ZabbixAPI.percentOfCoverByIncidentForWAS),
                         new Series<>("WildFly","", ZabbixAPI.percentOfCoverByIncidentForWildFly),
                         new Series<>("WebLogic","", ZabbixAPI.percentOfCoverByIncidentForWebLogic),
+                        new Series<>("Siebel","", ZabbixAPI.percentOfCoverByIncidentForSiebel),
                         //Столбцы OpenShift
                         new Series<>("OpenShift","","", ZabbixAPI.percentOfCoverByIncidentForOpenShift))
                 .withYaxis(YAxisBuilder.get()

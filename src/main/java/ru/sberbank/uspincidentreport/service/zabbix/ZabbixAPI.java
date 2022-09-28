@@ -55,27 +55,31 @@ public class ZabbixAPI {
     public volatile static Set<Trigger> listTriggersForWildFly = new HashSet<>();
     public volatile static Set<Trigger> listTriggersForWAS = new HashSet<>();
     public volatile static Set<Trigger> listTriggersForWebLogic = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersForSiebel = new HashSet<>();
     //Создание списка дефолтных с уровнем критичности 0 триггеров с инцидентами по продуктам Стандартных платформ
     public volatile static Set<Trigger> listTriggersWithIncForNginx = new HashSet<>();
     public volatile static Set<Trigger> listTriggersWithIncForWildFly = new HashSet<>();
     public volatile static Set<Trigger> listTriggersWithIncForWAS = new HashSet<>();
     public volatile static Set<Trigger> listTriggersWithIncForWebLogic = new HashSet<>();
+    public volatile static Set<Trigger> listTriggersWithIncForSiebel = new HashSet<>();
     //Создание списка триггеров по продуктам Стандартных платформ c заданным уровнем критичности
     public volatile static Set<Trigger> listTriggersWithCustomSeverityForNginx;
     public volatile static Set<Trigger> listTriggersWithCustomSeverityForWAS;
     public volatile static Set<Trigger> listTriggersWithCustomSeverityForWildFly;
     public volatile static Set<Trigger> listTriggersWithCustomSeverityForWebLogic;
-
+    public volatile static Set<Trigger> listTriggersWithCustomSeverityForSiebel;
     //Создание списка триггеров с инцидентами по продуктам Стандартных платформ c заданным уровнем критичности
     public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForNginx;
     public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForWAS;
     public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForWildFly;
     public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForWebLogic;
+    public volatile static Set<Trigger> listTriggersWithIncWithCustomSeverityForSiebel;
     //Расчет процента покрытия по продуктам Стандартных платформ
     public volatile static int percentOfCoverByIncidentForNginx;
     public volatile static int percentOfCoverByIncidentForWildFly;
     public volatile static int percentOfCoverByIncidentForWAS;
     public volatile static int percentOfCoverByIncidentForWebLogic;
+    public volatile static int percentOfCoverByIncidentForSiebel;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -431,12 +435,14 @@ public class ZabbixAPI {
         listTriggersWithCustomSeverityForWAS = getTriggersWithSeverity(listTriggersForWAS, severity);
         listTriggersWithCustomSeverityForWildFly = getTriggersWithSeverity(listTriggersForWildFly, severity);
         listTriggersWithCustomSeverityForWebLogic = getTriggersWithSeverity(listTriggersForWebLogic, severity);
+        listTriggersWithCustomSeverityForSiebel = getTriggersWithSeverity(listTriggersForSiebel, severity);
 
         //Создание списка триггеров с инцидентами по продуктам Стандартных платформ c заданным уровнем критичности
         listTriggersWithIncWithCustomSeverityForNginx = getTriggersWithSeverity(listTriggersWithIncForNginx, severity);
         listTriggersWithIncWithCustomSeverityForWAS = getTriggersWithSeverity(listTriggersWithIncForWAS, severity);
         listTriggersWithIncWithCustomSeverityForWildFly = getTriggersWithSeverity(listTriggersWithIncForWildFly, severity);
         listTriggersWithIncWithCustomSeverityForWebLogic = getTriggersWithSeverity(listTriggersWithIncForWebLogic, severity);
+        listTriggersWithIncWithCustomSeverityForSiebel = getTriggersWithSeverity(listTriggersWithIncForSiebel, severity);
 
         //Расчет процента покрытия по продуктам Стандартных платформ c заданным уровнем критичности
         percentOfCoverByIncidentForNginx = percentOfCoverByIncident(listTriggersWithCustomSeverityForNginx,
@@ -447,6 +453,8 @@ public class ZabbixAPI {
                 listTriggersWithIncWithCustomSeverityForWildFly);
         percentOfCoverByIncidentForWebLogic = percentOfCoverByIncident(listTriggersWithCustomSeverityForWebLogic,
                 listTriggersWithIncWithCustomSeverityForWebLogic);
+        percentOfCoverByIncidentForSiebel = percentOfCoverByIncident(listTriggersWithCustomSeverityForSiebel,
+                listTriggersWithIncWithCustomSeverityForSiebel);
 
         //Создание списка триггеров по продуктам Платформа управления контейнерами (Terra)
         listTriggersWithCustomSeverityForOpenShift = getTriggersWithSeverity(listTriggersForOpenShift, severity);
@@ -473,7 +481,7 @@ public class ZabbixAPI {
     //Этот метод запускается при старте приложения и собирает сатистику по триггерам с уровнем критичности 0
     public static void getTriggerStatisticDefault(String severity, String tagName, String tagValue, String hostSOWA,
                                                   String hostKafka, String hostMQ, String hostDP, String hostNginx, String hostWAS,
-                                                  String hostWildFly, String hostWeblogic, String hostOpenShift) throws JsonProcessingException {
+                                                  String hostWildFly, String hostWeblogic, String hostSiebel, String hostOpenShift) throws JsonProcessingException {
 
         //Создание списка всех триггеров по продуктам ОИП
         listTriggersForSOWA.addAll(triggerListWithTemplateName(severity, hostSOWA));
@@ -498,6 +506,7 @@ public class ZabbixAPI {
         listTriggersForWAS.addAll(triggerListWithTemplateName(severity, hostWAS));
         listTriggersForWildFly.addAll(triggerListWithTemplateName(severity, hostWildFly));
         listTriggersForWebLogic.addAll(triggerListWithTemplateName(severity, hostWeblogic));
+        listTriggersForSiebel.addAll(triggerListWithTemplateName(severity, hostSiebel));
 
         //Создание списка триггеров с инцидентами по продуктам Стандартных платформ
         listTriggersWithIncForNginx.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
@@ -508,6 +517,8 @@ public class ZabbixAPI {
                 severity, hostWildFly));
         listTriggersWithIncForWebLogic.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
                 severity, hostWeblogic));
+        listTriggersWithIncForSiebel.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
+                severity, hostSiebel));
 
         //--------------------------------------------------------------------------------------------------------------
 

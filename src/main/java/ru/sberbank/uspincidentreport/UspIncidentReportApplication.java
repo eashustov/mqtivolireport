@@ -161,6 +161,13 @@ public class UspIncidentReportApplication {
     private void setZabbixGroupsWeblogic(String hostName){
         zabbixHostWeblogic = hostName;
     }
+
+    static String zabbixHostSiebel;
+    @Value("${zabbix.api.hostname.siebel}")
+    private void setZabbixGroupsSiebel(String hostName){
+        zabbixHostSiebel = hostName;
+    }
+
     //Платформа управления контейнерами (Terra)
     static String zabbixHostOpenShift;
     @Value("${zabbix.api.hostname.openshift}")
@@ -190,7 +197,7 @@ public class UspIncidentReportApplication {
                         try {
                             ZabbixAPI.getTriggerStatisticDefault(zabbixAPITriggersSeverityDefaultValue, zabbixAPITagName,
                                     zabbixAPITagValue, zabbixHostSOWA, zabbixHostKafka, zabbixHostMQ, zabbixHostDP,
-                                    zabbixHostNginx, zabbixHostWAS, zabbixHostWildFly, zabbixHostWeblogic,
+                                    zabbixHostNginx, zabbixHostWAS, zabbixHostWildFly, zabbixHostWeblogic, zabbixHostSiebel,
                                     zabbixHostOpenShift);
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
@@ -220,6 +227,7 @@ public class UspIncidentReportApplication {
                         ZabbixAPI.listTriggersWithIncForWAS.clear();
                         ZabbixAPI.listTriggersWithIncForWildFly.clear();
                         ZabbixAPI.listTriggersWithIncForWebLogic.clear();
+                        ZabbixAPI.listTriggersWithIncForSiebel.clear();
                         ZabbixAPI.listTriggersForOpenShift.clear();
                         ZabbixAPI.listTriggersWithIncForOpenShift.clear();
                     } catch (Exception e) {
