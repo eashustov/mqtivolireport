@@ -940,7 +940,7 @@ public class Analitics extends VerticalLayout {
             triggersListGridInitlayout.removeAll();
             countTriggers.setText("Найдено триггеров: " + triggerWithIncDataView.getItemCount());
             triggersWithIncHeader.setText("Список триггеров для " + triggersByProductComboBox.getValue() + " (" + triggersIncidentTagComboBox.getValue() + "." +
-                    " мин. уровень критичности: "  + triggersSeverityComboBox.getValue() + ")");
+                    " Уровень критичности " + typeSeveritySelect.getValue() + " " + triggersSeverityComboBox.getValue() + ")");
             triggersListGridInitlayout.add(closeButton, triggersWithIncHeader, comboBoxLayout, triggerWithIncGrid,
                     countTriggers);
         });
@@ -1069,7 +1069,7 @@ public class Analitics extends VerticalLayout {
             triggersListGridInitlayout.removeAll();
             countTriggers.setText("Найдено триггеров: " + triggerWithIncDataView.getItemCount());
             triggersWithIncHeader.setText("Список триггеров для " + triggersByProductComboBox.getValue() + " (" + triggersIncidentTagComboBox.getValue() + "." +
-                    " мин. уровень критичности: "  + triggersSeverityComboBox.getValue() + ")");
+                    " Уровень критичности " + typeSeveritySelect.getValue() + " " + triggersSeverityComboBox.getValue() + ")");
             triggersListGridInitlayout.add(closeButton, triggersWithIncHeader, comboBoxLayout, triggerWithIncGrid,
                     countTriggers);
         });
