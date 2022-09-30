@@ -1305,7 +1305,7 @@ public class Analitics extends VerticalLayout {
         });
 
         HorizontalLayout triggersWithIncHeaderLayout = new HorizontalLayout(VerticalBarChartIncCoverHeader);
-        HorizontalLayout comboBoxLayout = new HorizontalLayout(triggersSeverityComboBox, buttonTriggersListBuild);
+        HorizontalLayout comboBoxLayout = new HorizontalLayout(typeSeveritySelect, triggersSeverityComboBox, buttonTriggersListBuild);
         comboBoxLayout.setVerticalComponentAlignment(Alignment.END,triggersSeverityComboBox, buttonTriggersListBuild);
         setHorizontalComponentAlignment(Alignment.CENTER, comboBoxLayout);
         triggersWithIncHeaderLayout.setVerticalComponentAlignment(Alignment.END, VerticalBarChartIncCoverHeader);
