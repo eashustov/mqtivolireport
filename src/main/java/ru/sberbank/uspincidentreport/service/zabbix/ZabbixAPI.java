@@ -206,6 +206,7 @@ public class ZabbixAPI {
                 .method("discoveryrule.get")
                 .paramEntry("output", "itemid")
                 .paramEntry("hostids", hostID)
+                .paramEntry("monitored", true)
                 .build();
         try {
             JSONObject getResponseLLD = zabbixApi.call(getRequestLLD);
