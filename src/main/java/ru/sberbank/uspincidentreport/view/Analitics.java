@@ -767,7 +767,7 @@ public class Analitics extends VerticalLayout {
         triggersIncidentTagComboBox.addThemeVariants(ComboBoxVariant.LUMO_SMALL);
 
         H5 triggersWithIncHeader = new H5("Список триггеров для " + triggersByProductComboBox.getValue() + " (" + triggersIncidentTagComboBox.getValue() + "." +
-                " мин. уровень критичности: "  + triggersSeverityComboBox.getValue() + ")");
+                " уровнем критичности " + typeSeveritySelect.getValue() + " " + triggersSeverityComboBox.getValue() + ")");
 
         triggerWithIncGrid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
         triggerWithIncGrid.setColumnReorderingAllowed(true);
