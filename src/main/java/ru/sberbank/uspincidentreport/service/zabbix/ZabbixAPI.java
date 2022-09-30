@@ -10,6 +10,7 @@ import io.github.hengyunabc.zabbix.api.Request;
 import io.github.hengyunabc.zabbix.api.RequestBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import ru.sberbank.uspincidentreport.view.Analitics;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -312,13 +313,29 @@ public class ZabbixAPI {
 
 
     static Set<Trigger> getTriggersWithSeverity(Set<Trigger> listTriggers, String severity) {
-        Set<Trigger> listTriggersWithSeverity = listTriggers.stream()
-                .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
-                .collect(Collectors.toSet());
+        Set<Trigger> listTriggersWithSeverity= new HashSet<>();
+        try{
+            if (Analitics.typeSeveritySelect.getValue().equals(">=")) {
+                listTriggersWithSeverity = listTriggers.stream()
+                        .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
+                        .collect(Collectors.toSet());
+            } else if (Analitics.typeSeveritySelect.getValue().equals("=")) {
+                listTriggersWithSeverity = listTriggers.stream()
+                        .filter(trigger -> Integer.parseInt(trigger.priority) == (Integer.parseInt(severity)))
+                        .collect(Collectors.toSet());
+            } else {
+                listTriggersWithSeverity = listTriggers.stream()
+                        .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
+                        .collect(Collectors.toSet());
+            }
+        } catch (NullPointerException e) {
+            listTriggersWithSeverity = listTriggers.stream()
+                    .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
+                    .collect(Collectors.toSet());
+        }
 //        System.out.println("Триггеры с минимальным уровнем критичности: " + severity + listTriggersWithSeverity);
         return listTriggersWithSeverity;
     }
-
     static Template getTemplatebyID(String triggerids) throws JsonProcessingException, IndexOutOfBoundsException {
         Template template = new Template();
         Request getRequest = RequestBuilder.newBuilder()

@@ -108,6 +108,7 @@ public class Analitics extends VerticalLayout {
     IncTop10Filter incTop10Filter;
 
     //ZabbixAPI
+    public static RadioButtonGroup<String> typeSeveritySelect= new RadioButtonGroup<>();
     ComboBox<String> triggersSeverityComboBox;
     static Map<String, String> triggersSeverityComboBoxHumanItemsMap;
     Dialog listTriggerDialog;
@@ -1213,6 +1214,12 @@ public class Analitics extends VerticalLayout {
             put("4", "Высокая");
             put("5", "Чрезвычайная");
         }};
+        //Выбор типа сравнения по критичности
+        typeSeveritySelect.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+        typeSeveritySelect.setLabel("");
+        typeSeveritySelect.setItems(">=", "=");
+        typeSeveritySelect.setValue(">=");
+        //Выбор критичности
         triggersSeverityComboBox = new ComboBox<>();
         triggersSeverityComboBox.setLabel("Критичность триггера");
         triggersSeverityComboBox.setPlaceholder("Критичность триггера");
@@ -1227,6 +1234,36 @@ public class Analitics extends VerticalLayout {
         triggersSeverityComboBox.setClearButtonVisible(false);
         triggersSeverityComboBox.setAllowCustomValue(false);
         triggersSeverityComboBox.addThemeVariants(ComboBoxVariant.LUMO_SMALL);
+
+        typeSeveritySelect.addValueChangeListener(e-> {
+            if (VerticalBarChartIncCoverlayout.getComponentCount() == 3){
+                VerticalBarChartIncCoverlayout.remove(VerticalBarChartIncCover);
+                try {
+                    VerticalBarChartIncCoverlayout.add(VerticalBarChartIncCoverInit(triggersSeverityComboBoxHumanItemsMap
+                            .entrySet()
+                            .stream()
+                            .filter(entry -> entry.getValue().equals(triggersSeverityComboBox.getValue()))
+                            .map(Map.Entry::getKey)
+                            .findFirst().get()));
+
+                } catch (JsonProcessingException jsonProcessingException) {
+                    jsonProcessingException.printStackTrace();
+                }
+            } else {
+                try {
+                    VerticalBarChartIncCoverlayout.add(VerticalBarChartIncCoverInit(triggersSeverityComboBoxHumanItemsMap
+                            .entrySet()
+                            .stream()
+                            .filter(entry -> entry.getValue().equals(triggersSeverityComboBox.getValue()))
+                            .map(Map.Entry::getKey)
+                            .findFirst().get()));
+                } catch (JsonProcessingException jsonProcessingException) {
+                    jsonProcessingException.printStackTrace();
+                }
+            }
+
+        });
+
         triggersSeverityComboBox.addValueChangeListener(e->{
 
             if (VerticalBarChartIncCoverlayout.getComponentCount() == 3){
