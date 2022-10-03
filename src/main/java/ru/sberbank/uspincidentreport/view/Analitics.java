@@ -108,7 +108,7 @@ public class Analitics extends VerticalLayout {
     IncTop10Filter incTop10Filter;
 
     //ZabbixAPI
-    private RadioButtonGroup<String> typeSeveritySelect= new RadioButtonGroup<>();
+    private RadioButtonGroup<String> typeSeveritySelect;
     public static String typeSeverity;
     ComboBox<String> triggersSeverityComboBox;
     static Map<String, String> triggersSeverityComboBoxHumanItemsMap;
@@ -1216,6 +1216,7 @@ public class Analitics extends VerticalLayout {
             put("5", "Чрезвычайная");
         }};
         //Выбор типа сравнения по критичности
+        typeSeveritySelect = new RadioButtonGroup<>();
         typeSeveritySelect.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
         typeSeveritySelect.setLabel("");
         typeSeveritySelect.setItems(">=", "=");
