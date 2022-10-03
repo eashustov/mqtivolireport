@@ -5,15 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.spring.annotation.UIScope;
-import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import io.github.hengyunabc.zabbix.api.DefaultZabbixApi;
 import io.github.hengyunabc.zabbix.api.Request;
 import io.github.hengyunabc.zabbix.api.RequestBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import ru.sberbank.uspincidentreport.view.Analitics;
 
 import java.util.ArrayList;
@@ -23,8 +19,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-@SpringComponent
-@UIScope
+@Component
 public class ZabbixAPI {
 
     public static DefaultZabbixApi zabbixApi;
@@ -319,14 +314,13 @@ public class ZabbixAPI {
 
 
     static Set<Trigger> getTriggersWithSeverity(Set<Trigger> listTriggers, String severity) {
-        RadioButtonGroup<String>  typeSeveritySelect = Analitics.typeSeveritySelect;
         Set<Trigger> listTriggersWithSeverity;
         try{
-            if (typeSeveritySelect.getValue().equals(">=")) {
+            if (Analitics.typeSeverity.equals(">=")) {
                 listTriggersWithSeverity = listTriggers.stream()
                         .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
                         .collect(Collectors.toSet());
-            } else if (typeSeveritySelect.getValue().equals("=")) {
+            } else if (Analitics.typeSeverity.equals("=")) {
                 listTriggersWithSeverity = listTriggers.stream()
                         .filter(trigger -> Integer.parseInt(trigger.priority) == (Integer.parseInt(severity)))
                         .collect(Collectors.toSet());
