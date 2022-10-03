@@ -53,6 +53,8 @@ import com.vaadin.flow.router.Route;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataTop10;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
@@ -75,6 +77,7 @@ import static ru.sberbank.uspincidentreport.service.ExporToCSV.exportToCSV;
 
 @Route(value = "analitics")
 @PageTitle("Аналитика автоинцидентов УСП за период")
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Analitics extends VerticalLayout {
     private H4 header;
     ApexCharts donutChart;
