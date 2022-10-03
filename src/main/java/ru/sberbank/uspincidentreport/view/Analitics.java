@@ -51,9 +51,11 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.guieffect.qual.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -80,9 +82,7 @@ import static ru.sberbank.uspincidentreport.service.ExporToCSV.exportToCSV;
 @Route(value = "analitics")
 @PageTitle("Аналитика автоинцидентов УСП за период")
 @SpringComponent
-@VaadinSessionScope
-@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-
+@UIScope
 public class Analitics extends VerticalLayout {
     private H4 header;
     ApexCharts donutChart;

@@ -6,14 +6,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import io.github.hengyunabc.zabbix.api.DefaultZabbixApi;
 import io.github.hengyunabc.zabbix.api.Request;
 import io.github.hengyunabc.zabbix.api.RequestBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import ru.sberbank.uspincidentreport.view.Analitics;
 
 import java.util.ArrayList;
@@ -24,9 +23,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @SpringComponent
-@VaadinSessionScope
-@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@UIScope
 public class ZabbixAPI {
+    public ZabbixAPI(@Autowired Analitics bean) {
+    }
 
     public static DefaultZabbixApi zabbixApi;
     //Переменные статистики по дефолтных с уровнем критичности 0 триггерам продуктов ОИП
