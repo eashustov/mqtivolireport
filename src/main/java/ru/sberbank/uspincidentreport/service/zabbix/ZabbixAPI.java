@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
@@ -25,9 +26,6 @@ import java.util.stream.Collectors;
 @SpringComponent
 @UIScope
 public class ZabbixAPI {
-
-    @Autowired
-    private static Analitics analiticsBean;
 
     public static DefaultZabbixApi zabbixApi;
     //Переменные статистики по дефолтных с уровнем критичности 0 триггерам продуктов ОИП
@@ -321,13 +319,14 @@ public class ZabbixAPI {
 
 
     static Set<Trigger> getTriggersWithSeverity(Set<Trigger> listTriggers, String severity) {
+        RadioButtonGroup<String>  typeSeveritySelect = Analitics.typeSeveritySelect;
         Set<Trigger> listTriggersWithSeverity;
         try{
-            if (analiticsBean.typeSeveritySelect.getValue().equals(">=")) {
+            if (typeSeveritySelect.getValue().equals(">=")) {
                 listTriggersWithSeverity = listTriggers.stream()
                         .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
                         .collect(Collectors.toSet());
-            } else if (analiticsBean.typeSeveritySelect.getValue().equals("=")) {
+            } else if (typeSeveritySelect.getValue().equals("=")) {
                 listTriggersWithSeverity = listTriggers.stream()
                         .filter(trigger -> Integer.parseInt(trigger.priority) == (Integer.parseInt(severity)))
                         .collect(Collectors.toSet());

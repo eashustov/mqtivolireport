@@ -124,7 +124,7 @@ public class Analitics extends VerticalLayout {
 //    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
     public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics,
-                     UspIncidentDataTop10Repo dataTop10IncRepo, @Autowired ZabbixAPI ZabbixAPIBean) {
+                     UspIncidentDataTop10Repo dataTop10IncRepo) {
         this.header = new H4("Аналитика автоинцидентов УСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
