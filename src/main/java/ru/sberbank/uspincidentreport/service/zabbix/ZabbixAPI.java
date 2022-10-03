@@ -23,10 +23,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @SpringComponent
-@UIScope
+@VaadinSessionScope
 public class ZabbixAPI {
-    public ZabbixAPI(@Autowired Analitics bean) {
-    }
+
+    @Autowired
+    private static Analitics analiticsBean;
 
     public static DefaultZabbixApi zabbixApi;
     //Переменные статистики по дефолтных с уровнем критичности 0 триггерам продуктов ОИП
@@ -320,13 +321,13 @@ public class ZabbixAPI {
 
 
     static Set<Trigger> getTriggersWithSeverity(Set<Trigger> listTriggers, String severity) {
-        Set<Trigger> listTriggersWithSeverity= new HashSet<>();
+        Set<Trigger> listTriggersWithSeverity;
         try{
-            if (Analitics.typeSeveritySelect.getValue().equals(">=")) {
+            if (analiticsBean.typeSeveritySelect.getValue().equals(">=")) {
                 listTriggersWithSeverity = listTriggers.stream()
                         .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
                         .collect(Collectors.toSet());
-            } else if (Analitics.typeSeveritySelect.getValue().equals("=")) {
+            } else if (analiticsBean.typeSeveritySelect.getValue().equals("=")) {
                 listTriggersWithSeverity = listTriggers.stream()
                         .filter(trigger -> Integer.parseInt(trigger.priority) == (Integer.parseInt(severity)))
                         .collect(Collectors.toSet());
