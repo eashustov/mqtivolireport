@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import io.github.hengyunabc.zabbix.api.DefaultZabbixApi;
 import io.github.hengyunabc.zabbix.api.Request;
 import io.github.hengyunabc.zabbix.api.RequestBuilder;
@@ -21,7 +23,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-@Component
+@SpringComponent
+@VaadinSessionScope
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ZabbixAPI {
 
