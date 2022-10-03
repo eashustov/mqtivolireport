@@ -110,7 +110,6 @@ public class Analitics extends VerticalLayout {
     //ZabbixAPI
     public static RadioButtonGroup<String> typeSeveritySelect= new RadioButtonGroup<>();
     ComboBox<String> triggersSeverityComboBox;
-    public static String typeSeverity;
     static Map<String, String> triggersSeverityComboBoxHumanItemsMap;
     Dialog listTriggerDialog;
 
@@ -1220,7 +1219,7 @@ public class Analitics extends VerticalLayout {
         typeSeveritySelect.setLabel("");
         typeSeveritySelect.setItems(">=", "=");
         typeSeveritySelect.setValue(">=");
-        typeSeverity = typeSeveritySelect.getValue();
+        ZabbixAPI.typeSeverity = typeSeveritySelect.getValue();
         //Выбор критичности
         triggersSeverityComboBox = new ComboBox<>();
         triggersSeverityComboBox.setLabel("Критичность триггера");
@@ -1238,7 +1237,7 @@ public class Analitics extends VerticalLayout {
         triggersSeverityComboBox.addThemeVariants(ComboBoxVariant.LUMO_SMALL);
 
         typeSeveritySelect.addValueChangeListener(e-> {
-            typeSeverity = typeSeveritySelect.getValue();
+            ZabbixAPI.typeSeverity = typeSeveritySelect.getValue();
             if (VerticalBarChartIncCoverlayout.getComponentCount() == 3){
                 VerticalBarChartIncCoverlayout.remove(VerticalBarChartIncCover);
                 try {

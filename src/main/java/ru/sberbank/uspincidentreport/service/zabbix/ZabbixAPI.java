@@ -10,7 +10,6 @@ import io.github.hengyunabc.zabbix.api.Request;
 import io.github.hengyunabc.zabbix.api.RequestBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.sberbank.uspincidentreport.view.Analitics;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class ZabbixAPI {
+    public static String typeSeverity;
 
     public static DefaultZabbixApi zabbixApi;
     //Переменные статистики по дефолтных с уровнем критичности 0 триггерам продуктов ОИП
@@ -316,11 +316,11 @@ public class ZabbixAPI {
     static Set<Trigger> getTriggersWithSeverity(Set<Trigger> listTriggers, String severity) {
         Set<Trigger> listTriggersWithSeverity;
         try{
-            if (Analitics.typeSeverity.equals(">=")) {
+            if (typeSeverity.equals(">=")) {
                 listTriggersWithSeverity = listTriggers.stream()
                         .filter(trigger -> Integer.parseInt(trigger.priority) >= (Integer.parseInt(severity)))
                         .collect(Collectors.toSet());
-            } else if (Analitics.typeSeverity.equals("=")) {
+            } else if (typeSeverity.equals("=")) {
                 listTriggersWithSeverity = listTriggers.stream()
                         .filter(trigger -> Integer.parseInt(trigger.priority) == (Integer.parseInt(severity)))
                         .collect(Collectors.toSet());
