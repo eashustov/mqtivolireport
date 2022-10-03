@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @SpringComponent
-@VaadinSessionScope
+@UIScope
 public class ZabbixAPI {
 
     @Autowired

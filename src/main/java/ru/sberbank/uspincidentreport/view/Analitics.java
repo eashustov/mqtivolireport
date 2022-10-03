@@ -82,7 +82,7 @@ import static ru.sberbank.uspincidentreport.service.ExporToCSV.exportToCSV;
 @Route(value = "analitics")
 @PageTitle("Аналитика автоинцидентов УСП за период")
 @SpringComponent
-@VaadinSessionScope
+@UIScope
 public class Analitics extends VerticalLayout {
     private H4 header;
     ApexCharts donutChart;
