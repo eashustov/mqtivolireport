@@ -108,6 +108,8 @@ public class USPIncResolutionGuideMap {
         put("Disk inode is more than", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521454");
         put("Free memory on server", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521830");
         put("Пользователем mqm запущено более", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521879");
+        put("MQ_Sender_Cluster_Problem", "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Channel_Cluster_Problem");
+        put("MQ_SSL_Connection_Closed", "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_SSL_Connection_Closed+Message_ID%3D+AMQ9660E");
     }};
 
     //Инциденты для CI02021302 Nginx
