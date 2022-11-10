@@ -110,6 +110,7 @@ public class USPIncResolutionGuideMap {
         put("Пользователем mqm запущено более", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521879");
         put("MQ_Channel_Cluster_Problem", "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Channel_Cluster_Problem");
         put("MQ_SSL_Connection_Closed", "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_SSL_Connection_Closed+Message_ID%3D+AMQ9660E");
+        put("MQ_Queue_Depth_100000", "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Queue_Depth_100000");
     }};
 
     //Инциденты для CI02021302 Nginx
