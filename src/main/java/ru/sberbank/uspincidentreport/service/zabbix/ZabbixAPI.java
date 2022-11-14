@@ -127,6 +127,7 @@ public class ZabbixAPI {
                 .paramEntry("output", new String[]{"triggerid", "description", "priority", "templateid"})
                 .paramEntry("host", hostName)
                 .paramEntry("inherited", true)
+                .paramEntry("monitored", true)
                 .build();
         try{
 
@@ -161,6 +162,7 @@ public class ZabbixAPI {
                 .paramEntry("host", hostName)
                 .paramEntry("inherited", true)
                 .paramEntry("tags", tagJSONArray)
+                .paramEntry("monitored", true)
                 .build();
         try{
             JSONObject getResponse = zabbixApi.call(getRequest);
