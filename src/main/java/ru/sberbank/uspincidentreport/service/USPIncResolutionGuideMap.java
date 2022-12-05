@@ -76,6 +76,7 @@ public class USPIncResolutionGuideMap {
         put("File system util is exceed", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522428");
         put("Memory usage", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522446");
         put("Current system load is", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522467");
+        put("SSLHandshakeException", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7766222014");
    }};
 
     //Инциденты для CI02021291 IBM MQ
@@ -111,6 +112,7 @@ public class USPIncResolutionGuideMap {
         put("MQ_Channel_Cluster_Problem", "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Channel_Cluster_Problem");
         put("MQ_SSL_Connection_Closed", "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_SSL_Connection_Closed+Message_ID%3D+AMQ9660E");
         put("MQ_Queue_Depth_100000", "https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Queue_Depth_100000");
+        put("MQ_Receive_Channel_Problem", "https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7766553534");
     }};
 
     //Инциденты для CI02021302 Nginx
