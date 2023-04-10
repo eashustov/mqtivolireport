@@ -1,0 +1,15 @@
+CPU Utilization;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518792
+Disk space is more than 9;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518804
+Disk inode is more than;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521437
+Пользователем sowactl запущено более;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521653
+Пользователем sowactl использовано более;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521665
+Процент использования массивов семафоров;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521679
+Процент использования процессов;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521694
+Процент использования разделяемой памяти;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521707
+Процент использования сегментов разделяемой памяти;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521720
+Процент использования семафоров;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521735
+Процент использования файловых-дескрипторов;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521748
+в состоянии down;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521760
+Certificate;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521774
+Unavailable by ICMP ping;https://confluence.ca.sbrf.ru/display/SberInfra/SOWA.+Unavailable+by+ICMP+ping
+Memory Utilization >;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521641

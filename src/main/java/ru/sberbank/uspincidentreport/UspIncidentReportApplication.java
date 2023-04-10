@@ -188,6 +188,39 @@ public class UspIncidentReportApplication {
         gcInterval = requestInterval;
     }
 
+    // Создание текстовой переменной типа: текст в проблеме: http ссылка на инструкцию для устранения
+    //Инциденты для CI02192117 Kafka
+    public static String CI02192117KafkaMapFile;
+
+    @Value("${inc.resolution.map.kafka}")
+    private void setCI02192117KafkaMapFile(String mapFile) {
+        CI02192117KafkaMapFile = mapFile;
+    }
+
+    //Инциденты для CI02192118 SOWA
+    public static String CI02192118SOWAMapFile;
+
+    @Value("${inc.resolution.map.sowa}")
+    private void setCI02192118SOWAMapFile(String mapFile) {
+        CI02192118SOWAMapFile = mapFile;
+    }
+
+    //Инциденты для CI02021290 IBM DataPower
+    public static String CI02021290DPMapFile;
+
+    @Value("${inc.resolution.map.dp}")
+    private void setCI02021290DPMapFile(String mapFile) {
+        CI02021290DPMapFile = mapFile;
+    }
+
+    //Инциденты для CI02021291 IBM MQ
+    public static String CI02021291MQMapFile;
+
+    @Value("${inc.resolution.map.mq}")
+    private void setCI02021291MQMapFile(String mapFile) {
+        CI02021291MQMapFile = mapFile;
+    }
+
     public static void main(String[] args) {
         context = SpringApplication.run(UspIncidentReportApplication.class, args);
 

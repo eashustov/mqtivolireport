@@ -1,0 +1,23 @@
+Disk inode is more than;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521473
+Memory Utilization >;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521996
+EventQueueSize;https://confluence.ca.sbrf.ru/display/SberInfra/Apache+Kafka.+%5BAI%5DEventQueueSize
+CPU Utilization;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518847
+Disk space is more than 85% full on volume;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518859
+Disk space is more than 95% full on volume;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518871
+Время сборки мусора PS MarkSweep превышает 600 мс;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518883
+Количество UnderMinIsr партиций;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518896
+Количество партиций, не имеющих активного лидера;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518908
+Размер очереди запросов;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518920
+Пользователем kafka запущено более;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522009
+Пользователем kafka использовано более;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522021
+Процент использования массивов семафоров;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522035
+Процент использования процессов;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522047
+Процент использования разделяемой памяти;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522059
+Процент использования сегментов разделяемой памяти;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522073
+Процент использования семафоров;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522085
+Процент использования файловых-дескрипторов;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522098
+Количество сборок мусора в минуту;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522126
+Время сборки мусора;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522140
+Количество открытых файлов превышает порог;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522156
+LogDirectory;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522173
+Более 90% Heap памяти использовано;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522112

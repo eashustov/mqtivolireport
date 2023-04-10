@@ -1,0 +1,23 @@
+WEB Status DataPower port;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638519059
+MQ total connections is exceed;https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+MQ+total+connections+is+exceed
+down in domain;https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+down+in+domain%3A+XXXXXXX
+OASP_DP_CPUUsage average 1 minute;https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+OASP_DP_CPUUsage+average+1+minute+%3E+9X
+Response message is: Connection Refused;https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+Response+message+is%3A+Connection+Refused
+Response message is: Connect/Read Timed;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518512
+is unavailable by ICMP;https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+unavailable+by+ICMP
+CPUUsage one minute;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518463
+OASP_DP_Memory Status Usage;https://confluence.ca.sbrf.ru/display/SberInfra/IBM+DataPower.+OASP_DP_Memory+Status+Usage+%3E+90
+Eth no link on;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522212
+Battery fail;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522224
+Battery life end;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522236
+Battery missing;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522254
+Certificate;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522268
+Disk Space Insufficient;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522281
+Fan stopped;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522293
+Memory full;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522306
+Parser out of memory;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522373
+Power fail;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522387
+System out of memory;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522407
+File system util is exceed;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522428
+Memory usage;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522446
+Current system load is;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638522467

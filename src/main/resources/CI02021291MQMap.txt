@@ -1,0 +1,28 @@
+Maximum number of channels reached;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518601
+Internal error on call to SSL function on channel;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518711
+MQHealthcheck MQ_SERVER_DOWN;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518637
+MQ_Connection_On_Channel_Maxinstances_max_reached;https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Connection_On_Channel_Maxinstances_max_reached
+MQ_Listener_Not_Started;https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Listener_Not_Started
+MQ_Queue_Depth_200_In_Transmission_Queue;https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Queue_Depth_200_In_Transmission_Queue
+MQ_Queue_Manager_Problem;https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Queue_Manager_Problem+Manager_Name%3D+XXXXXXX+MQ_Manager_Status%3D+4
+MQ_Sender_Channel_Problem;https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Sender_Channel_Problem
+CPU Utilization;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518550
+Disk space is more than;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518562
+Memory Utilization;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518575
+MQ_Queue_Depth_50%;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638518662
+Processor load is over;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521842
+Disk space is less than;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521854
+Lack of available virtual memory on server;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521866
+Пользователем mqm использовано более;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521891
+Процент использования массивов семафоров;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521903
+Процент использования процессов;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521915
+Процент использования разделяемой памяти;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521927
+Процент использования сегментов разделяемой памяти;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521939
+Процент использования семафоров;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521951
+Процент использования файловых-дескрипторов;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521963
+Disk space is less than;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521975
+MQ_Channel_Out_Of_Sync;https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Channel_Out_Of_Sync
+MQ_Error_in_Log_SSL_Certificate_Expired;https://confluence.ca.sbrf.ru/display/SberInfra/MQ.+MQ_Error_in_Log_SSL_Certificate_Expired
+Disk inode is more than;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521454
+Free memory on server;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521830
+Пользователем mqm запущено более;https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=7638521879
