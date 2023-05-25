@@ -19,18 +19,18 @@ public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData
            "             BRIEF_DESCRIPTION,\n" +
            "             PRIORITY_CODE,\n" +
            "             OPEN_TIME,\n" +
-           "             to_char(dbms_lob.substr(ACTION,3000,1))\n" +
+           "             to_char(dbms_lob.substr(ACTION,2000,1))\n" +
            "                                     AS ACTION,\n" +
-           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)), '^.*(\\s.*){6}.*'),\n" +
+           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)), '^.*(\\s.*){6}.*'),\n" +
            "                           'htt.*$') AS ZABBIX_HISTORY,\n" +
            "             REPLACE\n" +
            "                 (\n" +
-           "                     REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)), '^.*(\\s.*){4}.*'),\n" +
+           "                     REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)), '^.*(\\s.*){4}.*'),\n" +
            "                                   'Хост:\\s.*$'),\n" +
            "                     'Хост: '\n" +
            "                 )\n" +
            "                                     AS HOST,\n" +
-           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)),\n" +
+           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)),\n" +
            "                                         '^.*(\\s.*){1}.*'),\n" +
            "                           'Проблема.*$')\n" +
            "                                     AS PROBLEM,\n" +
@@ -68,18 +68,18 @@ public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData
            "             BRIEF_DESCRIPTION,\n" +
            "             PRIORITY_CODE,\n" +
            "             OPEN_TIME,\n" +
-           "             to_char(dbms_lob.substr(ACTION,3000,1))                                                           AS\n" +
+           "             to_char(dbms_lob.substr(ACTION,2000,1))                                                           AS\n" +
            "                                                                                          ACTION,\n" +
-           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)), '^.*(\\s.*){6}.*'), 'htt.*$') AS\n" +
+           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)), '^.*(\\s.*){6}.*'), 'htt.*$') AS\n" +
            "                                                                                          ZABBIX_HISTORY,\n" +
            "             REPLACE\n" +
            "                 (\n" +
-           "                     REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)), '^.*(\\s.*){4}.*'),\n" +
+           "                     REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)), '^.*(\\s.*){4}.*'),\n" +
            "                                   'Хост:\\s.*$'),\n" +
            "                     'Хост: '\n" +
            "                 )\n" +
            "                                                                                       AS HOST,\n" +
-           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)),\n" +
+           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)),\n" +
            "                                         '^.*(\\s.*){1}.*'),\n" +
            "                           'Проблема.*$') AS PROBLEM,\n" +
            "             HPC_STATUS,\n" +
@@ -129,18 +129,18 @@ public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData
            "             BRIEF_DESCRIPTION,\n" +
            "             PRIORITY_CODE,\n" +
            "             OPEN_TIME,\n" +
-           "             to_char(dbms_lob.substr(ACTION,3000,1))\n" +
+           "             to_char(dbms_lob.substr(ACTION,2000,1))\n" +
            "                                     AS ACTION,\n" +
-           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)), '^.*(\\s.*){6}.*'),\n" +
+           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)), '^.*(\\s.*){6}.*'),\n" +
            "                           'htt.*$') AS ZABBIX_HISTORY,\n" +
            "             REPLACE\n" +
            "                 (\n" +
-           "                     REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)), '^.*(\\s.*){4}.*'),\n" +
+           "                     REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)), '^.*(\\s.*){4}.*'),\n" +
            "                                   'Хост:\\s.*$'),\n" +
            "                     'Хост: '\n" +
            "                 )\n" +
            "                                     AS HOST,\n" +
-           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)),\n" +
+           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)),\n" +
            "                                         '^.*(\\s.*){1}.*'),\n" +
            "                           'Проблема.*$')\n" +
            "                                     AS PROBLEM,\n" +
@@ -187,18 +187,18 @@ public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData
            "             BRIEF_DESCRIPTION,\n" +
            "             PRIORITY_CODE,\n" +
            "             OPEN_TIME,\n" +
-           "             to_char(dbms_lob.substr(ACTION,3000,1))                                                           AS\n" +
+           "             to_char(dbms_lob.substr(ACTION,2000,1))                                                           AS\n" +
            "                                                                                          ACTION,\n" +
-           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)), '^.*(\\s.*){6}.*'), 'htt.*$') AS\n" +
+           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)), '^.*(\\s.*){6}.*'), 'htt.*$') AS\n" +
            "                                                                                          ZABBIX_HISTORY,\n" +
            "             REPLACE\n" +
            "                 (\n" +
-           "                     REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)), '^.*(\\s.*){4}.*'),\n" +
+           "                     REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)), '^.*(\\s.*){4}.*'),\n" +
            "                                   'Хост:\\s.*$'),\n" +
            "                     'Хост: '\n" +
            "                 )\n" +
            "                                                                                       AS HOST,\n" +
-           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,3000,1)),\n" +
+           "             REGEXP_SUBSTR(REGEXP_SUBSTR(to_char(dbms_lob.substr(ACTION,2000,1)),\n" +
            "                                         '^.*(\\s.*){1}.*'),\n" +
            "                           'Проблема.*$') AS PROBLEM,\n" +
            "             HPC_STATUS,\n" +
