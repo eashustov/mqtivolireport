@@ -219,8 +219,13 @@ public class Analitics extends VerticalLayout {
     }
 
     //Метод формирования CSV файла со списком инцидетов за период
-    private void getIncListToCSV (){
+    private void getIncListToCSV(){
         downloadToCSV = new Anchor(exportToCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
+        Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
+        buttonDownloadCSV.setText("Сохранить в CSV");
+        buttonDownloadCSV.setEnabled(true);
+        downloadToCSV.removeAll();
+        downloadToCSV.add(buttonDownloadCSV);
     }
 
     //Метод диалога поиска инцидента
