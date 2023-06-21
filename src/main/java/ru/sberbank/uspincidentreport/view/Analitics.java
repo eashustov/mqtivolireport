@@ -113,6 +113,7 @@ public class Analitics extends VerticalLayout {
     ComboBox<String> triggersSeverityComboBox;
     static Map<String, String> triggersSeverityComboBoxHumanItemsMap;
     Dialog listTriggerDialog;
+    Anchor downloadToCSV;
 
 //    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
@@ -152,7 +153,7 @@ public class Analitics extends VerticalLayout {
         buttonQuery.setText("Запрос данных");
 
         //Anchor block
-        Anchor downloadToCSV = new Anchor(exportToCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
+        downloadToCSV = new Anchor(exportToCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
         Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
         buttonDownloadCSV.setText("Сохранить в CSV");
         buttonDownloadCSV.setEnabled(false);
@@ -193,6 +194,7 @@ public class Analitics extends VerticalLayout {
         buttonQuery.addClickListener(clickEvent -> {
             formLayout.removeAll();
             remove(formLayout);
+            getIncListToCSV();
             getTotalCountAnaliticsData(start_Date,end_Date);
             assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
             lineChart = LineChartInit();
@@ -214,6 +216,11 @@ public class Analitics extends VerticalLayout {
         typeAnaliticsSelect.addValueChangeListener(changeEvent -> {
             buttonQuery.focus();
         });
+    }
+
+    //Метод формирования CSV файла со списком инцидетов за период
+    private void getIncListToCSV (){
+        downloadToCSV = new Anchor(exportToCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
     }
 
     //Метод диалога поиска инцидента
