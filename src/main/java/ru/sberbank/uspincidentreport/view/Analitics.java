@@ -194,7 +194,7 @@ public class Analitics extends VerticalLayout {
         buttonQuery.addClickListener(clickEvent -> {
             formLayout.removeAll();
             remove(formLayout);
-            getIncListToCSV();
+            downloadToCSV.setHref(exportToCSV(initGridIncData (start_Date,end_Date)));
             getTotalCountAnaliticsData(start_Date,end_Date);
             assignmentGroupMapToMonthData = getTotalCounPerMonthAnaliticsData(start_Date,end_Date);
             lineChart = LineChartInit();
@@ -216,16 +216,6 @@ public class Analitics extends VerticalLayout {
         typeAnaliticsSelect.addValueChangeListener(changeEvent -> {
             buttonQuery.focus();
         });
-    }
-
-    //Метод формирования CSV файла со списком инцидетов за период
-    private void getIncListToCSV(){
-        downloadToCSV = new Anchor(exportToCSV(initGridIncData (start_Date,end_Date)), "Сохранить в CSV" );
-        Button buttonDownloadCSV = new Button(new Icon(VaadinIcon.DOWNLOAD));
-        buttonDownloadCSV.setText("Сохранить в CSV");
-        buttonDownloadCSV.setEnabled(true);
-        downloadToCSV.removeAll();
-        downloadToCSV.add(buttonDownloadCSV);
     }
 
     //Метод диалога поиска инцидента
