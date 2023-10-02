@@ -62,7 +62,8 @@ public interface UspIncidentDataCountPerMonthRepo extends CrudRepository<UspInci
             "                                           'ЦИ Центр Интеграционные платформы (00011215)',\n" +
             "                                           'СБТ ДК ОСА Серверы приложений (Щелчков Р.А.) (00010280)',\n" +
             "                                           'Сопровождение Платформы управления контейнерами (00018435)',\n" +
-            "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)')\n" +
+            "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)'," +
+            "                                           'SberInfra Сопровождение Платформы управления контейнерами (Косов М.В.)')\n" +
             "         UNION\n" +
             "         SELECT\n" +
             "             prob1.\"NUMBER\",\n" +
@@ -113,9 +114,13 @@ public interface UspIncidentDataCountPerMonthRepo extends CrudRepository<UspInci
             "                                           'ЦИ Центр Интеграционные платформы (00011215)',\n" +
             "                                           'СБТ ДК ОСА Серверы приложений (Щелчков Р.А.) (00010280)',\n" +
             "                                           'Сопровождение Платформы управления контейнерами (00018435)',\n" +
-            "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)'))\n" +
+            "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)',\n" +
+            "                                           'SberInfra Сопровождение Платформы управления контейнерами (Косов М.В.)'))\n" +
             "WHERE\n" +
-            "        OPENED_BY = 'int_zabbix_si' AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')\n" +
+            "        OPENED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)',\n" +
+            "                     'INT_SC_SERVICE_PROXY (756759)', 'INT_SC_SERVICE_PROXY (00563040)',\n" +
+            "                     'int_zabbix_si')\n" +
+            "AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')\n" +
             "GROUP BY \"HPC_ASSIGNMENT\", to_char(\"OPEN_TIME\", 'Month'), to_char(\"OPEN_TIME\", 'MM'), to_char(\"OPEN_TIME\", 'YYYY')\n" +
             "ORDER BY \"HPC_ASSIGNMENT\", \"YEAR\", \"MONTH_NUMBER\" ASC",
             nativeQuery = true)
@@ -182,7 +187,9 @@ public interface UspIncidentDataCountPerMonthRepo extends CrudRepository<UspInci
             "   'CI00737140', \n" +
             "   'CI00737137', \n" +
             "   'CI02008623', \n" +
-            "   'CI01563053')\n" +
+            "   'CI01563053', \n" +
+            "   'CI04178739', \n" +
+            "   'CI04085569')\n" +
             "         UNION\n" +
             "         SELECT\n" +
             "             prob1.\"NUMBER\",\n" +
@@ -243,9 +250,14 @@ public interface UspIncidentDataCountPerMonthRepo extends CrudRepository<UspInci
             "   'CI00737140', \n" +
             "   'CI00737137', \n" +
             "   'CI02008623', \n" +
-            "   'CI01563053'))\n" +
+            "   'CI01563053', \n" +
+            "   'CI04178739', \n" +
+            "   'CI04085569'))\n" +
             "WHERE\n" +
-            "        OPENED_BY = 'int_zabbix_si' AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')\n" +
+            "        OPENED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)',\n" +
+            "                     'INT_SC_SERVICE_PROXY (756759)', 'INT_SC_SERVICE_PROXY (00563040)',\n" +
+            "                     'int_zabbix_si')\n" +
+            "AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')\n" +
             "GROUP BY \"AFFECTED_ITEM\", to_char(\"OPEN_TIME\", 'Month'), to_char(\"OPEN_TIME\", 'MM'), to_char(\"OPEN_TIME\", 'YYYY')\n" +
             "ORDER BY \"AFFECTED_ITEM\", \"YEAR\", \"MONTH_NUMBER\" ASC",
             nativeQuery = true)

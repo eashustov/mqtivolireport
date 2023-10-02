@@ -62,7 +62,9 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "                                           'ЦИ Центр Интеграционные платформы (00011215)',\n" +
            "                                           'СБТ ДК ОСА Серверы приложений (Щелчков Р.А.) (00010280)',\n" +
            "                                           'Сопровождение Платформы управления контейнерами (00018435)',\n" +
-           "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)') AND\n" +
+           "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)',\n" +
+           "                                           'SberInfra Сопровождение Платформы управления контейнерами (Косов М.В.)')\n" +
+           "                                            AND\n" +
            "                 prob1.hpc_status NOT IN ( '6 Выполнен',\n" +
            "                                           '7 Закрыт',\n" +
            "                                           '5 Выполнен',\n" +
@@ -118,14 +120,17 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "                                           'ЦИ Центр Интеграционные платформы (00011215)',\n" +
            "                                           'СБТ ДК ОСА Серверы приложений (Щелчков Р.А.) (00010280)',\n" +
            "                                           'Сопровождение Платформы управления контейнерами (00018435)',\n" +
-           "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)') AND\n" +
+           "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)',\n" +
+           "                                           'SberInfra Сопровождение Платформы управления контейнерами (Косов М.В.)')\n" +
+           "                                            AND\n" +
            "                 prob1.hpc_status NOT IN ( '6 Выполнен',\n" +
            "                                           '7 Закрыт',\n" +
            "                                           '5 Выполнен',\n" +
            "                                           '6 Закрыт') )\n" +
            "WHERE\n" +
-           "        OPENED_BY = 'int_zabbix_si'",
-           nativeQuery = true)
+           "        OPENED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)',\n" +
+           "            'INT_SC_SERVICE_PROXY (756759)', 'INT_SC_SERVICE_PROXY (00563040)',\n" +
+           "            'int_zabbix_si')\n", nativeQuery = true)
    List<UspIncidentData> findAll();
 
    @Query(value = "SELECT\n" +
@@ -179,7 +184,8 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "\t'ЦИ Центр Интеграционные платформы (00011215)',\n" +
            "\t'СБТ ДК ОСА Серверы приложений (Щелчков Р.А.) (00010280)',\n" +
            "\t'Сопровождение Платформы управления контейнерами (00018435)',\n" +
-           "\t'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)') \n" +
+           "\t'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)',\n" +
+           "\t'SberInfra Сопровождение Платформы управления контейнерами (Косов М.В.)')\n" +
            "UNION\n" +
            "SELECT\n" +
            "\tprob1.\"NUMBER\",\n" +
@@ -231,11 +237,15 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "\t'ЦИ Центр Интеграционные платформы (00011215)',\n" +
            "\t'СБТ ДК ОСА Серверы приложений (Щелчков Р.А.) (00010280)',\n" +
            "\t'Сопровождение Платформы управления контейнерами (00018435)',\n" +
-           "\t'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)')) \n" +
+           "\t'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)',\n" +
+           "\t'SberInfra Сопровождение Платформы управления контейнерами (Косов М.В.)'))\n" +
            "WHERE\n" +
            "\tPROBLEM LIKE REPLACE (:triggerDescription, '\"', '*')\n" +
            "\tAND\n" +
-           "\tOPENED_BY = 'int_zabbix_si' AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS')" +
+           "\tOPENED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)',\n" +
+           "               'INT_SC_SERVICE_PROXY (756759)', 'INT_SC_SERVICE_PROXY (00563040)',\n" +
+           "               'int_zabbix_si')\n" +
+           "\tAND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS')" +
            " AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')" , nativeQuery = true)
    List<UspIncidentData> findIncByTrigger(@Param("startDate") String startDate, @Param("endDate") String endDate,
                                           @Param("triggerDescription") String triggerDescription);

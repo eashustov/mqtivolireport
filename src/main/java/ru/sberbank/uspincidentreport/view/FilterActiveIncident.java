@@ -43,6 +43,8 @@ public class FilterActiveIncident {
         put("CI00737137", "Стандартные платформы серверов приложений (WAS, WLS)");
         put("CI02008623", "Мониторинг использования лицензий (МИЛИ)");
         put("CI01563053", "Платформа управления контейнерами (Terra)");
+        put("CI04178739", "SynGX");
+        put("CI04085569", "Platform V Corax (Kafka SE)");
     }};
 
     static Set<String> affectedItem;

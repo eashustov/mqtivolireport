@@ -73,7 +73,7 @@ import static ru.sberbank.uspincidentreport.service.ExporToCSV.exportToCSV;
 
 
 @Route(value = "analitics")
-@PageTitle("Аналитика автоинцидентов УСП за период")
+@PageTitle("Аналитика технологических инцидентов СМ ДСП за период")
 
 public class Analitics extends VerticalLayout {
     private H4 header;
@@ -119,7 +119,7 @@ public class Analitics extends VerticalLayout {
 
     public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics,
                      UspIncidentDataTop10Repo dataTop10IncRepo) {
-        this.header = new H4("Аналитика автоинцидентов УСП за период");
+        this.header = new H4("Аналитика технологических инцидентов СМ ДСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
         start_Date = new DatePicker("Начало");
@@ -502,7 +502,9 @@ public class Analitics extends VerticalLayout {
                             .replace("CI00737140", "Интеграционные платформы серверов приложений (WMQ, WMB, DataPower, Pega PRPC)")
                             .replace("CI00737137", "Стандартные платформы серверов приложений (WAS, WLS)")
                             .replace("CI02008623", "Мониторинг использования лицензий (МИЛИ)")
-                            .replace("CI01563053", "Платформа управления контейнерами (Terra)"))
+                            .replace("CI01563053", "Платформа управления контейнерами (Terra)")
+                            .replace("CI04178739", "SynGX")
+                            .replace("CI04085569", "Platform V Corax (Kafka SE)"))
                     .collect(Collectors.toList());
         }
 
@@ -592,7 +594,9 @@ public class Analitics extends VerticalLayout {
                             .replace("CI00737140", "Интеграционные платформы серверов приложений (WMQ, WMB, DataPower, Pega PRPC)")
                             .replace("CI00737137", "Стандартные платформы серверов приложений (WAS, WLS)")
                             .replace("CI02008623", "Мониторинг использования лицензий (МИЛИ)")
-                            .replace("CI01563053", "Платформа управления контейнерами (Terra)");
+                            .replace("CI01563053", "Платформа управления контейнерами (Terra)"
+                            .replace("CI04178739", "SynGX")
+                            .replace("CI04085569", "Platform V Corax (Kafka SE)"));
 
                     itemExecute.add(affectedItem);
 

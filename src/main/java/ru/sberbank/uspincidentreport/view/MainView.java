@@ -46,7 +46,7 @@ import static java.nio.file.Files.readString;
 
 
 @Route
-@PageTitle("Автоинциденты системы мониторинга УСП")
+@PageTitle("Технологические инциденты системы мониторинга ДСП")
 //Сохранение состояния таблицы при обновлении
 //@PreserveOnRefresh
 public class MainView extends VerticalLayout {
@@ -77,7 +77,7 @@ public class MainView extends VerticalLayout {
 
     public MainView(UspIncidentRepo repo) throws IOException {
         this.repo = repo;
-        this.header = new H4("Активные автоинциденты системы мониторинга УСП");
+        this.header = new H4("Активные технологические инциденты системы мониторинга ДСП");
         this.grid = new Grid<>(UspIncidentData.class, false);
 //        this.dataView = grid.setItems(repo.findAll());
         setHorizontalComponentAlignment(Alignment.CENTER, header);
