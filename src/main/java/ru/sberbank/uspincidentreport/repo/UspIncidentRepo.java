@@ -128,9 +128,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "                                           '5 Выполнен',\n" +
            "                                           '6 Закрыт') )\n" +
            "WHERE\n" +
-           "        OPENED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)',\n" +
-           "            'INT_SC_SERVICE_PROXY (756759)', 'INT_SC_SERVICE_PROXY (00563040)',\n" +
-           "            'int_zabbix_si')\n", nativeQuery = true)
+           "        OPENED_BY in ('OPENED_BY', 'int_zabbix_si')", nativeQuery = true)
    List<UspIncidentData> findAll();
 
    @Query(value = "SELECT\n" +
@@ -242,9 +240,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "WHERE\n" +
            "\tPROBLEM LIKE REPLACE (:triggerDescription, '\"', '*')\n" +
            "\tAND\n" +
-           "\tOPENED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)',\n" +
-           "               'INT_SC_SERVICE_PROXY (756759)', 'INT_SC_SERVICE_PROXY (00563040)',\n" +
-           "               'int_zabbix_si')\n" +
+           "\tOPENED_BY in ('OPENED_BY', 'int_zabbix_si')\n" +
            "\tAND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS')" +
            " AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')" , nativeQuery = true)
    List<UspIncidentData> findIncByTrigger(@Param("startDate") String startDate, @Param("endDate") String endDate,

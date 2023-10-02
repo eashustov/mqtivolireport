@@ -117,9 +117,7 @@ public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData
            "                                           'SberInfra УСП Интеграционные платформы (Гоголев К.Ю.) (00019273)',\n" +
            "                                           'SberInfra Сопровождение Платформы управления контейнерами (Косов М.В.)'))\n" +
            "WHERE\n" +
-           "        OPENED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)',\n" +
-           "                     'INT_SC_SERVICE_PROXY (756759)', 'INT_SC_SERVICE_PROXY (00563040)',\n" +
-           "                     'int_zabbix_si')\n" +
+           "        OPENED_BY in ('OPENED_BY', 'int_zabbix_si')\n" +
            " AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')", nativeQuery = true)
    List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
 //   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("assignmentGroup") String assignmentGroup);
@@ -252,9 +250,7 @@ public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData
            "   'CI04178739', \n" +
            "   'CI04085569'))\n" +
            "WHERE\n" +
-           "        OPENED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)',\n" +
-           "                     'INT_SC_SERVICE_PROXY (756759)', 'INT_SC_SERVICE_PROXY (00563040)',\n" +
-           "                     'int_zabbix_si')\n" +
+           "        OPENED_BY in ('OPENED_BY', 'int_zabbix_si')\n" +
            "AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')" +
            "AND upper(\"NUMBER\") || ' ' || upper(\"HOST\") || ' ' || upper(HPC_ASSIGNEE_NAME) || ' ' || upper(HPC_ASSIGNMENT) || ' ' || upper(AFFECTED_ITEM) like '%' || upper(:searchFilter) || '%'", nativeQuery = true)
    List<UspIncidentData> findIncBySearchFilter(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("searchFilter") String searchFilter);
