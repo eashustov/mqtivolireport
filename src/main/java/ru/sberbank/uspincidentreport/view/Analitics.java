@@ -594,9 +594,9 @@ public class Analitics extends VerticalLayout {
                             .replace("CI00737140", "Интеграционные платформы серверов приложений (WMQ, WMB, DataPower, Pega PRPC)")
                             .replace("CI00737137", "Стандартные платформы серверов приложений (WAS, WLS)")
                             .replace("CI02008623", "Мониторинг использования лицензий (МИЛИ)")
-                            .replace("CI01563053", "Платформа управления контейнерами (Terra)"
+                            .replace("CI01563053", "Платформа управления контейнерами (Terra)")
                             .replace("CI04178739", "SynGX")
-                            .replace("CI04085569", "Platform V Corax (Kafka SE)"));
+                            .replace("CI04085569", "Platform V Corax (Kafka SE)");
 
                     itemExecute.add(affectedItem);
 
