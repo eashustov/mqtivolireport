@@ -128,7 +128,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "                                           '5 Выполнен',\n" +
            "                                           '6 Закрыт') )\n" +
            "WHERE\n" +
-           "        HPC_CREATED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)', 'INT_SC_SERVICE_PROXY (00563040)')", nativeQuery = true)
+           "        HPC_CREATED_BY_NAME in ('Технологический пользователь АС ZABBIX_SI (958891)', 'INT_SC_SERVICE_PROXY (756759)')", nativeQuery = true)
    List<UspIncidentData> findAll();
 
    @Query(value = "SELECT\n" +
@@ -240,7 +240,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "WHERE\n" +
            "\tPROBLEM LIKE REPLACE (:triggerDescription, '\"', '*')\n" +
            "\tAND\n" +
-           "\tHPC_CREATED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)', 'INT_SC_SERVICE_PROXY (00563040)')\n" +
+           "\tHPC_CREATED_BY_NAME in ('Технологический пользователь АС ZABBIX_SI (958891)', 'INT_SC_SERVICE_PROXY (756759)')\n" +
            "\tAND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS')" +
            " AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')" , nativeQuery = true)
    List<UspIncidentData> findIncByTrigger(@Param("startDate") String startDate, @Param("endDate") String endDate,

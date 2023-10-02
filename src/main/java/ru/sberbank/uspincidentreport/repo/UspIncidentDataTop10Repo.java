@@ -142,7 +142,7 @@ public interface UspIncidentDataTop10Repo extends CrudRepository<UspIncidentData
             "                                                       'CI04178739', \n" +
             "                                                       'CI04085569'))\n" +
             "             WHERE\n" +
-            "        HPC_CREATED_BY in ('Технологический пользователь АС ZABBIX_SI (00738651)', 'INT_SC_SERVICE_PROXY (00563040)')\n" +
+            "        HPC_CREATED_BY_NAME in ('Технологический пользователь АС ZABBIX_SI (958891)', 'INT_SC_SERVICE_PROXY (756759)')\n" +
             "AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')\n" +
             "             GROUP BY \"AFFECTED_ITEM\", HOST\n" +
             "             ORDER BY \"AFFECTED_ITEM\", \"COUNT_INC\" DESC) top_10)\n" +
