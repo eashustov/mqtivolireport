@@ -56,7 +56,10 @@ public class MainView extends VerticalLayout {
     private Grid<UspIncidentData> grid;
     private GridListDataView<UspIncidentData> dataView;
     private RefreshThread thread;
-    PersonFilter personFilter;
+    PersonFilter incFilter;
+    private Span incFilteredCount = new Span();
+    private Span incCount = new Span();
+    private Span span = new Span();
 
 //    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
@@ -132,42 +135,42 @@ public class MainView extends VerticalLayout {
 
 //        GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll(assignmentGroup));
         GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll());
-        personFilter = new PersonFilter(dataView);
+        incFilter = new PersonFilter(dataView);
 
         //Create headers for Grid
 
         grid.getHeaderRows().clear();
         HeaderRow headerRow = grid.appendHeaderRow();
         headerRow.getCell(NUMBER)
-                .setComponent(createFilterHeader("Номер инцидента", personFilter::setNumber));
+                .setComponent(createFilterHeader("Номер инцидента", incFilter::setNumber));
         headerRow.getCell(BRIEF_DESCRIPTION)
-                .setComponent(createFilterHeader("Краткое описание", personFilter::setBriefDescription));
+                .setComponent(createFilterHeader("Краткое описание", incFilter::setBriefDescription));
         headerRow.getCell(PRIORITY_CODE)
-                .setComponent(createFilterHeader("Важность", personFilter::setPriorityCode));
+                .setComponent(createFilterHeader("Важность", incFilter::setPriorityCode));
         headerRow.getCell(OPEN_TIME)
-                .setComponent(createFilterHeader("Время регистрации", personFilter::setOpenTime));
+                .setComponent(createFilterHeader("Время регистрации", incFilter::setOpenTime));
         headerRow.getCell(ASSIGNEE_NAME)
-                .setComponent(createFilterHeader("Исполнитель", personFilter::setAssigneeName));
+                .setComponent(createFilterHeader("Исполнитель", incFilter::setAssigneeName));
         headerRow.getCell(ASSIGNMENT)
-                .setComponent(createFilterHeader("Назначен в группу", personFilter::setAssignment));
+                .setComponent(createFilterHeader("Назначен в группу", incFilter::setAssignment));
         headerRow.getCell(CREATED_BY_NAME)
-                .setComponent(createFilterHeader("Инициатор", personFilter::setCreatedByName));
+                .setComponent(createFilterHeader("Инициатор", incFilter::setCreatedByName));
         headerRow.getCell(ZABBIX_HISTORY)
-                .setComponent(createFilterHeader("История в Zabbix", personFilter::setZabbixHistory));
+                .setComponent(createFilterHeader("История в Zabbix", incFilter::setZabbixHistory));
         headerRow.getCell(STATUS)
-                .setComponent(createFilterHeader("Статус", personFilter::setStatus));
+                .setComponent(createFilterHeader("Статус", incFilter::setStatus));
         headerRow.getCell(RESOLUTION)
-                .setComponent(createFilterHeader("Сценарий устранения", personFilter::setResolution));
+                .setComponent(createFilterHeader("Сценарий устранения", incFilter::setResolution));
         headerRow.getCell(RESOLUTION_GUIDE)
-                .setComponent(createFilterHeader("Инструкция для устранения", personFilter::setResolutionGuide));
+                .setComponent(createFilterHeader("Инструкция для устранения", incFilter::setResolutionGuide));
         headerRow.getCell(ACTION)
-                .setComponent(createFilterHeader("Подробное описание", personFilter::setAction));
+                .setComponent(createFilterHeader("Подробное описание", incFilter::setAction));
         headerRow.getCell(HOST)
-                .setComponent(createFilterHeader("Сервер", personFilter::setHost));
+                .setComponent(createFilterHeader("Сервер", incFilter::setHost));
         headerRow.getCell(PROBLEM)
-                .setComponent(createFilterHeader("Проблема", personFilter::setProblem));
+                .setComponent(createFilterHeader("Проблема", incFilter::setProblem));
         headerRow.getCell(AFFECTED_ITEM)
-                .setComponent(FilterActiveIncident.createFilterHeader("ИТ-услуга", personFilter::setAffectedItem, dataView));
+                .setComponent(FilterActiveIncident.createFilterHeader("ИТ-услуга", incFilter::setAffectedItem, dataView));
         //        AFFECTED_ITEM.setHeader(FilterActiveIncident.createFilterHeader("ИТ-услуга", personFilter::setAffectedItem, dataView));
 //        headerRow.getCell(AFFECTED_ITEM)
 //                .setComponent(createFilterHeader("ИТ-услуга", personFilter::setAffectedItem));
@@ -183,7 +186,7 @@ public class MainView extends VerticalLayout {
 //        Export to CSV
         var streamResource = new StreamResource("uspOpenIncidents.csv",
                 () -> {
-                    Stream<UspIncidentData> uspIncidentList = personFilter.dataViewFiltered.getItems();
+                    Stream<UspIncidentData> uspIncidentList = incFilter.dataViewFiltered.getItems();
                     StringWriter output = new StringWriter();
                     StatefulBeanToCsv<UspIncidentData> beanToCSV = null;
                     try {
@@ -301,9 +304,21 @@ public class MainView extends VerticalLayout {
         actions.setVerticalComponentAlignment(Alignment.CENTER, analiticsChart);
         setHorizontalComponentAlignment(Alignment.END, actions);
 
+        incCount.setText("Всего инцидентов: " + dataView.getItemCount());
+        incFilteredCount.setText("Отфильтровано: " + incFilter.dataViewFiltered.getItemCount());
+
+
+        // Обновление данных счетчика по отфильтрованным элементам
+        incFilter.dataViewFiltered.addItemCountChangeListener(event->{
+            remove(incFilteredCount, span);
+            incFilteredCount.setText("Отфильтровано: " + incFilter.dataViewFiltered.getItemCount());
+            add(incFilteredCount, span);
+            System.out.println("Отфильтровано: " + incFilter.dataViewFiltered.getItemCount());
+        });
+
 
 //        Добавление компонентов в основной layout
-        add(header, actions, grid, incContextMenu);
+        add(header, actions, grid, incContextMenu, incCount, incFilteredCount, span);
 
 //        countRefresh(counter);
 
@@ -558,9 +573,6 @@ public class MainView extends VerticalLayout {
     private class RefreshThread extends Thread {
         private final UI ui;
         private final MainView view;
-        private Span span = new Span();
-        private Span incCount = new Span();
-        private Span incFilteredCount = new Span();
         public boolean needRefresh = false;
 
 
@@ -585,10 +597,6 @@ public class MainView extends VerticalLayout {
                         ui.access(() -> {
                             view.remove(incFilteredCount, incCount, span);
                             span.setText(message);
-                            incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
-                            personFilter.dataViewFiltered.removeItems(personFilter.dataViewFiltered.getItems().collect(Collectors.toList()));
-                            personFilter.dataViewFiltered.addItems(view.dataView.getItems().collect(Collectors.toList()));
-                            incFilteredCount.setText("Отфильтровано: " + String.valueOf(view.personFilter.dataViewFiltered.getItemCount()));
                             view.add(incFilteredCount, incCount, span);
 
                         });
@@ -597,19 +605,15 @@ public class MainView extends VerticalLayout {
                     // Inform that we are done
                     ui.access(() -> {
                         view.remove(incFilteredCount, incCount, span);
-                        personFilter.dataViewFiltered.removeItems(personFilter.dataViewFiltered.getItems().collect(Collectors.toList()));
-//                        view.dataView = grid.setItems(repo.findAll(assignmentGroup));
-//                        personFilter.dataViewFiltered.addItems(repo.findAll(assignmentGroup));
+                        incFilter.dataViewFiltered.removeItems(incFilter.dataViewFiltered.getItems().collect(Collectors.toList()));
                         view.dataView = grid.setItems(repo.findAll());
-                        personFilter.dataViewFiltered.addItems(repo.findAll());
+                        incFilter.dataViewFiltered.addItems(repo.findAll());
                         affectedItemFilterRefresh();
                         Notification.show("Данные обновлены", 1000, Notification.Position.TOP_CENTER);
                         span.setText("Данные обновлены");
-                        incFilteredCount.setText("Отфильтровано: " + String.valueOf(view.personFilter.dataViewFiltered.getItemCount()));
                         incCount.setText("Всего инцидентов: " + String.valueOf(view.dataView.getItemCount()));
                         view.add(incFilteredCount, incCount, span);
                         needRefresh=false;
-//                        System.gc();
                     });
                 }
             } catch (InterruptedException e) {
