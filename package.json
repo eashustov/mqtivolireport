@@ -116,7 +116,7 @@
     "@vaadin/vaadin-virtual-list": "23.0.4",
     "@vaadin/vertical-layout": "23.0.4",
     "@vaadin/virtual-list": "23.0.4",
-    "apexcharts": "3.30.0",
+    "apexcharts": "3.35.0",
     "construct-style-sheets-polyfill": "3.0.4",
     "date-fns": "2.23.0",
     "lit": "2.1.4",
@@ -259,7 +259,7 @@
       "@vaadin/vaadin-virtual-list": "23.0.4",
       "@vaadin/vertical-layout": "23.0.4",
       "@vaadin/virtual-list": "23.0.4",
-      "apexcharts": "3.30.0",
+      "apexcharts": "3.35.0",
       "construct-style-sheets-polyfill": "3.0.4",
       "date-fns": "2.23.0",
       "lit": "2.1.4",
@@ -287,7 +287,7 @@
       "workbox-precaching": "6.5.0",
       "workbox-webpack-plugin": "6.5.0"
     },
-    "hash": "3abaec4e962d042dfea3ee86e2d0b6875049dbb50297738c56be886ff9d4d92a"
+    "hash": "6fc9912c0dba43bbd5037e068998249d1fa2cc217a47ee9ee96f36e3ba425329"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
