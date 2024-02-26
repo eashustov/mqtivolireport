@@ -1,5 +1,6 @@
 package ru.sberbank.uspincidentreport.repo;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +11,7 @@ import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import java.util.List;
 
 @Repository
+@Profile("!dev & !prod")
 public interface UspIncidentDataTop10Repo extends CrudRepository<UspIncidentData, String> {
 
     @Query(value = "WITH RWS AS (\n" +

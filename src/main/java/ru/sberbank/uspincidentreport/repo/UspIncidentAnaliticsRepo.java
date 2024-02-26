@@ -1,5 +1,6 @@
 package ru.sberbank.uspincidentreport.repo;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -9,8 +10,8 @@ import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import java.util.List;
 
 @Repository
+@Profile("!dev & !prod")
 public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData, String> {
-
    @Query(value = "SELECT\n" +
            "    *\n" +
            "FROM\n" +
@@ -120,7 +121,6 @@ public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData
            "        HPC_CREATED_BY_NAME in ('Технологический пользователь АС ZABBIX_SI (958891)', 'INT_SC_SERVICE_PROXY (756759)')\n" +
            " AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')", nativeQuery = true)
    List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
-//   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("assignmentGroup") String assignmentGroup);
 
    //Запрос для поиска автоинцидентов за период
 
@@ -254,6 +254,4 @@ public interface UspIncidentAnaliticsRepo extends CrudRepository<UspIncidentData
            "AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')" +
            "AND upper(\"NUMBER\") || ' ' || upper(\"HOST\") || ' ' || upper(HPC_ASSIGNEE_NAME) || ' ' || upper(HPC_ASSIGNMENT) || ' ' || upper(AFFECTED_ITEM) like '%' || upper(:searchFilter) || '%'", nativeQuery = true)
    List<UspIncidentData> findIncBySearchFilter(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("searchFilter") String searchFilter);
-
-
 }

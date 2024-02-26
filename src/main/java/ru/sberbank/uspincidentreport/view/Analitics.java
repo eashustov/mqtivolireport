@@ -50,6 +50,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.PermitAll;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,8 @@ import java.util.stream.Collectors;
 import static ru.sberbank.uspincidentreport.service.ExporToCSV.exportToCSV;
 
 
-@Route(value = "analitics")
+@PermitAll
+@Route(value = "analitics", layout = MainLayout.class)
 @PageTitle("Аналитика технологических инцидентов СМ ДСП за период")
 
 public class Analitics extends VerticalLayout {
@@ -91,15 +93,11 @@ public class Analitics extends VerticalLayout {
     DateTimeFormatter europeanDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     List<String> labelsData;
     List<Double> seriesData;
-    @Autowired
+
     private UspIncidentDataTotalCountRepo dataTotalCountRepo;
-    @Autowired
     private UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo;
-    @Autowired
     private UspIncidentAnaliticsRepo repoAnalitics;
-    @Autowired
     private UspIncidentDataTop10Repo dataTop10IncRepo;
-    @Autowired
     private UspIncidentRepo repo;
 
     private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
@@ -115,8 +113,7 @@ public class Analitics extends VerticalLayout {
     Dialog listTriggerDialog;
     Anchor downloadToCSV;
 
-//    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
-
+    @Autowired
     public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics,
                      UspIncidentDataTop10Repo dataTop10IncRepo) {
         this.header = new H4("Аналитика технологических инцидентов СМ ДСП за период");
@@ -452,18 +449,15 @@ public class Analitics extends VerticalLayout {
 
     @SneakyThrows
     private void getTotalCountAnaliticsData(DatePicker start_Date, DatePicker end_Date){
-//        String assignmentGroup = Files.readString(Paths.get("usp_incident_assignmentGroup.txt"));
         startDate = start_Date.getValue().format(europeanDateFormatter) + " 00:00:00";
         endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
 
         if (typeAnaliticsSelect.getValue() == "по группам сопровождения") {
-//        seriesData = dataTotalCountRepo.findIncByAssignmentCount(startDate, endDate, assignmentGroup)
             seriesData = dataTotalCountRepo.findIncByAssignmentCount(startDate, endDate)
                     .stream()
                     .map(t -> t.getCount_Inc().doubleValue())
                     .collect(Collectors.toList());
 
-//        labelsData = dataTotalCountRepo.findIncByAssignmentCount(startDate, endDate, assignmentGroup)
             labelsData = dataTotalCountRepo.findIncByAssignmentCount(startDate, endDate)
                     .stream()
                     .map(t -> t.getHPC_Assignment())

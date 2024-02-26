@@ -1,16 +1,19 @@
 package ru.sberbank.uspincidentreport.repo;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import ru.sberbank.uspincidentreport.domain.IUspIncidentDataCountPerMonth;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 
 
 import java.util.List;
 
+@Repository
+@Profile("!dev & !prod")
 public interface UspIncidentDataCountPerMonthRepo extends CrudRepository<UspIncidentData, String> {
-
 
     @Query(value = "SELECT\n" +
             "    \"HPC_ASSIGNMENT\", to_char(\"OPEN_TIME\", 'Month') AS \"MONTH\",  to_char(\"OPEN_TIME\", 'MM') AS \"MONTH_NUMBER\", to_char(\"OPEN_TIME\", 'YYYY') AS \"YEAR\", COUNT (\"NUMBER\")AS \"COUNT_INC\"\n" +
@@ -258,25 +261,4 @@ public interface UspIncidentDataCountPerMonthRepo extends CrudRepository<UspInci
             "ORDER BY \"AFFECTED_ITEM\", \"YEAR\", \"MONTH_NUMBER\" ASC",
             nativeQuery = true)
     List<IUspIncidentDataCountPerMonth> findIncAffectedItemCountPerMonth(@Param("startDate") String startDate, @Param("endDate") String endDate);
-
-
-
-
-
-
-    //@Query(value = "select p.HPC_ASSIGNMENT as assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS month,  MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS monthnumber, YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS year, COUNT (p.NUMBER) AS countinc from probsummarym1 p \n" +
-//        "GROUP BY assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss'))\n" +
-//        "ORDER BY assignment, year, monthnumber ASC", nativeQuery = true)
-//List<IUspIncidentDataCountPerMonth> findIncCountPerMonth();
-
-//       @Query(value = "select p.HPC_ASSIGNMENT as assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS month,  MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS monthnumber, YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')) AS year, COUNT (p.NUMBER) AS countinc from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy hh:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy hh:mm:ss')\n" +
-//               "GROUP BY assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss')), YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy hh:mm:ss'))\n" +
-//               "ORDER BY assignment, year, monthnumber ASC", nativeQuery = true)
-//    List<IUspIncidentDataCountPerMonth> findIncCountPerMonth(@Param("startDate") String startDate, @Param("endDate") String endDate);
-//@Query(value = "select p.HPC_ASSIGNMENT as assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy HH:mm:ss')) AS month,  MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy HH:mm:ss')) AS monthnumber, YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy HH:mm:ss')) AS year, COUNT (p.NUMBER) AS countinc from probsummarym1 p WHERE p.HPC_ASSIGNMENT IN (:assignmentGroup) \n" +
-//        "GROUP BY assignment, MONTHNAME(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy HH:mm:ss')), MONTH(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy HH:mm:ss')), YEAR(PARSEDATETIME(p.OPEN_TIME, 'dd.MM.yyyy HH:mm:ss'))\n" +
-//        "ORDER BY assignment, year, monthnumber ASC", nativeQuery = true)
-//    List<IUspIncidentDataCountPerMonth> findIncCountPerMonth(@Param("assignmentGroup") String assignmentGroup);
-//    List<IUspIncidentDataCountPerMonth> findIncCountPerMonth(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("assignmentGroup") String assignmentGroup);
-
 }

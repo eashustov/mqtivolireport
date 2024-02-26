@@ -98,7 +98,7 @@ public class ZabbixAPI {
     static List<Discoveryrule> listLLD = new ArrayList<>();
 
     //Выставление значений тега из appliation.properties
-    //Из application.properties нельзя вставить значение в статическую переменную напряму.
+    //Из application-prod.properties нельзя вставить значение в статическую переменную напряму.
     // Поэтому требуется метод setURLs, setUser, setPassword
     static String zabbixAPITagName;
     @Value("${zabbix.api.tag.name}")
@@ -375,7 +375,7 @@ public class ZabbixAPI {
                     try {
                         trigger.setTemplateName(getTemplatebyID(trigger.getTemplateid()).getName());
                         triggerListWithTemplateName.add(trigger);
-                    } catch (JsonProcessingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
@@ -386,7 +386,7 @@ public class ZabbixAPI {
                     try {
                         trigger.setTemplateName(getTemplatebyID(trigger.getTemplateid()).getName());
                         triggerprototypeListWithTemplateName.add(trigger);
-                    } catch (JsonProcessingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
@@ -406,7 +406,7 @@ public class ZabbixAPI {
                     try {
                         trigger.setTemplateName(getTemplatebyID(trigger.getTemplateid()).getName());
                         triggerListWithIncidentTagWithTemplateName.add(trigger);
-                    } catch (JsonProcessingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
@@ -417,7 +417,7 @@ public class ZabbixAPI {
                     try {
                         trigger.setTemplateName(getTemplatebyID(trigger.getTemplateid()).getName());
                         triggerprototypeListWithTemplateName.add(trigger);
-                    } catch (JsonProcessingException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
@@ -500,7 +500,8 @@ public class ZabbixAPI {
     //Этот метод запускается при старте приложения и собирает сатистику по триггерам с уровнем критичности 0
     public static void getTriggerStatisticDefault(String severity, String tagName, String tagValue, String hostSOWA,
                                                   String hostKafka, String hostMQ, String hostDP, String hostNginx, String hostWAS,
-                                                  String hostWildFly, String hostWeblogic, String hostSiebel, String hostOpenShift) throws JsonProcessingException {
+                                                  String hostWildFly, String hostWeblogic, String hostSiebel, String hostOpenShift)
+            throws Exception {
 
         //Создание списка всех триггеров по продуктам ОИП
         listTriggersForSOWA.addAll(triggerListWithTemplateName(severity, hostSOWA));
@@ -547,7 +548,7 @@ public class ZabbixAPI {
         listTriggersWithIncForOpenShift.addAll(triggerListWithIncidentTagWithTemplateName(tagName, tagValue,
                 severity, hostOpenShift));
 
-        zabbixApi.destroy();
+//        zabbixApi.destroy();
     }
 }
 

@@ -1,4 +1,5 @@
 package ru.sberbank.uspincidentreport.repo;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -8,6 +9,7 @@ import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import java.util.List;
 
 @Repository
+@Profile("!dev & !prod")
 public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String> {
 
    @Override
@@ -245,15 +247,5 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            " AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')" , nativeQuery = true)
    List<UspIncidentData> findIncByTrigger(@Param("startDate") String startDate, @Param("endDate") String endDate,
                                           @Param("triggerDescription") String triggerDescription);
-
-
-//   @Query(value = "select * from probsummarym1 p WHERE p.HPC_ASSIGNMENT IN (:assignmentGroup) LIMIT 500", nativeQuery = true)
-//   List<UspIncidentData> findAll(@Param("assignmentGroup") String assignmentGroup);
-
-//   @Query(value = "select * from probsummarym1 p where p.OPEN_TIME BETWEEN TO_CHAR(:startDate, 'dd.MM.yyyy HH:mm:ss') AND TO_CHAR(:endDate, 'dd.MM.yyyy HH:mm:ss')", nativeQuery = true)
-//   List<UspIncidentData> findIncByDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
-
-//   @Query(value = "select * from probsummarym1 LIMIT 500", nativeQuery = true)
-
 
 }

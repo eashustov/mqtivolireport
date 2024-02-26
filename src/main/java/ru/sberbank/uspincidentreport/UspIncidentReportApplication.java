@@ -8,12 +8,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.sberbank.uspincidentreport.service.zabbix.ZabbixAPI;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static ru.sberbank.uspincidentreport.service.zabbix.ZabbixAPI.zabbixApi;
+
 @SpringBootApplication
 public class UspIncidentReportApplication {
 
     private static ConfigurableApplicationContext context;
 
-    //Из application.properties нельзя вставить значение в статическую переменную напряму.
+    //Из application-prod.properties нельзя вставить значение в статическую переменную напряму.
     // Поэтому требуется метод setURLs, setUser, setPassword
     private static String[] urls;
     @Value("${zabbix.api.url}")
@@ -34,7 +40,7 @@ public class UspIncidentReportApplication {
     }
 
     //Выставление значений тега из appliation.properties
-    //Из application.properties нельзя вставить значение в статическую переменную напряму.
+    //Из application-prod.properties нельзя вставить значение в статическую переменную напряму.
     // Поэтому требуется метод setURLs, setUser, setPassword
     static String zabbixAPITagName;
     @Value("${zabbix.api.tag.name}")
@@ -55,7 +61,7 @@ public class UspIncidentReportApplication {
     }
 
     //Выставление значений zabbix групп тега из appliation.properties
-    //Из application.properties нельзя вставить значение в статическую переменную напряму.
+    //Из application-prod.properties нельзя вставить значение в статическую переменную напряму.
     // Поэтому требуется метод setGroups*
     //ОИП
     static String[] zabbixGroupsSOWA;
@@ -113,65 +119,65 @@ public class UspIncidentReportApplication {
         zabbixGroupsOpenShift = groupsName;
     }
 
-    static String zabbixHostSOWA;
+    static String[] zabbixHostSOWA;
     @Value("${zabbix.api.hostname.sowa}")
-    private void setZabbixHostSOWA(String hostName){
+    private void setZabbixHostSOWA(String[] hostName){
         zabbixHostSOWA = hostName;
     }
 
-    static String zabbixHostKafka;
+    static String[] zabbixHostKafka;
     @Value("${zabbix.api.hostname.kafka}")
-    private void setZabbixHostKafka(String hostName){
+    private void setZabbixHostKafka(String[] hostName){
         zabbixHostKafka = hostName;
     }
 
-    static String zabbixHostMQ;
+    static String[] zabbixHostMQ;
     @Value("${zabbix.api.hostname.mq}")
-    private void setZabbixHostMQ(String hostName){
+    private void setZabbixHostMQ(String[] hostName){
         zabbixHostMQ = hostName;
     }
 
-    static String zabbixHostDP;
+    static String[] zabbixHostDP;
     @Value("${zabbix.api.hostname.dp}")
-    private void setZabbixHostDP(String hostName){
+    private void setZabbixHostDP(String[] hostName){
         zabbixHostDP = hostName;
     }
 
     //Стандартные платформы
-    static String zabbixHostNginx;
+    static String[] zabbixHostNginx;
     @Value("${zabbix.api.hostname.nginx}")
-    private void setZabbixHostNginx(String hostName){
+    private void setZabbixHostNginx(String[] hostName){
         zabbixHostNginx = hostName;
     }
 
-    static String zabbixHostWAS;
+    static String[] zabbixHostWAS;
     @Value("${zabbix.api.hostname.was}")
-    private void setZabbixHostWAS(String hostName){
+    private void setZabbixHostWAS(String[] hostName){
         zabbixHostWAS = hostName;
     }
 
-    static String zabbixHostWildFly;
+    static String[] zabbixHostWildFly;
     @Value("${zabbix.api.hostname.wildfly}")
-    private void setZabbixHostWildFly(String hostName){
+    private void setZabbixHostWildFly(String[] hostName){
         zabbixHostWildFly = hostName;
     }
 
-    static String zabbixHostWeblogic;
+    static String[] zabbixHostWeblogic;
     @Value("${zabbix.api.hostname.weblogic}")
-    private void setZabbixHostWeblogic(String hostName){
+    private void setZabbixHostWeblogic(String[] hostName){
         zabbixHostWeblogic = hostName;
     }
 
-    static String zabbixHostSiebel;
+    static String[] zabbixHostSiebel;
     @Value("${zabbix.api.hostname.siebel}")
-    private void setZabbixHostSiebel(String hostName){
+    private void setZabbixHostSiebel(String[] hostName){
         zabbixHostSiebel = hostName;
     }
 
     //Платформа управления контейнерами (Terra)
-    static String zabbixHostOpenShift;
+    static String[] zabbixHostOpenShift;
     @Value("${zabbix.api.hostname.openshift}")
-    private void setZabbixHostOpenShift(String hostName){
+    private void setZabbixHostOpenShift(String[] hostName){
         zabbixHostOpenShift = hostName;
     }
     //Период опроса Zabbix серверов
@@ -183,7 +189,7 @@ public class UspIncidentReportApplication {
 
     //Период запуска GC
     static int gcInterval;
-    @Value("${gc.interval}")
+    @Value("${gcInterval}")
     private void setGCInterval(int requestInterval){
         gcInterval = requestInterval;
     }
@@ -226,25 +232,71 @@ public class UspIncidentReportApplication {
 
         //Получение статистики Zabbix
         Runnable ZabbixAPIGetStatistic = ()->{
+            //Массив с элементами-список хостов по каждому продукту
+            List<String[]> ArrayHostsList = Arrays.asList(zabbixHostSOWA, zabbixHostKafka, zabbixHostMQ, zabbixHostDP,
+                    zabbixHostNginx, zabbixHostWAS, zabbixHostWildFly, zabbixHostWeblogic, zabbixHostSiebel,
+                    zabbixHostOpenShift);
+            String hostSOWA = null, hostKafka = null, hostMQ = null, hostDP = null, hostNginx = null, hostWAS = null,
+                    hostWildFly = null, hostWeblogic = null, hostSiebel = null, hostOpenShift = null;
                 while (true) {
+                    int iteration; //Количество итераций-опросов Zabbix. Должно быть после выоленния равно максимальому кол-у хостов в одной переменной
+                    int maxLengtList=1; //Максимальное количество серверов в  одной переменной
                     for(String url:urls) {
+                        iteration=0;
                         try {
                             ZabbixAPI.ZabbixAPIRegistration(url, user, password);
+                            do {
+                                for (String[] hostsList : ArrayHostsList) {
+                                    try {
+                                            if (hostsList == zabbixHostSOWA) {
+                                                hostSOWA = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostKafka) {
+                                                hostKafka = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostMQ) {
+                                                hostMQ = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostDP) {
+                                                hostDP = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostNginx) {
+                                                hostNginx = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostWAS) {
+                                                hostWAS = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostWildFly) {
+                                                hostWildFly = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostWeblogic) {
+                                                hostWeblogic = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostSiebel) {
+                                                hostSiebel = hostsList[iteration];
+                                            } else if (hostsList == zabbixHostOpenShift) {
+                                                hostOpenShift = hostsList[iteration];
+                                            }
+                                            if (maxLengtList < hostsList.length) {
+                                                maxLengtList = hostsList.length;
+                                            }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                try {
+                                    iteration++;
+//                                    System.out.println("Итерация " + iteration);
+//                                    System.out.println("Максималное количество серверов в одной переменной " + maxLengtList);
+//                                    System.out.println("Хосты для опроса Zabbix: " +
+//                                                    hostSOWA + ", " + hostKafka + ", " + hostMQ + ", " + hostDP + ", " + hostNginx
+//                                                    + ", " + hostWAS + ", " + hostWildFly + ", " + hostWeblogic
+//                                            + ", " + hostSiebel + ", " + hostOpenShift);
+                                    ZabbixAPI.getTriggerStatisticDefault(zabbixAPITriggersSeverityDefaultValue, zabbixAPITagName,
+                                            zabbixAPITagValue, hostSOWA, hostKafka, hostMQ, hostDP, hostNginx, hostWAS,
+                                            hostWildFly, hostWeblogic, hostSiebel, hostOpenShift);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } while (iteration<maxLengtList);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            continue;
-                        }
-                        try {
-                            ZabbixAPI.getTriggerStatisticDefault(zabbixAPITriggersSeverityDefaultValue, zabbixAPITagName,
-                                    zabbixAPITagValue, zabbixHostSOWA, zabbixHostKafka, zabbixHostMQ, zabbixHostDP,
-                                    zabbixHostNginx, zabbixHostWAS, zabbixHostWildFly, zabbixHostWeblogic, zabbixHostSiebel,
-                                    zabbixHostOpenShift);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                            continue;
                         }
                     }
                     try {
+                        zabbixApi.destroy();
                         System.out.println("Пауза между опросами Zabbix: " + zabbixRequestInterval + " минут");
                         Thread.sleep(zabbixRequestInterval*60000);
                     } catch (InterruptedException e) {
@@ -272,7 +324,6 @@ public class UspIncidentReportApplication {
                         ZabbixAPI.listTriggersWithIncForOpenShift.clear();
                     } catch (Exception e) {
                         e.printStackTrace();
-                        continue;
                     }
                 }
             };

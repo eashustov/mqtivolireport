@@ -33,6 +33,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.sberbank.uspincidentreport.domain.UspIncidentData;
 import ru.sberbank.uspincidentreport.repo.UspIncidentRepo;
@@ -42,16 +43,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.nio.file.Files.readString;
-
-
-@Route
+@PermitAll
+@Route(value="", layout = MainLayout.class)
 @PageTitle("Технологические инциденты системы мониторинга ДСП")
 //Сохранение состояния таблицы при обновлении
 //@PreserveOnRefresh
 public class MainView extends VerticalLayout {
     private H4 header;
-    @Autowired
     private UspIncidentRepo repo;
     private Grid<UspIncidentData> grid;
     private GridListDataView<UspIncidentData> dataView;
@@ -60,8 +58,6 @@ public class MainView extends VerticalLayout {
     private Span incFilteredCount = new Span();
     private Span incCount = new Span();
     private Span span = new Span();
-
-//    String assignmentGroup = readString(Paths.get("/home/eshustov/IdeaProjects/usp_incident_assignmentGroup.txt"));
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -77,7 +73,7 @@ public class MainView extends VerticalLayout {
         thread = null;
     }
 
-
+    @Autowired
     public MainView(UspIncidentRepo repo) throws IOException {
         this.repo = repo;
         this.header = new H4("Активные технологические инциденты системы мониторинга ДСП");
@@ -89,7 +85,7 @@ public class MainView extends VerticalLayout {
 //Grid View
         Grid<UspIncidentData> grid = new Grid<>(UspIncidentData.class, false);
         grid.setHeight("600px");
-        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT, GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
         grid.setColumnReorderingAllowed(true);
 
         IncidentContextMenu incContextMenu = new IncidentContextMenu(grid);
@@ -133,7 +129,6 @@ public class MainView extends VerticalLayout {
                 .setSortable(true).setResizable(true).setTextAlign(ColumnTextAlign.START).setHeader("Инструкция для устранения");
         RESOLUTION_GUIDE.setVisible(false);
 
-//        GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll(assignmentGroup));
         GridListDataView<UspIncidentData> dataView = grid.setItems(repo.findAll());
         incFilter = new PersonFilter(dataView);
 
@@ -214,11 +209,9 @@ public class MainView extends VerticalLayout {
         downloadToCSV.removeAll();
         downloadToCSV.add(buttonDownloadCSV);
 
-        //Link to Analitics
-        Anchor analiticsChart = new Anchor("analitics", "Аналитика");
-        analiticsChart.setTarget("_blank");
-
-
+//        //Link to Analitics
+//        Anchor analiticsChart = new Anchor("analitics", "Аналитика");
+//        analiticsChart.setTarget("_blank");
 
         //Создание панели инструментов
         MenuBar menuBar = new MenuBar();
@@ -241,10 +234,10 @@ public class MainView extends VerticalLayout {
         SubMenu styleSubMenu = style.getSubMenu();
         MenuItem normal = styleSubMenu.addItem("Номальный");
         normal.setCheckable(true);
-        normal.setChecked(true);
+        normal.setChecked(false);
         MenuItem compact = styleSubMenu.addItem("Компактный");
         compact.setCheckable(true);
-        compact.setChecked(false);
+        compact.setChecked(true);
 
         ComponentEventListener<ClickEvent<MenuItem>> NormalStylelistener = e -> {
             if (e.getSource().isChecked()) {
@@ -297,16 +290,13 @@ public class MainView extends VerticalLayout {
         columnToggleContextMenu.addColumnToggleItem("Проблема", PROBLEM);
         columnToggleContextMenu.addColumnToggleItem("ИТ-услуга", AFFECTED_ITEM);
 
-
         // build top HorizontalLayout
-        HorizontalLayout actions = new HorizontalLayout(analiticsChart,menuBar);
+        HorizontalLayout actions = new HorizontalLayout(menuBar);
         actions.setVerticalComponentAlignment(Alignment.END, menuBar);
-        actions.setVerticalComponentAlignment(Alignment.CENTER, analiticsChart);
         setHorizontalComponentAlignment(Alignment.END, actions);
 
         incCount.setText("Всего инцидентов: " + dataView.getItemCount());
         incFilteredCount.setText("Отфильтровано: " + incFilter.dataViewFiltered.getItemCount());
-
 
         // Обновление данных счетчика по отфильтрованным элементам
         incFilter.dataViewFiltered.addItemCountChangeListener(event->{
@@ -315,7 +305,6 @@ public class MainView extends VerticalLayout {
             add(incFilteredCount, span);
             System.out.println("Отфильтровано: " + incFilter.dataViewFiltered.getItemCount());
         });
-
 
 //        Добавление компонентов в основной layout
         add(header, actions, grid, incContextMenu, incCount, incFilteredCount, span);
@@ -400,8 +389,6 @@ public class MainView extends VerticalLayout {
     }
 
     static class PersonFilter {
-
-
         private GridListDataView<UspIncidentData> dataViewFiltered;
         private String number;
         private String briefDescription;
@@ -422,7 +409,6 @@ public class MainView extends VerticalLayout {
         public PersonFilter(GridListDataView<UspIncidentData> dataView) {
             this.dataViewFiltered = dataView;
             this.dataViewFiltered.addFilter(this::test);
-
         }
 
         public void setNumber(String number) {
