@@ -1,7 +1,5 @@
 package ru.sberbank.uspincidentreport.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.stereotype.Component;
 import ru.sberbank.uspincidentreport.UspIncidentReportApplication;
 

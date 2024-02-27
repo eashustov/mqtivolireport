@@ -47,7 +47,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "             OPENED_BY,\n" +
            "             AFFECTED_ITEM, 'RESOLUTION_GUIDE' AS RESOLUTION_GUIDE\n" +
            "         FROM\n" +
-           "             smprimary.probsummarym1 prob1\n" +
+           "             SMPRIMARYSAFE.probsummarym1 prob1\n" +
            "         WHERE\n" +
            "                 prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',\n" +
            "                                           'ЦСИТ ОАСП Стандартные платформы (00003984)',\n" +
@@ -105,7 +105,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "             'OPENED_BY',\n" +
            "             AFFECTED_ITEM, 'RESOLUTION_GUIDE' AS RESOLUTION_GUIDE\n" +
            "         FROM\n" +
-           "             smprimary.SBPROBSUMMARYTSM1 prob1\n" +
+           "             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1\n" +
            "         WHERE\n" +
            "                 prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',\n" +
            "                                           'ЦСИТ ОАСП Стандартные платформы (00003984)',\n" +
@@ -167,7 +167,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "\tOPENED_BY, \n" +
            "\tAFFECTED_ITEM, 'RESOLUTION_GUIDE' AS RESOLUTION_GUIDE\n" +
            "FROM\n" +
-           "\tsmprimary.probsummarym1 prob1 \n" +
+           "\tSMPRIMARYSAFE.probsummarym1 prob1 \n" +
            "WHERE\n" +
            "\tprob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',\n" +
            "\t'ЦСИТ ОАСП Стандартные платформы (00003984)',\n" +
@@ -220,7 +220,7 @@ public interface UspIncidentRepo extends CrudRepository<UspIncidentData, String>
            "\t'OPENED_BY'    AS OPENED_BY, \n" +
            "\tAFFECTED_ITEM, 'RESOLUTION_GUIDE' AS RESOLUTION_GUIDE\n" +
            "FROM\n" +
-           "\tsmprimary.SBPROBSUMMARYTSM1 prob1 \n" +
+           "\tSMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1 \n" +
            "WHERE\n" +
            "\tprob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',\n" +
            "\t'ЦСИТ ОАСП Стандартные платформы (00003984)',\n" +

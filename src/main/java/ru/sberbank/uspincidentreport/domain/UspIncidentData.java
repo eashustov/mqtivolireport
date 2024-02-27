@@ -9,7 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-//@Table(schema = "SMPRIMARY", name = "probsummarym1")
+//@Table(schema = "SMPRIMARYSAFE", name = "probsummarym1")
 @Table(name = "probsummarym1")
 public class UspIncidentData {
     @Id

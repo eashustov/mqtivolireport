@@ -984,7 +984,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -1036,7 +1036,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -1311,7 +1311,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -1363,7 +1363,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -1638,7 +1638,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -1690,7 +1690,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -1965,7 +1965,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -2017,7 +2017,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -2292,7 +2292,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -2344,7 +2344,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -2619,7 +2619,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -2671,7 +2671,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -2946,7 +2946,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -2998,7 +2998,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -3272,7 +3272,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -3324,7 +3324,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -3598,7 +3598,7 @@ FROM
                                      AS RESOLUTION,
              OPENED_BY
          FROM
-             smprimary.probsummarym1 prob1
+             SMPRIMARYSAFE.probsummarym1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',
@@ -3650,7 +3650,7 @@ FROM
              'RESOLUTION'   AS RESOLUTION,
              'OPENED_BY'
          FROM
-             smprimary.SBPROBSUMMARYTSM1 prob1
+             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1
          WHERE
                  prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',
                                            'ЦСИТ ОАСП Стандартные платформы (00003984)',

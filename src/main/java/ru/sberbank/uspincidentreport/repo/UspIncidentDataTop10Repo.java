@@ -51,7 +51,7 @@ public interface UspIncidentDataTop10Repo extends CrudRepository<UspIncidentData
             "                          OPENED_BY,\n" +
             "                          AFFECTED_ITEM\n" +
             "                      FROM\n" +
-            "                          smprimary.probsummarym1 prob1\n" +
+            "                          SMPRIMARYSAFE.probsummarym1 prob1\n" +
             "                      WHERE\n" +
             "                              prob1.AFFECTED_ITEM IN ( 'CI02021303',\n" +
             "                                                       'CI02021304',\n" +
@@ -114,7 +114,7 @@ public interface UspIncidentDataTop10Repo extends CrudRepository<UspIncidentData
             "                          'OPENED_BY'    AS OPENED_BY,\n" +
             "                          AFFECTED_ITEM\n" +
             "                      FROM\n" +
-            "                          smprimary.SBPROBSUMMARYTSM1 prob1\n" +
+            "                          SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1\n" +
             "                      WHERE\n" +
             "                              prob1.AFFECTED_ITEM IN ( 'CI02021303',\n" +
             "                                                       'CI02021304',\n" +

@@ -179,7 +179,7 @@ public class MainView extends VerticalLayout {
         }));
 
 //        Export to CSV
-        var streamResource = new StreamResource("uspOpenIncidents.csv",
+        var streamResource = new StreamResource("DSPOpenIncidents.csv",
                 () -> {
                     Stream<UspIncidentData> uspIncidentList = incFilter.dataViewFiltered.getItems();
                     StringWriter output = new StringWriter();
@@ -232,7 +232,7 @@ public class MainView extends VerticalLayout {
 
         MenuItem style = menuBar.addItem("Вид");
         SubMenu styleSubMenu = style.getSubMenu();
-        MenuItem normal = styleSubMenu.addItem("Номальный");
+        MenuItem normal = styleSubMenu.addItem("Нормальный");
         normal.setCheckable(true);
         normal.setChecked(false);
         MenuItem compact = styleSubMenu.addItem("Компактный");

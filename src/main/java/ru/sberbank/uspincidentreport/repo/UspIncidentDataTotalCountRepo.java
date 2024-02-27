@@ -46,7 +46,7 @@ public interface UspIncidentDataTotalCountRepo extends CrudRepository<UspInciden
             "                                     AS RESOLUTION,\n" +
             "             OPENED_BY\n" +
             "         FROM\n" +
-            "             smprimary.probsummarym1 prob1\n" +
+            "             SMPRIMARYSAFE.probsummarym1 prob1\n" +
             "         WHERE\n" +
             "                 prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',\n" +
             "                                           'ЦСИТ ОАСП Стандартные платформы (00003984)',\n" +
@@ -98,7 +98,7 @@ public interface UspIncidentDataTotalCountRepo extends CrudRepository<UspInciden
             "             'RESOLUTION'   AS RESOLUTION,\n" +
             "             'OPENED_BY'\n" +
             "         FROM\n" +
-            "             smprimary.SBPROBSUMMARYTSM1 prob1\n" +
+            "             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1\n" +
             "         WHERE\n" +
             "                 prob1.hpc_assignment IN ( 'ЦСИТ Серверы приложений (00001092)',\n" +
             "                                           'ЦСИТ ОАСП Стандартные платформы (00003984)',\n" +
@@ -159,7 +159,7 @@ public interface UspIncidentDataTotalCountRepo extends CrudRepository<UspInciden
             "             OPENED_BY,\n" +
             "             AFFECTED_ITEM\n" +
             "         FROM\n" +
-            "             smprimary.probsummarym1 prob1\n" +
+            "             SMPRIMARYSAFE.probsummarym1 prob1\n" +
             "         WHERE\n" +
             "                 prob1.AFFECTED_ITEM IN ( 'CI02021303', \n" +
             "   'CI02021304', \n" +
@@ -222,7 +222,7 @@ public interface UspIncidentDataTotalCountRepo extends CrudRepository<UspInciden
             "             'OPENED_BY',\n" +
             "             AFFECTED_ITEM\n" +
             "         FROM\n" +
-            "             smprimary.SBPROBSUMMARYTSM1 prob1\n" +
+            "             SMPRIMARYSAFE.SBPROBSUMMARYTSM1 prob1\n" +
             "         WHERE\n" +
             "                 prob1.AFFECTED_ITEM IN ( 'CI02021303', \n" +
             "   'CI02021304', \n" +
