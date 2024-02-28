@@ -489,7 +489,7 @@ public class Analitics extends VerticalLayout {
                             .replace("CI02192117", "Apache Kafka")
                             .replace("CI02021290", "IBM DataPower")
                             .replace("CI02021291", "IBM WebSphere MQ")
-                            .replace("CI02021300", "Apache Zookeeper")
+                            .replace("CI02021300", "SKeeper")
                             .replace("CI02192118", "SOWA")
                             .replace("CI02021306", "Сервисы интеграции приложений WebSphere (IBM App services)")
                             .replace("CI00737141", "Специализированные платформы серверов приложений (IBM Portal, Oracle Siebel CRM, Teradat, IBM FileNet)")
@@ -498,7 +498,10 @@ public class Analitics extends VerticalLayout {
                             .replace("CI02008623", "Мониторинг использования лицензий (МИЛИ)")
                             .replace("CI01563053", "Платформа управления контейнерами (Terra)")
                             .replace("CI04178739", "SynGX")
-                            .replace("CI04085569", "Platform V Corax (Kafka SE)"))
+                            .replace("CI04085569", "Platform V Corax (Kafka SE)")
+                            .replace("CI04452790", "SIDEC")
+                            .replace("CI05435889", "IAGW")
+                            .replace("CI05879203", "EAGLE"))
                     .collect(Collectors.toList());
         }
 
@@ -581,7 +584,7 @@ public class Analitics extends VerticalLayout {
                             .replace("CI02192117", "Apache Kafka")
                             .replace("CI02021290", "IBM DataPower")
                             .replace("CI02021291", "IBM WebSphere MQ")
-                            .replace("CI02021300", "Apache Zookeeper")
+                            .replace("CI02021300", "SKeeper")
                             .replace("CI02192118", "SOWA")
                             .replace("CI02021306", "Сервисы интеграции приложений WebSphere (IBM App services)")
                             .replace("CI00737141", "Специализированные платформы серверов приложений (IBM Portal, Oracle Siebel CRM, Teradat, IBM FileNet)")
@@ -590,7 +593,10 @@ public class Analitics extends VerticalLayout {
                             .replace("CI02008623", "Мониторинг использования лицензий (МИЛИ)")
                             .replace("CI01563053", "Платформа управления контейнерами (Terra)")
                             .replace("CI04178739", "SynGX")
-                            .replace("CI04085569", "Platform V Corax (Kafka SE)");
+                            .replace("CI04085569", "Platform V Corax (Kafka SE)")
+                            .replace("CI04452790", "SIDEC")
+                            .replace("CI05435889", "IAGW")
+                            .replace("CI05879203", "EAGLE");
 
                     itemExecute.add(affectedItem);
 
