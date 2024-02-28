@@ -35,7 +35,7 @@ public class FilterActiveIncident {
         put("CI02192117", "Apache Kafka");
         put("CI02021290", "IBM DataPower");
         put("CI02021291", "IBM WebSphere MQ");
-        put("CI02021300", "Apache Zookeeper");
+        put("CI02021300", "SKeeper");
         put("CI02192118", "SOWA");
         put("CI02021306", "Сервисы интеграции приложений WebSphere (IBM App services)");
         put("CI00737141", "Специализированные платформы серверов приложений (IBM Portal, Oracle Siebel CRM, Teradat, IBM FileNet)");
@@ -45,6 +45,9 @@ public class FilterActiveIncident {
         put("CI01563053", "Платформа управления контейнерами (Terra)");
         put("CI04178739", "SynGX");
         put("CI04085569", "Platform V Corax (Kafka SE)");
+        put("CI04452790", "SIDEC");
+        put("CI05435889", "IAGW");
+        put("CI05879203", "EAGLE");
     }};
 
     static Set<String> affectedItem;

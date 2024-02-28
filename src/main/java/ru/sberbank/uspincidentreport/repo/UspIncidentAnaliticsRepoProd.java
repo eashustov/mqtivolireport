@@ -184,7 +184,10 @@ public interface UspIncidentAnaliticsRepoProd extends UspIncidentAnaliticsRepo{
             "   'CI02008623', \n" +
             "   'CI01563053', \n" +
             "   'CI04178739', \n" +
-            "   'CI04085569')\n" +
+            "   'CI04085569', \n" +
+            "   'CI04452790', \n" +
+            "   'CI05435889', \n" +
+            "   'CI05879203')\n" +
             "         UNION\n" +
             "         SELECT\n" +
             "             prob1.\"NUMBER\",\n" +
@@ -247,7 +250,10 @@ public interface UspIncidentAnaliticsRepoProd extends UspIncidentAnaliticsRepo{
             "   'CI02008623', \n" +
             "   'CI01563053', \n" +
             "   'CI04178739', \n" +
-            "   'CI04085569'))\n" +
+            "   'CI04085569', \n" +
+            "   'CI04452790', \n" +
+            "   'CI05435889', \n" +
+            "   'CI05879203'))\n" +
             "WHERE\n" +
             "        HPC_CREATED_BY_NAME in ('Технологический пользователь АС ZABBIX_SI (958891)', 'INT_SC_SERVICE_PROXY (756759)')\n" +
             "AND OPEN_TIME BETWEEN TO_TIMESTAMP(:startDate, 'DD.MM.RRRR HH24:MI:SS') AND TO_TIMESTAMP(:endDate, 'DD.MM.RRRR HH24:MI:SS')" +
