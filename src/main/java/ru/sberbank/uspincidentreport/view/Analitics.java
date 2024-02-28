@@ -115,7 +115,7 @@ public class Analitics extends VerticalLayout {
 
     @Autowired
     public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics,
-                     UspIncidentDataTop10Repo dataTop10IncRepo) {
+                     UspIncidentDataTop10Repo dataTop10IncRepo, UspIncidentRepo repo) {
         this.header = new H4("Аналитика технологических инцидентов СМ ДСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
@@ -135,6 +135,7 @@ public class Analitics extends VerticalLayout {
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
         this.repoAnalitics = repoAnalitics;
         this.dataTop10IncRepo = dataTop10IncRepo;
+        this.repo = repo;
 
         //Кнопка поиска
         TextField searchField = new TextField();
@@ -177,8 +178,8 @@ public class Analitics extends VerticalLayout {
         add(header, dateLayout);
 
         //Обработчик поиска
-        searchField.setValueChangeMode(ValueChangeMode.LAZY);
-        searchField.setValueChangeTimeout(3000);
+        searchField.setValueChangeMode(ValueChangeMode.ON_BLUR);
+        searchField.setValueChangeTimeout(3000); //Используется для ValueChangeMode.LAZY
         searchField.addValueChangeListener(changeListener->{
             if (!searchField.getValue().equals(""))
             {
