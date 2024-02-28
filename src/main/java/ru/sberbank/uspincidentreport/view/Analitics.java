@@ -96,9 +96,9 @@ public class Analitics extends VerticalLayout {
 
     private UspIncidentDataTotalCountRepo dataTotalCountRepo;
     private UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo;
-    private UspIncidentAnaliticsRepo repoAnalitics;
+    private UspIncidentAnaliticsRepo analiticsRepo;
     private UspIncidentDataTop10Repo dataTop10IncRepo;
-    private UspIncidentRepo repo;
+    private UspIncidentRepo incidentRepo;
 
     private Map<String,Map<String, Integer>> assignmentGroupMapToMonthData;
 
@@ -114,8 +114,8 @@ public class Analitics extends VerticalLayout {
     Anchor downloadToCSV;
 
     @Autowired
-    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo repoAnalitics,
-                     UspIncidentDataTop10Repo dataTop10IncRepo, UspIncidentRepo repo) {
+    public Analitics(UspIncidentDataTotalCountRepo dataTotalCountRepo, UspIncidentDataCountPerMonthRepo dataCountPerMonthRepo, UspIncidentAnaliticsRepo analiticsRepo,
+                     UspIncidentDataTop10Repo dataTop10IncRepo, UspIncidentRepo incidentRepo) {
         this.header = new H4("Аналитика технологических инцидентов СМ ДСП за период");
         setHorizontalComponentAlignment(Alignment.CENTER, header);
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
@@ -133,9 +133,9 @@ public class Analitics extends VerticalLayout {
         endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
         this.dataTotalCountRepo = dataTotalCountRepo;
         this.dataCountPerMonthRepo = dataCountPerMonthRepo;
-        this.repoAnalitics = repoAnalitics;
+        this.analiticsRepo = analiticsRepo;
         this.dataTop10IncRepo = dataTop10IncRepo;
-        this.repo = repo;
+        this.incidentRepo = incidentRepo;
 
         //Кнопка поиска
         TextField searchField = new TextField();
@@ -237,7 +237,7 @@ public class Analitics extends VerticalLayout {
         setHorizontalComponentAlignment(Alignment.END, closeButton);
 
         Grid<UspIncidentData> searchGrid = new Grid<>(UspIncidentData.class, false);
-        GridListDataView<UspIncidentData> searchDataView = searchGrid.setItems(repoAnalitics.findIncBySearchFilter(startDate,endDate,searchValue));
+        GridListDataView<UspIncidentData> searchDataView = searchGrid.setItems(analiticsRepo.findIncBySearchFilter(startDate,endDate,searchValue));
 
 //        searchGrid.setAllRowsVisible(true); //Автоматическая высота таблицы в зависимости от количества строк
         searchGrid.setHeight("77%");
@@ -668,7 +668,7 @@ public class Analitics extends VerticalLayout {
         endDate = end_Date.getValue().format(europeanDateFormatter) + " 23:59:59";
         grid_analitics = new Grid<>(UspIncidentData.class, false);
 //        dataView = grid.setItems(repo.findIncByDate(startDate, endDate, assignmentGroup ));
-        dataView_analitics = grid_analitics.setItems(repoAnalitics.findIncByDate(startDate, endDate));
+        dataView_analitics = grid_analitics.setItems(analiticsRepo.findIncByDate(startDate, endDate));
         return dataView_analitics;
     };
 
@@ -1468,7 +1468,7 @@ public class Analitics extends VerticalLayout {
                     }
 
                     GridListDataView<UspIncidentData> triggerIncGridDataView = triggerIncGrid.setItems(
-                            repo.findIncByTrigger(startDate, endDate, triggerDescription));
+                            incidentRepo.findIncByTrigger(startDate, endDate, triggerDescription));
 
 //                    System.out.println("Описание триггера:" + triggerDescription);
                     MainView.PersonFilter personFilter = new MainView.PersonFilter(triggerIncGridDataView);
