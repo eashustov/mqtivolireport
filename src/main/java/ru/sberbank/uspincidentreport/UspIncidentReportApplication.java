@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.sberbank.uspincidentreport.service.zabbix.ZabbixAPI;
 
@@ -15,7 +17,7 @@ import java.util.List;
 import static ru.sberbank.uspincidentreport.service.zabbix.ZabbixAPI.zabbixApi;
 
 @SpringBootApplication
-public class UspIncidentReportApplication {
+public class UspIncidentReportApplication extends SpringBootServletInitializer {
 
     private static ConfigurableApplicationContext context;
 
@@ -335,6 +337,15 @@ public class UspIncidentReportApplication {
         HeapControl ();
 
     }
+
+    //Блок для запуска на WildFly
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(applicationClass);
+    }
+
+    private static Class<UspIncidentReportApplication> applicationClass = UspIncidentReportApplication.class;
+    // Конец блока для запуска на WildFly
 
     public static void HeapControl () {
 //        System.out.println("Heap контроль запущен");

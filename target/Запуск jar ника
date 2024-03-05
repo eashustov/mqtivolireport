@@ -1,1 +1,0 @@
-eshustov@rosa2021 ~/IdeaProjects/UspIncidentReport/target $ /home/eshustov/.jdks/jdk-11.0.1/bin/java -Dfile.encoding=UTF-8 -jar /home/eshustov/IdeaProjects/UspIncidentReport/target/uspincidentreport-0.0.1-SNAPSHOT.jar --spring.config.location=./
