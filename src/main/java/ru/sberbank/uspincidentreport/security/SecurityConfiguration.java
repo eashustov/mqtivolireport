@@ -24,6 +24,12 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     @Value("${spring.ldap.authentication.url}")
     String url;
 
+    @Value("${spring.ldap.authentication.managerDn}")
+    String managerDn;
+
+    @Value("${spring.ldap.authentication.managerPassword}")
+    String managerPassword;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // Delegating the responsibility of general configurations
@@ -64,9 +70,11 @@ public class SecurityConfiguration extends VaadinWebSecurity {
                 .userDnPatterns(userDnPatterns)
                 .groupSearchBase(groupSearchBase)
                 .contextSource()
-                .url(url);
+                .url(url)
+                .managerDn(managerDn)
+                .managerPassword(managerPassword)
+                .and();
         ////For use embedded LDAP server for test purpose
-//                .and()
 //                .passwordCompare()
 //                .passwordEncoder(new BCryptPasswordEncoder())
 //                .passwordAttribute("userPassword");
